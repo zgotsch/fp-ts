@@ -449,8 +449,7 @@ export function getIOValidation<E>(
  * @since 2.1.0
  */
 export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
-  const W = E.getWitherable(M)
-  const F = getFilterableComposition(I.Monad, W)
+  const F = getFilterableComposition(I.Monad, E.getFilterable(M))
 
   return {
     URI,

@@ -602,8 +602,7 @@ export function getTaskValidation<E>(
  * @since 2.1.0
  */
 export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
-  const W = E.getWitherable(M)
-  const F = getFilterableComposition(T.Monad, W)
+  const F = getFilterableComposition(T.Monad, E.getFilterable(M))
 
   return {
     URI,
