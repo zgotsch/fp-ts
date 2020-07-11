@@ -30,6 +30,8 @@ high state of flux, you're at risk of it changing without notice.
     - `TheseT` (@gcanti)
     - `WriterT` (@gcanti)
     - `ValidationT` (@gcanti)
+  - `Applicative`
+    - remove `getApplicativeComposition` and related types (@gcanti)
 
 # 2.7.0
 
