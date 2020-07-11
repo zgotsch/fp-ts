@@ -7,7 +7,6 @@ import * as I from '../src/IO'
 import * as IE from '../src/IOEither'
 import { monoidString } from '../src/Monoid'
 import { none, some } from '../src/Option'
-import { pipeable } from '../src/pipeable'
 import { semigroupString, semigroupSum } from '../src/Semigroup'
 import * as T from '../src/Task'
 import * as _ from '../src/TaskEither'
@@ -127,30 +126,11 @@ describe('TaskEither', () => {
 
   describe('getFilterable', () => {
     const F_ = _.getFilterable(A.getMonoid<string>())
-    const { filter } = pipeable(F_)
 
     it('filter', async () => {
-      assert.deepStrictEqual(
-        await pipe(
-          _.right(1),
-          filter((n) => n > 0)
-        )(),
-        await _.right(1)()
-      )
-      assert.deepStrictEqual(
-        await pipe(
-          _.right(-1),
-          filter((n) => n > 0)
-        )(),
-        await _.left([])()
-      )
-      assert.deepStrictEqual(
-        await pipe(
-          _.left(['a']),
-          filter((n) => n > 0)
-        )(),
-        await _.left(['a'])()
-      )
+      assert.deepStrictEqual(await pipe(F_.filter(_.right(1), (n) => n > 0))(), await _.right(1)())
+      assert.deepStrictEqual(await pipe(F_.filter(_.right(-1), (n) => n > 0))(), await _.left([])())
+      assert.deepStrictEqual(await pipe(F_.filter(_.left(['a']), (n) => n > 0))(), await _.left(['a'])())
     })
   })
 

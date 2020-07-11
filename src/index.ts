@@ -27,7 +27,6 @@ import * as contravariant from './Contravariant'
 import * as date from './Date'
 import * as distributiveLattice from './DistributiveLattice'
 import * as either from './Either'
-import * as eitherT from './EitherT'
 import * as eq from './Eq'
 import * as extend from './Extend'
 import * as field from './Field'
@@ -58,15 +57,12 @@ import * as monadThrow from './MonadThrow'
 import * as monoid from './Monoid'
 import * as nonEmptyArray from './NonEmptyArray'
 import * as option from './Option'
-import * as optionT from './OptionT'
 import * as ord from './Ord'
 import * as ordering from './Ordering'
-import * as pipeable from './pipeable'
 import * as profunctor from './Profunctor'
 import * as random from './Random'
 import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
-import * as readerT from './ReaderT'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
 import * as readonlyArray from './ReadonlyArray'
@@ -84,24 +80,20 @@ import * as set from './Set'
 import * as show from './Show'
 import * as state from './State'
 import * as stateReaderTaskEither from './StateReaderTaskEither'
-import * as stateT from './StateT'
 import * as store from './Store'
 import * as strong from './Strong'
 import * as task from './Task'
 import * as taskEither from './TaskEither'
 import * as taskThese from './TaskThese'
 import * as these from './These'
-import * as theseT from './TheseT'
 import * as traced from './Traced'
 import * as traversable from './Traversable'
 import * as traversableWithIndex from './TraversableWithIndex'
 import * as tree from './Tree'
 import * as tuple from './Tuple'
 import * as unfoldable from './Unfoldable'
-import * as validationT from './ValidationT'
 import * as witherable from './Witherable'
 import * as writer from './Writer'
-import * as writerT from './WriterT'
 export {
   /**
    * @since 2.0.0
@@ -203,10 +195,6 @@ export {
    * @since 2.0.0
    */
   either,
-  /**
-   * @since 2.0.0
-   */
-  eitherT,
   /**
    * @since 2.0.0
    */
@@ -326,19 +314,11 @@ export {
   /**
    * @since 2.0.0
    */
-  optionT,
-  /**
-   * @since 2.0.0
-   */
   ord,
   /**
    * @since 2.0.0
    */
   ordering,
-  /**
-   * @since 2.0.0
-   */
-  pipeable,
   /**
    * @since 2.0.0
    */
@@ -355,10 +335,6 @@ export {
    * @since 2.0.0
    */
   readerEither,
-  /**
-   * @since 2.0.0
-   */
-  readerT,
   /**
    * @since 2.0.0
    */
@@ -434,10 +410,6 @@ export {
   /**
    * @since 2.0.0
    */
-  stateT,
-  /**
-   * @since 2.0.0
-   */
   store,
   /**
    * @since 2.0.0
@@ -459,10 +431,6 @@ export {
    * @since 2.0.0
    */
   these,
-  /**
-   * @since 2.4.0
-   */
-  theseT,
   /**
    * @since 2.0.0
    */
@@ -490,17 +458,9 @@ export {
   /**
    * @since 2.0.0
    */
-  validationT,
-  /**
-   * @since 2.0.0
-   */
   witherable,
   /**
    * @since 2.0.0
    */
-  writer,
-  /**
-   * @since 2.4.0
-   */
-  writerT
+  writer
 }

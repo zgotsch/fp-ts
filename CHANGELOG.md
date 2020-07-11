@@ -21,6 +21,15 @@ high state of flux, you're at risk of it changing without notice.
     - required typescript version: `4.x` (@gcanti)
   - **Build**
     - change output to `es6` (@gcanti)
+  - **Removed modules**
+    - `pipeable` (@gcanti)
+    - `EitherT` (@gcanti)
+    - `OptionT` (@gcanti)
+    - `ReaderT` (@gcanti)
+    - `StateT` (@gcanti)
+    - `TheseT` (@gcanti)
+    - `WriterT` (@gcanti)
+    - `ValidationT` (@gcanti)
 
 # 2.7.0
 

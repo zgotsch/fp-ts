@@ -7,7 +7,6 @@ import * as I from '../src/IO'
 import * as _ from '../src/IOEither'
 import { monoidString } from '../src/Monoid'
 import { none, some } from '../src/Option'
-import { pipeable } from '../src/pipeable'
 import { semigroupSum } from '../src/Semigroup'
 
 describe('IOEither', () => {
@@ -298,23 +297,13 @@ describe('IOEither', () => {
 
   describe('getFilterable', () => {
     const F_ = _.getFilterable(getMonoid<string>())
-    const { filter } = pipeable(F_)
 
     it('filter', async () => {
-      const r1 = pipe(
-        _.right(1),
-        filter((n) => n > 0)
-      )
+      const r1 = pipe(F_.filter(_.right(1), (n) => n > 0))
       assert.deepStrictEqual(r1(), _.right(1)())
-      const r2 = pipe(
-        _.right(-1),
-        filter((n) => n > 0)
-      )
+      const r2 = pipe(F_.filter(_.right(-1), (n) => n > 0))
       assert.deepStrictEqual(r2(), _.left([])())
-      const r3 = pipe(
-        _.left(['a']),
-        filter((n) => n > 0)
-      )
+      const r3 = pipe(F_.filter(_.left(['a']), (n) => n > 0))
       assert.deepStrictEqual(r3(), _.left(['a'])())
     })
   })
