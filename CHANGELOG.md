@@ -14,10 +14,13 @@
 **Note**: Gaps between patch versions are faulty/broken releases. **Note**: A feature tagged as Experimental is in a
 high state of flux, you're at risk of it changing without notice.
 
-# 3.0.0-beta
+# 3.0.0-alpha
 
 - **Breaking Change**
-  - required typescript version: `4.x` (@gcanti)
+  - **TypeScript version**
+    - required typescript version: `4.x` (@gcanti)
+  - **Build**
+    - change output to `es6` (@gcanti)
 
 # 2.7.0
 
