@@ -11,25 +11,24 @@
  *
  * @since 2.0.0
  */
-import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
 import {
   Functor,
   Functor1,
   Functor2,
-  Functor3,
-  Functor4,
   Functor2C,
+  Functor3,
+  Functor3C,
+  Functor4,
   FunctorComposition,
   FunctorComposition11,
   FunctorComposition12,
   FunctorComposition12C,
   FunctorComposition21,
-  FunctorComposition2C1,
   FunctorComposition22,
   FunctorComposition22C,
-  getFunctorComposition,
-  Functor3C
+  FunctorComposition2C1
 } from './Functor'
+import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
 
 /**
  * @category type classes
@@ -201,7 +200,7 @@ export function getFunctorWithIndexComposition<F, FI, G, GI>(
   G: FunctorWithIndex<G, GI>
 ): FunctorWithIndexComposition<F, FI, G, GI> {
   return {
-    map: getFunctorComposition(F, G).map,
+    map: (fa, f) => F.map(fa, (ga) => G.map(ga, f)),
     mapWithIndex: (fga, f) => F.mapWithIndex(fga, (fi, ga) => G.mapWithIndex(ga, (gi, a) => f([fi, gi], a)))
   }
 }

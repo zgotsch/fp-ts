@@ -8,7 +8,7 @@ import { Alt2, Alt2C } from './Alt'
 import { Applicative2, Applicative2C } from './Applicative'
 import { Bifunctor2 } from './Bifunctor'
 import * as E from './Either'
-import { Filterable2C, getFilterableComposition } from './Filterable'
+import { Filterable2C } from './Filterable'
 import { flow, identity, Lazy, pipe, Predicate, Refinement } from './function'
 import { Functor2 } from './Functor'
 import * as I from './IO'
@@ -16,7 +16,7 @@ import { Monad2, Monad2C } from './Monad'
 import { MonadIO2, MonadIO2C } from './MonadIO'
 import { MonadThrow2, MonadThrow2C } from './MonadThrow'
 import { Monoid } from './Monoid'
-import { Option } from './Option'
+import { getLeft, getRight, Option } from './Option'
 import { Semigroup } from './Semigroup'
 
 // -------------------------------------------------------------------------------------
@@ -456,18 +456,39 @@ export function getIOValidation<E>(
  * @since 2.1.0
  */
 export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
-  const F = getFilterableComposition(I.Monad, E.getFilterable(M))
+  const F = E.getFilterable(M)
+  const compact: Filterable2C<URI, E>['compact'] = I.map(F.compact)
+  const separate: Filterable2C<URI, E>['separate'] = (fge) => ({
+    left: compact(map_(fge, getLeft)),
+    right: compact(map_(fge, getRight))
+  })
+  const filter: Filterable2C<URI, E>['filter'] = <A>(fga: IOEither<E, A>, predicate: Predicate<A>) =>
+    pipe(
+      fga,
+      I.map((ga) => F.filter(ga, predicate))
+    )
+  const filterMap: Filterable2C<URI, E>['filterMap'] = (fga, f) =>
+    pipe(
+      fga,
+      I.map((ga) => F.filterMap(ga, f))
+    )
 
   return {
     URI,
     _E: undefined as any,
     map: map_,
-    compact: F.compact,
-    separate: F.separate,
-    filter: F.filter,
-    filterMap: F.filterMap,
-    partition: F.partition,
-    partitionMap: F.partitionMap
+    compact,
+    separate,
+    filter,
+    filterMap,
+    partition: <A>(fga: IOEither<E, A>, predicate: Predicate<A>) => ({
+      left: filter(fga, (a) => !predicate(a)),
+      right: filter(fga, predicate)
+    }),
+    partitionMap: (fga, f) => ({
+      left: filterMap(fga, (a) => getLeft(f(a))),
+      right: filterMap(fga, (a) => getRight(f(a)))
+    })
   }
 }
 

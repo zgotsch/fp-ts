@@ -45,16 +45,7 @@ import {
   FoldableComposition11,
   getFoldableComposition
 } from './Foldable'
-import {
-  Functor,
-  Functor1,
-  Functor2,
-  Functor2C,
-  Functor3,
-  FunctorComposition,
-  FunctorComposition11,
-  getFunctorComposition
-} from './Functor'
+import { Functor, Functor1, Functor2, Functor2C, Functor3, FunctorComposition, FunctorComposition11 } from './Functor'
 import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
 
 /**
@@ -377,7 +368,7 @@ export function getTraversableComposition<F, G>(F: Traversable<F>, G: Traversabl
 export function getTraversableComposition<F, G>(F: Traversable<F>, G: Traversable<G>): TraversableComposition<F, G> {
   const FC = getFoldableComposition(F, G)
   return {
-    map: getFunctorComposition(F, G).map,
+    map: (fa, f) => F.map(fa, (ga) => G.map(ga, f)),
     reduce: FC.reduce,
     foldMap: FC.foldMap,
     reduceRight: FC.reduceRight,
