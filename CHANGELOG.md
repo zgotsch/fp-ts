@@ -34,6 +34,8 @@ high state of flux, you're at risk of it changing without notice.
     - remove `getApplicativeComposition` and related types (@gcanti)
   - `Filterable`
     - remove `getFilterableComposition` and related types (@gcanti)
+  - `FunctorWithIndex`
+    - remove `getFunctorWithIndexComposition` and related types (@gcanti)
 - **New Feature**
   - `Either`
     - add `getFilterable` constrained instance (@gcanti)
