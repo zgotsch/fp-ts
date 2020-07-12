@@ -3,7 +3,6 @@
  */
 import { Alt3, Alt3C } from './Alt'
 import { Applicative3, Applicative3C } from './Applicative'
-import { apComposition } from './Apply'
 import { Bifunctor3 } from './Bifunctor'
 import * as E from './Either'
 import { flow, identity, pipe, Predicate, Refinement } from './function'
@@ -255,11 +254,13 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <R, A>(fa: ReaderEither<R, E, A>
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <R, E, A>(
+export const ap = <R, E, A>(
   fa: ReaderEither<R, E, A>
-) => <B>(fab: ReaderEither<R, E, (a: A) => B>) => ReaderEither<R, E, B> =
-  /*#__PURE__*/
-  apComposition(R.Applicative, E.Applicative)
+): (<B>(fab: ReaderEither<R, E, (a: A) => B>) => ReaderEither<R, E, B>) =>
+  flow(
+    R.map((gab) => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
+    R.ap(fa)
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -411,7 +412,13 @@ export function getApplyMonoid<R, E, A>(M: Monoid<A>): Monoid<ReaderEither<R, E,
  * @since 2.7.0
  */
 export function getApplicativeReaderValidation<E>(SE: Semigroup<E>): Applicative3C<URI, E> {
-  const ap = apComposition(R.Applicative, E.getApplicativeValidation(SE))
+  const AV = E.getApplicativeValidation(SE)
+  const ap = <R, A>(fa: ReaderEither<R, E, A>): (<B>(fab: ReaderEither<R, E, (a: A) => B>) => ReaderEither<R, E, B>) =>
+    flow(
+      R.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga)),
+      R.ap(fa)
+    )
+
   return {
     URI,
     _E: undefined as any,

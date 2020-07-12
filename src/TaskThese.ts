@@ -1,14 +1,16 @@
 /**
  * @since 2.4.0
  */
-import { apComposition, Apply1 } from './Apply'
+import { Applicative2, Applicative2C } from './Applicative'
+import { Apply1 } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
 import { flow, pipe } from './function'
 import { Functor2 } from './Functor'
 import { IO } from './IO'
 import { IOEither } from './IOEither'
 import { Monad2C } from './Monad'
-import { MonadTask2C, MonadTask2 } from './MonadTask'
+import { MonadIO2 } from './MonadIO'
+import { MonadTask2, MonadTask2C } from './MonadTask'
 import { Semigroup } from './Semigroup'
 import * as T from './Task'
 import * as TH from './These'
@@ -19,8 +21,6 @@ import * as TH from './These'
 
 import These = TH.These
 import Task = T.Task
-import { Applicative2C, Applicative2 } from './Applicative'
-import { MonadIO2 } from './MonadIO'
 
 /**
  * @category model
@@ -225,7 +225,13 @@ export function getSemigroup<E, A>(SE: Semigroup<E>, SA: Semigroup<A>): Semigrou
  * @since 2.7.0
  */
 export function getApplicative<E>(A: Apply1<T.URI>, SE: Semigroup<E>): Applicative2C<URI, E> {
-  const ap = apComposition(A, TH.getMonad(SE))
+  const AV = TH.getApplicative(SE)
+  const ap = <A>(fa: TaskThese<E, A>) => <B>(fab: TaskThese<E, (a: A) => B>): TaskThese<E, B> =>
+    A.ap(
+      A.map(fab, (gab) => (ga: TH.These<E, A>) => AV.ap(gab, ga)),
+      fa
+    )
+
   return {
     URI,
     _E: undefined as any,

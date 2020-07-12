@@ -1,7 +1,7 @@
 import * as _ from '../../src/ReaderEither'
 import * as R from '../../src/Reader'
 import * as E from '../../src/Either'
-import { pipe } from '../../src/pipeable'
+import { pipe } from '../../src/function'
 
 //
 // getOrElseW

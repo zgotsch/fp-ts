@@ -1,7 +1,7 @@
 import * as _ from '../../src/NonEmptyArray'
 import { ordString } from '../../src/Ord'
 import { eqString } from '../../src/Eq'
-import { pipe } from '../../src/pipeable'
+import { pipe } from '../../src/function'
 
 declare const as: Array<string>
 declare const neas: _.NonEmptyArray<string>

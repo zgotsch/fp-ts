@@ -6,7 +6,6 @@
  */
 import { Alt2, Alt2C } from './Alt'
 import { Applicative2, Applicative2C } from './Applicative'
-import { apComposition } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
 import * as E from './Either'
 import { Filterable2C, getFilterableComposition } from './Filterable'
@@ -245,9 +244,11 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: IOEither<E, A>) => IOEit
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <E, A>(fa: IOEither<E, A>) => <B>(fab: IOEither<E, (a: A) => B>) => IOEither<E, B> =
-  /*#__PURE__*/
-  apComposition(I.Applicative, E.Applicative)
+export const ap = <E, A>(fa: IOEither<E, A>): (<B>(fab: IOEither<E, (a: A) => B>) => IOEither<E, B>) =>
+  flow(
+    I.map((gab) => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
+    I.ap(fa)
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -395,7 +396,13 @@ export function getApplyMonoid<E, A>(M: Monoid<A>): Monoid<IOEither<E, A>> {
  * @since 2.7.0
  */
 export function getApplicativeIOValidation<E>(SE: Semigroup<E>): Applicative2C<URI, E> {
-  const ap = apComposition(I.Applicative, E.getApplicativeValidation(SE))
+  const AV = E.getApplicativeValidation(SE)
+  const ap = <A>(fa: IOEither<E, A>): (<B>(fab: IOEither<E, (a: A) => B>) => IOEither<E, B>) =>
+    flow(
+      I.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga)),
+      I.ap(fa)
+    )
+
   return {
     URI,
     _E: undefined as any,

@@ -1,5 +1,5 @@
 import * as _ from '../../src/ReadonlyNonEmptyArray'
-import { pipe } from '../../src/pipeable'
+import { pipe } from '../../src/function'
 
 declare const rneas: _.ReadonlyNonEmptyArray<string>
 declare const rnens: _.ReadonlyNonEmptyArray<number>

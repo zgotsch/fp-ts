@@ -1,5 +1,5 @@
 import * as _ from '../../src/Reader'
-import { pipe } from '../../src/pipeable'
+import { pipe } from '../../src/function'
 
 //
 // chainW

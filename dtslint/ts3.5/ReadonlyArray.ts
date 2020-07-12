@@ -1,5 +1,5 @@
 import * as _ from '../../src/ReadonlyArray'
-import { pipe } from '../../src/pipeable'
+import { pipe } from '../../src/function'
 import { eqNumber } from '../../src/Eq'
 
 declare const rus: ReadonlyArray<unknown>

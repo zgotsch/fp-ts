@@ -62,7 +62,9 @@ export const local: <Q, R>(f: (d: Q) => R) => <A>(ma: Reader<R, A>) => Reader<Q,
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
+/* istanbul ignore next */
 const map_: Monad2<URI>['map'] = (fa, f) => F.pipe(fa, map(f))
+/* istanbul ignore next */
 const ap_: Monad2<URI>['ap'] = (fab, fa) => F.pipe(fab, ap(fa))
 /* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => F.pipe(ma, chain(f))
