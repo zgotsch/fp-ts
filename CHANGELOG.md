@@ -32,6 +32,8 @@ high state of flux, you're at risk of it changing without notice.
     - `ValidationT` (@gcanti)
   - `Applicative`
     - remove `getApplicativeComposition` and related types (@gcanti)
+  - `Compactable`
+    - remove `getCompactableComposition` and related types (@gcanti)
   - `Filterable`
     - remove `getFilterableComposition` and related types (@gcanti)
   - `FunctorWithIndex`
