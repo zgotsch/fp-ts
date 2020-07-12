@@ -30,20 +30,23 @@ high state of flux, you're at risk of it changing without notice.
     - `TheseT` (@gcanti)
     - `WriterT` (@gcanti)
     - `ValidationT` (@gcanti)
-  - `Applicative`
-    - remove `getApplicativeComposition` and related types (@gcanti)
-  - `Compactable`
-    - remove `getCompactableComposition` and related types (@gcanti)
-  - `Filterable`
-    - remove `getFilterableComposition` and related types (@gcanti)
-  - `FoldableWithIndex`
-    - remove `getFoldableWithIndexComposition` and related types (@gcanti)
-  - `Functor`
-    - remove `getFunctorComposition` and related types (@gcanti)
-  - `FunctorWithIndex`
-    - remove `getFunctorWithIndexComposition` and related types (@gcanti)
-  - `Traversable`
-    - remove `getTraversableComposition` and related types (@gcanti)
+  - **Modules**
+    - `Applicative`
+      - remove `getApplicativeComposition` and related types (@gcanti)
+    - `Compactable`
+      - remove `getCompactableComposition` and related types (@gcanti)
+    - `Filterable`
+      - remove `getFilterableComposition` and related types (@gcanti)
+    - `Foldable`
+      - remove `getFoldableComposition` and related types (@gcanti)
+    - `FoldableWithIndex`
+      - remove `getFoldableWithIndexComposition` and related types (@gcanti)
+    - `Functor`
+      - remove `getFunctorComposition` and related types (@gcanti)
+    - `FunctorWithIndex`
+      - remove `getFunctorWithIndexComposition` and related types (@gcanti)
+    - `Traversable`
+      - remove `getTraversableComposition` and related types (@gcanti)
 - **New Feature**
   - `Either`
     - add `getFilterable` constrained instance (@gcanti)
