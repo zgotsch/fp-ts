@@ -78,7 +78,6 @@ import * as show from './Show'
 import * as state from './State'
 import * as stateReaderTaskEither from './StateReaderTaskEither'
 import * as store from './Store'
-import * as strong from './Strong'
 import * as task from './Task'
 import * as taskEither from './TaskEither'
 import * as taskThese from './TaskThese'
@@ -396,10 +395,6 @@ export {
    * @since 2.0.0
    */
   store,
-  /**
-   * @since 2.0.0
-   */
-  strong,
   /**
    * @since 2.0.0
    */

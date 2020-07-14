@@ -30,6 +30,7 @@ high state of flux, you're at risk of it changing without notice.
     - `OptionT` (@gcanti)
     - `ReaderT` (@gcanti)
     - `StateT` (@gcanti)
+    - `Strong` (@gcanti)
     - `TheseT` (@gcanti)
     - `WriterT` (@gcanti)
     - `ValidationT` (@gcanti)

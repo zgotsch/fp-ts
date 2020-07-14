@@ -9,7 +9,6 @@ import { Monad2 } from './Monad'
 import { Monoid } from './Monoid'
 import { Profunctor2 } from './Profunctor'
 import { Semigroup } from './Semigroup'
-import { Strong2 } from './Strong'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -69,8 +68,6 @@ const chain_: Monad2<URI>['chain'] = (ma, f) => F.pipe(ma, chain(f))
 const compose_: <E, A, B>(ab: Reader<A, B>, la: Reader<E, A>) => Reader<E, B> = (ab, la) => (l) => ab(la(l))
 const promap_: <E, A, D, B>(fbc: Reader<E, A>, f: (d: D) => E, g: (a: A) => B) => Reader<D, B> = (mbc, f, g) => (a) =>
   g(mbc(f(a)))
-const first_: Strong2<URI>['first'] = (pab) => ([a, c]) => [pab(a), c]
-const second_: Strong2<URI>['second'] = (pbc) => ([a, b]) => [a, pbc(b)]
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -283,23 +280,12 @@ export const Category: Category2<URI> = {
   id
 }
 
-/**
- * @internal instances
- */
-export const Strong: Strong2<URI> = {
-  URI,
-  map: map_,
-  promap: promap_,
-  first: first_,
-  second: second_
-}
-
 // TODO: remove in v3
 /**
  * @category instances
  * @since 2.0.0
  */
-export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> & Strong2<URI> = {
+export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> = {
   URI,
   map: map_,
   of,
@@ -307,7 +293,5 @@ export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> & Strong2<U
   chain: chain_,
   promap: promap_,
   compose: compose_,
-  id,
-  first: first_,
-  second: second_
+  id
 }
