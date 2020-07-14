@@ -43,6 +43,7 @@ high state of flux, you're at risk of it changing without notice.
     - `ValidationT` (@gcanti)
   - **Modules**
     - rename `ReadonlyArray` module to `Array` (@gcanti)
+    - rename `ReadonlyMap` module to `Map` (@gcanti)
     - `Applicative`
       - remove `getApplicativeComposition` and related types (@gcanti)
     - `Compactable`

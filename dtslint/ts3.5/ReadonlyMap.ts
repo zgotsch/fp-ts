@@ -1,4 +1,4 @@
-import * as _ from '../../src/ReadonlyMap'
+import * as _ from '../../src/Map'
 import { eqString, eqNumber } from '../../src/Eq'
 
 //

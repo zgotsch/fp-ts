@@ -7,7 +7,7 @@ import * as IO from '../src/IO'
 import { monoidString } from '../src/Monoid'
 import * as O from '../src/Option'
 import * as Ord from '../src/Ord'
-import * as _ from '../src/ReadonlyMap'
+import * as _ from '../src/Map'
 import { getFirstSemigroup, getLastSemigroup, getStructSemigroup, semigroupSum } from '../src/Semigroup'
 import { getStructShow, Show, showString } from '../src/Show'
 import * as T from '../src/Task'
@@ -48,7 +48,7 @@ const repo = new Map<Key, Value>([
   [{ id: 2 }, { value: 2 }]
 ])
 
-describe('ReadonlyMap', () => {
+describe('Map', () => {
   describe('pipeables', () => {
     it('map', () => {
       const double = (n: number): number => n * 2

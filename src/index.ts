@@ -45,6 +45,7 @@ import * as ioRef from './IORef'
 import * as joinSemilattice from './JoinSemilattice'
 import * as lattice from './Lattice'
 import * as magma from './Magma'
+import * as map from './Map'
 import * as meetSemilattice from './MeetSemilattice'
 import * as monad from './Monad'
 import * as monadIO from './MonadIO'
@@ -60,7 +61,6 @@ import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
-import * as readonlyMap from './ReadonlyMap'
 import * as readonlyNonEmptyArray from './ReadonlyNonEmptyArray'
 import * as readonlyRecord from './ReadonlyRecord'
 import * as readonlySet from './ReadonlySet'
@@ -254,6 +254,10 @@ export {
    */
   magma,
   /**
+   * @since 3.0.0
+   */
+  map,
+  /**
    * @since 2.0.0
    */
   meetSemilattice,
@@ -309,10 +313,6 @@ export {
    * @since 2.0.0
    */
   readerTaskEither,
-  /**
-   * @since 2.5.0
-   */
-  readonlyMap,
   /**
    * @since 2.5.0
    */
