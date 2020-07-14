@@ -16,7 +16,6 @@ import * as boundedJoinSemilattice from './BoundedJoinSemilattice'
 import * as boundedLattice from './BoundedLattice'
 import * as boundedMeetSemilattice from './BoundedMeetSemilattice'
 import * as category from './Category'
-import * as chain from './Chain'
 import * as choice from './Choice'
 import * as comonad from './Comonad'
 import * as compactable from './Compactable'
@@ -150,10 +149,6 @@ export {
    * @since 2.0.0
    */
   category,
-  /**
-   * @since 2.0.0
-   */
-  chain,
   /**
    * @since 2.0.0
    */
