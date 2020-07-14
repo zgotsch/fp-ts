@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import * as _ from '../src/Store'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import { pipe } from '../src/function'
 
 const len = (s: string): number => s.length

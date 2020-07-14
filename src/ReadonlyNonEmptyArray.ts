@@ -17,7 +17,7 @@ import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { Monad1 } from './Monad'
 import { none, Option, some } from './Option'
 import { Ord } from './Ord'
-import * as RA from './ReadonlyArray'
+import * as RA from './Array'
 import { ReadonlyRecord } from './ReadonlyRecord'
 import { getJoinSemigroup, getMeetSemigroup, Semigroup } from './Semigroup'
 import { Show } from './Show'
@@ -68,17 +68,8 @@ export const snoc: <A>(init: ReadonlyArray<A>, end: A) => ReadonlyNonEmptyArray<
  * @category constructors
  * @since 2.5.0
  */
-export function fromReadonlyArray<A>(as: ReadonlyArray<A>): Option<ReadonlyNonEmptyArray<A>> {
+export function fromArray<A>(as: ReadonlyArray<A>): Option<ReadonlyNonEmptyArray<A>> {
   return RA.isNonEmpty(as) ? some(as) : none
-}
-
-/**
- * @category constructors
- * @since 2.5.0
- */
-// tslint:disable-next-line: readonly-array
-export function fromArray<A>(as: Array<A>): Option<ReadonlyNonEmptyArray<A>> {
-  return fromReadonlyArray(RA.fromArray(as))
 }
 
 /**
@@ -321,7 +312,7 @@ export function filter<A>(
 export function filterWithIndex<A>(
   predicate: (i: number, a: A) => boolean
 ): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
-  return (nea) => fromReadonlyArray(nea.filter((a, i) => predicate(i, a)))
+  return (nea) => fromArray(nea.filter((a, i) => predicate(i, a)))
 }
 
 /**

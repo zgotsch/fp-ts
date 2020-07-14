@@ -7,11 +7,11 @@ import { identity, pipe, tuple } from '../src/function'
 import * as M from '../src/Monoid'
 import * as O from '../src/Option'
 import * as Ord from '../src/Ord'
-import * as _ from '../src/ReadonlyArray'
+import * as _ from '../src/Array'
 import * as Show from '../src/Show'
 import * as T from '../src/Task'
 
-describe('ReadonlyArray', () => {
+describe('Array', () => {
   describe('pipeables', () => {
     it('traverse', () => {
       const traverse = _.traverse(O.Applicative)((n: number): O.Option<number> => (n % 2 === 0 ? O.none : O.some(n)))

@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import { left, right } from '../src/Either'
 import { eqNumber } from '../src/Eq'
 import { identity, pipe } from '../src/function'

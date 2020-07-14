@@ -179,7 +179,7 @@ export function collect<K>(O: Ord<K>): <A, B>(f: (k: K, a: A) => B) => (m: Reado
  * @category destructors
  * @since 2.5.0
  */
-export function toReadonlyArray<K>(O: Ord<K>): <A>(m: ReadonlyMap<K, A>) => ReadonlyArray<readonly [K, A]> {
+export function toArray<K>(O: Ord<K>): <A>(m: ReadonlyMap<K, A>) => ReadonlyArray<readonly [K, A]> {
   return collect(O)((k, a) => [k, a] as const)
 }
 
@@ -198,7 +198,7 @@ export function toUnfoldable<K, F>(
   ord: Ord<K>,
   U: Unfoldable<F>
 ): <A>(d: ReadonlyMap<K, A>) => HKT<F, readonly [K, A]> {
-  const toArrayO = toReadonlyArray(ord)
+  const toArrayO = toArray(ord)
   return (d) => {
     const arr = toArrayO(d)
     const len = arr.length

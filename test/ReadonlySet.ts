@@ -5,7 +5,7 @@ import * as _ from '../src/ReadonlySet'
 import * as Eq from '../src/Eq'
 import { none, some as optionSome } from '../src/Option'
 import { showString } from '../src/Show'
-import { getMonoid } from '../src/ReadonlyArray'
+import { getMonoid } from '../src/Array'
 import { pipe } from '../src/function'
 
 const gte2 = (n: number) => n >= 2
@@ -19,10 +19,10 @@ const fooEq: Eq.Eq<Foo> = {
 }
 
 describe('ReadonlySet', () => {
-  it('toReadonlyArray', () => {
-    assert.deepStrictEqual(_.toReadonlyArray(ordNumber)(new Set()), [])
-    assert.deepStrictEqual(_.toReadonlyArray(ordNumber)(new Set([1, 2, 3])), [1, 2, 3])
-    assert.deepStrictEqual(_.toReadonlyArray(ordNumber)(new Set([3, 2, 1])), [1, 2, 3])
+  it('toArray', () => {
+    assert.deepStrictEqual(_.toArray(ordNumber)(new Set()), [])
+    assert.deepStrictEqual(_.toArray(ordNumber)(new Set([1, 2, 3])), [1, 2, 3])
+    assert.deepStrictEqual(_.toArray(ordNumber)(new Set([3, 2, 1])), [1, 2, 3])
   })
 
   it('getEq', () => {

@@ -112,7 +112,7 @@ export function collect<K extends string, A, B>(f: (k: K, a: A) => B): (r: Reado
  * @category destructors
  * @since 2.5.0
  */
-export const toReadonlyArray: <K extends string, A>(
+export const toArray: <K extends string, A>(
   r: ReadonlyRecord<K, A>
 ) => ReadonlyArray<readonly [K, A]> = collect((k, a) => [k, a])
 
@@ -130,7 +130,7 @@ export function toUnfoldable<F>(
 ): <K extends string, A>(r: ReadonlyRecord<K, A>) => HKT<F, readonly [K, A]>
 export function toUnfoldable<F>(U: Unfoldable<F>): <A>(r: ReadonlyRecord<string, A>) => HKT<F, readonly [string, A]> {
   return (r) => {
-    const arr = toReadonlyArray(r)
+    const arr = toArray(r)
     const len = arr.length
     return U.unfold(0, (b) => (b < len ? optionSome([arr[b], b + 1]) : none))
   }
@@ -639,7 +639,7 @@ export function fromFoldable<F, A>(
  *
  * @example
  * import { getLastSemigroup } from 'fp-ts/lib/Semigroup'
- * import { readonlyArray, zip } from 'fp-ts/lib/ReadonlyArray'
+ * import { readonlyArray, zip } from 'fp-ts/lib/Array'
  * import { identity } from 'fp-ts/lib/function'
  * import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/ReadonlyRecord'
  *

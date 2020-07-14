@@ -163,7 +163,7 @@ export function fromCompare<A>(compare: (x: A, y: A) => Ordering): Ord<A> {
  * - its `empty` value is an `Ord` that always considers compared elements equal
  *
  * @example
- * import { sort } from 'fp-ts/lib/ReadonlyArray'
+ * import { sort } from 'fp-ts/lib/Array'
  * import { contramap, getDualOrd, getMonoid, ordBoolean, ordNumber, ordString } from 'fp-ts/lib/Ord'
  * import { pipe } from 'fp-ts/lib/function'
  * import { fold } from 'fp-ts/lib/Monoid'

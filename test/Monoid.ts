@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import { boundedNumber } from '../src/Bounded'
 import {
   fold,

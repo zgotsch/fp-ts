@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { sort } from '../src/ReadonlyArray'
+import { sort } from '../src/Array'
 import * as _ from '../src/Ord'
 import { fold } from '../src/Monoid'
 import { pipe } from '../src/function'

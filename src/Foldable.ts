@@ -172,7 +172,7 @@ export function intercalate<M, F>(M: Monoid<M>, F: Foldable<F>): (sep: M, fm: HK
  * final result.
  *
  * @example
- * import { Foldable } from 'fp-ts/lib/ReadonlyArray'
+ * import { Foldable } from 'fp-ts/lib/Array'
  * import { traverse_ } from 'fp-ts/lib/Foldable'
  * import { Applicative } from 'fp-ts/lib/IO'
  *

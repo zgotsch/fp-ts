@@ -6,6 +6,7 @@ import * as alt from './Alt'
 import * as alternative from './Alternative'
 import * as applicative from './Applicative'
 import * as apply from './Apply'
+import * as array from './Array'
 import * as bifunctor from './Bifunctor'
 import * as boolean from './boolean'
 import * as booleanAlgebra from './BooleanAlgebra'
@@ -59,7 +60,6 @@ import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
-import * as readonlyArray from './ReadonlyArray'
 import * as readonlyMap from './ReadonlyMap'
 import * as readonlyNonEmptyArray from './ReadonlyNonEmptyArray'
 import * as readonlyRecord from './ReadonlyRecord'
@@ -101,6 +101,10 @@ export {
    * @since 2.0.0
    */
   apply,
+  /**
+   * @since 3.0.0
+   */
+  array,
   /**
    * @since 2.0.0
    */
@@ -305,10 +309,6 @@ export {
    * @since 2.0.0
    */
   readerTaskEither,
-  /**
-   * @since 2.5.0
-   */
-  readonlyArray,
   /**
    * @since 2.5.0
    */

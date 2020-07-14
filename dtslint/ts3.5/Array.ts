@@ -1,4 +1,4 @@
-import * as _ from '../../src/ReadonlyArray'
+import * as _ from '../../src/Array'
 import { pipe } from '../../src/function'
 import { eqNumber } from '../../src/Eq'
 

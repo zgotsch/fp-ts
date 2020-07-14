@@ -55,7 +55,7 @@ export const empty: ReadonlySet<never> = new Set()
  * @category destructors
  * @since 2.5.0
  */
-export function toReadonlyArray<A>(O: Ord<A>): (set: ReadonlySet<A>) => ReadonlyArray<A> {
+export function toArray<A>(O: Ord<A>): (set: ReadonlySet<A>) => ReadonlyArray<A> {
   return (x) => {
     // tslint:disable-next-line: readonly-array
     const r: Array<A> = []
@@ -411,7 +411,7 @@ export function getIntersectionSemigroup<A>(E: Eq<A>): Semigroup<ReadonlySet<A>>
  * @since 2.5.0
  */
 export function reduce<A>(O: Ord<A>): <B>(b: B, f: (b: B, a: A) => B) => (fa: ReadonlySet<A>) => B {
-  const toArrayO = toReadonlyArray(O)
+  const toArrayO = toArray(O)
   return (b, f) => (fa) => toArrayO(fa).reduce(f, b)
 }
 
@@ -419,7 +419,7 @@ export function reduce<A>(O: Ord<A>): <B>(b: B, f: (b: B, a: A) => B) => (fa: Re
  * @since 2.5.0
  */
 export function foldMap<A, M>(O: Ord<A>, M: Monoid<M>): (f: (a: A) => M) => (fa: ReadonlySet<A>) => M {
-  const toArrayO = toReadonlyArray(O)
+  const toArrayO = toArray(O)
   return (f) => (fa) => toArrayO(fa).reduce((b, a) => M.concat(b, f(a)), M.empty)
 }
 

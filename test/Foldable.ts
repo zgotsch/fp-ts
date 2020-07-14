@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import { foldM, intercalate, traverse_ } from '../src/Foldable'
 import * as I from '../src/IO'
 import { monoidString } from '../src/Monoid'

@@ -1,7 +1,7 @@
 import * as _ from '../../src/ReadonlyRecord'
 import { identity, pipe } from '../../src/function'
 import * as O from '../../src/Option'
-import * as A from '../../src/ReadonlyArray'
+import * as A from '../../src/Array'
 import * as E from '../../src/Either'
 import { monoidString } from '../../src/Monoid'
 import { eqNumber } from '../../src/Eq'

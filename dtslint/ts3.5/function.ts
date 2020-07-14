@@ -1,5 +1,5 @@
 import * as _ from '../../src/function'
-import * as A from '../../src/ReadonlyArray'
+import * as A from '../../src/Array'
 
 //
 // flip

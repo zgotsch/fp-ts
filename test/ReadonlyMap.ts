@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import { Either, left, right } from '../src/Either'
 import { Eq, eqNumber, fromEquals } from '../src/Eq'
 import { identity, pipe, Refinement } from '../src/function'
@@ -318,7 +318,7 @@ describe('ReadonlyMap', () => {
     )
   })
 
-  it('toReadonlyArray', () => {
+  it('toArray', () => {
     const m1 = new Map<User, number>([
       [{ id: 'a' }, 1],
       [{ id: 'b' }, 2]
@@ -327,7 +327,7 @@ describe('ReadonlyMap', () => {
       [{ id: 'b' }, 2],
       [{ id: 'a' }, 1]
     ])
-    const toArrayO = _.toReadonlyArray(ordUser)
+    const toArrayO = _.toArray(ordUser)
     assert.deepStrictEqual(toArrayO(m1), [
       [{ id: 'a' }, 1],
       [{ id: 'b' }, 2]
@@ -337,7 +337,7 @@ describe('ReadonlyMap', () => {
       [{ id: 'b' }, 2]
     ])
 
-    const toArray = _.toReadonlyArray(ordKey)
+    const toArray = _.toArray(ordKey)
     assert.deepStrictEqual(
       toArray(
         new Map([

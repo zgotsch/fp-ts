@@ -5,7 +5,7 @@ import { identity, pipe } from '../src/function'
 import * as IO from '../src/IO'
 import { monoidString } from '../src/Monoid'
 import * as O from '../src/Option'
-import * as A from '../src/ReadonlyArray'
+import * as A from '../src/Array'
 import * as _ from '../src/ReadonlyRecord'
 import { getFirstSemigroup, getLastSemigroup, semigroupSum } from '../src/Semigroup'
 import { showString } from '../src/Show'
@@ -284,12 +284,12 @@ describe('ReadonlyRecord', () => {
     )
   })
 
-  it('toReadonlyArray', () => {
-    assert.deepStrictEqual(_.toReadonlyArray({ a: 1, b: 2 }), [
+  it('toArray', () => {
+    assert.deepStrictEqual(_.toArray({ a: 1, b: 2 }), [
       ['a', 1],
       ['b', 2]
     ])
-    assert.deepStrictEqual(_.toReadonlyArray({ b: 2, a: 1 }), [
+    assert.deepStrictEqual(_.toArray({ b: 2, a: 1 }), [
       ['a', 1],
       ['b', 2]
     ])

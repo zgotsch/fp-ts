@@ -8,7 +8,7 @@
  * @since 2.0.0
  */
 import { Applicative as ApplicativeHKT, Applicative1 } from './Applicative'
-import * as A from './ReadonlyArray'
+import * as A from './Array'
 import { Comonad1 } from './Comonad'
 import { Eq, fromEquals } from './Eq'
 import { Foldable1 } from './Foldable'
