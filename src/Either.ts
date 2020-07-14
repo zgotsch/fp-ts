@@ -16,7 +16,6 @@
 import { Alt2, Alt2C } from './Alt'
 import { Applicative as ApplicativeHKT, Applicative2, Applicative2C } from './Applicative'
 import { Bifunctor2 } from './Bifunctor'
-import { ChainRec2, ChainRec2C, tailRec } from './ChainRec'
 import { Separated } from './Compactable'
 import { Eq } from './Eq'
 import { Extend2 } from './Extend'
@@ -343,10 +342,6 @@ const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => (isLeft(fea) ? left(f(fe
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => (isLeft(fea) ? left(f(fea.left)) : fea)
 const alt_: Alt2<URI>['alt'] = (fa, that) => (isLeft(fa) ? that() : fa)
 const extend_: Extend2<URI>['extend'] = (wa, f) => (isLeft(wa) ? wa : right(f(wa)))
-const chainRec_: ChainRec2<URI>['chainRec'] = (a, f) =>
-  tailRec(f(a), (e) =>
-    isLeft(e) ? right(left(e.left)) : isLeft(e.right) ? left(f(e.right.left)) : right(right(e.right.right))
-  )
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -786,7 +781,6 @@ export function getValidation<E>(
   Bifunctor2<URI> &
   Alt2C<URI, E> &
   Extend2<URI> &
-  ChainRec2C<URI, E> &
   MonadThrow2C<URI, E> {
   const applicativeValidation = getApplicativeValidation(SE)
   const altValidation = getAltValidation(SE)
@@ -804,7 +798,6 @@ export function getValidation<E>(
     extend: extend_,
     traverse: traverse_,
     sequence,
-    chainRec: chainRec_,
     throwError,
     ap: applicativeValidation.ap,
     alt: altValidation.alt
@@ -913,18 +906,6 @@ export const Extend: Extend2<URI> = {
  * @category instances
  * @since 2.7.0
  */
-export const ChainRec: ChainRec2<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  chain: chain_,
-  chainRec: chainRec_
-}
-
-/**
- * @category instances
- * @since 2.7.0
- */
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
   map: map_,
@@ -956,7 +937,6 @@ export const either: Monad2<URI> &
   Bifunctor2<URI> &
   Alt2<URI> &
   Extend2<URI> &
-  ChainRec2<URI> &
   MonadThrow2<URI> = {
   URI,
   map: map_,
@@ -972,7 +952,6 @@ export const either: Monad2<URI> &
   mapLeft: mapLeft_,
   alt: alt_,
   extend: extend_,
-  chainRec: chainRec_,
   throwError: throwError
 }
 

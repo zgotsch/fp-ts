@@ -22,6 +22,7 @@ high state of flux, you're at risk of it changing without notice.
   - **Build**
     - change output to `es6` (@gcanti)
   - **Removed modules**
+    - `ChainRec` (@gcanti)
     - `pipeable` (@gcanti)
     - `EitherT` (@gcanti)
     - `OptionT` (@gcanti)

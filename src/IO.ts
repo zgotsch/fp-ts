@@ -12,7 +12,6 @@
  * @since 2.0.0
  */
 import { Applicative1 } from './Applicative'
-import { ChainRec1 } from './ChainRec'
 import { identity } from './function'
 import { Functor1 } from './Functor'
 import { Monad1 } from './Monad'
@@ -39,13 +38,6 @@ export interface IO<A> {
 const map_: Monad1<URI>['map'] = (ma, f) => () => f(ma())
 const ap_: Monad1<URI>['ap'] = (mab, ma) => () => mab()(ma())
 const chain_: Monad1<URI>['chain'] = (ma, f) => () => f(ma())()
-const chainRec_: ChainRec1<URI>['chainRec'] = (a, f) => () => {
-  let e = f(a)()
-  while (e._tag === 'Left') {
-    e = f(e.left)()
-  }
-  return e.right
-}
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -214,29 +206,16 @@ export const MonadIO: MonadIO1<URI> = {
   fromIO
 }
 
-/**
- * @category instances
- * @since 2.7.0
- */
-export const ChainRec: ChainRec1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  chain: chain_,
-  chainRec: chainRec_
-}
-
 // TODO: remove in v3
 /**
  * @category instances
  * @since 2.0.0
  */
-export const io: Monad1<URI> & MonadIO1<URI> & ChainRec1<URI> = {
+export const io: Monad1<URI> & MonadIO1<URI> = {
   URI,
   map: map_,
   of,
   ap: ap_,
   chain: chain_,
-  fromIO,
-  chainRec: chainRec_
+  fromIO
 }

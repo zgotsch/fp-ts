@@ -5,7 +5,6 @@ import { Applicative2C } from './Applicative'
 import { Apply2C } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
 import { Chain2C } from './Chain'
-import { ChainRec2C } from './ChainRec'
 import { Comonad2 } from './Comonad'
 import { Foldable2 } from './Foldable'
 import { Monad2C } from './Monad'
@@ -64,13 +63,6 @@ export const getChain: <S>(S: Semigroup<S>) => Chain2C<URI, S> = RT.getChain as 
  * @since 2.0.0
  */
 export const getMonad: <S>(M: Monoid<S>) => Monad2C<URI, S> = RT.getMonad as any
-
-// TODO: remove in v3
-/**
- * @category instances
- * @since 2.0.0
- */
-export const getChainRec: <S>(M: Monoid<S>) => ChainRec2C<URI, S> = RT.getChainRec as any
 
 // -------------------------------------------------------------------------------------
 // non-pipeables

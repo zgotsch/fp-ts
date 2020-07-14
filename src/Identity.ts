@@ -3,7 +3,6 @@
  */
 import { Alt1 } from './Alt'
 import { Applicative as ApplicativeHKT, Applicative1 } from './Applicative'
-import { ChainRec1, tailRec } from './ChainRec'
 import { Comonad1 } from './Comonad'
 import { Eq } from './Eq'
 import { Extend1 } from './Extend'
@@ -40,7 +39,6 @@ const alt_: Alt1<URI>['alt'] = id
 const extend_: Extend1<URI>['extend'] = (wa, f) => f(wa)
 const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Identity<A>, f: (a: A) => HKT<F, B>): HKT<F, Identity<B>> =>
   F.map(f(ta), id)
-const chainRec_: ChainRec1<URI>['chainRec'] = tailRec
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -298,24 +296,12 @@ export const Comonad: Comonad1<URI> = {
   extract
 }
 
-/**
- * @category instances
- * @since 2.7.0
- */
-export const ChainRec: ChainRec1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  chain: chain_,
-  chainRec: chainRec_
-}
-
 // TODO: remove in v3
 /**
  * @category instances
  * @since 2.0.0
  */
-export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<URI> & Comonad1<URI> & ChainRec1<URI> = {
+export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<URI> & Comonad1<URI> = {
   URI,
   map: map_,
   ap: ap_,
@@ -328,6 +314,5 @@ export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<U
   sequence,
   alt: alt_,
   extract,
-  extend: extend_,
-  chainRec: chainRec_
+  extend: extend_
 }
