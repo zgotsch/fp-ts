@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import { left, right } from '../src/Either'
 import { ordNumber } from '../src/Ord'
-import * as _ from '../src/ReadonlySet'
+import * as _ from '../src/Set'
 import * as Eq from '../src/Eq'
 import { none, some as optionSome } from '../src/Option'
 import { showString } from '../src/Show'
@@ -18,7 +18,7 @@ const fooEq: Eq.Eq<Foo> = {
   equals: (a: Foo, b: Foo) => a.x === b.x
 }
 
-describe('ReadonlySet', () => {
+describe('Set', () => {
   it('toArray', () => {
     assert.deepStrictEqual(_.toArray(ordNumber)(new Set()), [])
     assert.deepStrictEqual(_.toArray(ordNumber)(new Set([1, 2, 3])), [1, 2, 3])

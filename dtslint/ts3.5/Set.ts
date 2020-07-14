@@ -1,4 +1,4 @@
-import * as _ from '../../src/ReadonlySet'
+import * as _ from '../../src/Set'
 import { eqNumber } from '../../src/Eq'
 
 declare const me: ReadonlySet<number>

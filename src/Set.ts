@@ -358,7 +358,7 @@ export function partitionMap<B, C>(
  * Form the set difference (`x` - `y`)
  *
  * @example
- * import { difference } from 'fp-ts/lib/ReadonlySet'
+ * import { difference } from 'fp-ts/lib/Set'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  * import { pipe } from 'fp-ts/lib/function'
  *
