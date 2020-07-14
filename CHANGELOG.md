@@ -24,6 +24,7 @@ high state of flux, you're at risk of it changing without notice.
   - **Removed modules**
     - `Chain` (@gcanti)
     - `ChainRec` (@gcanti)
+    - `Choice` (@gcanti)
     - `pipeable` (@gcanti)
     - `EitherT` (@gcanti)
     - `OptionT` (@gcanti)

@@ -3,8 +3,6 @@
  */
 import { Applicative2 } from './Applicative'
 import { Category2 } from './Category'
-import { Choice2 } from './Choice'
-import * as E from './Either'
 import * as F from './function'
 import { Functor2 } from './Functor'
 import { Monad2 } from './Monad'
@@ -73,10 +71,6 @@ const promap_: <E, A, D, B>(fbc: Reader<E, A>, f: (d: D) => E, g: (a: A) => B) =
   g(mbc(f(a)))
 const first_: Strong2<URI>['first'] = (pab) => ([a, c]) => [pab(a), c]
 const second_: Strong2<URI>['second'] = (pbc) => ([a, b]) => [a, pbc(b)]
-const left_: Choice2<URI>['left'] = <A, B, C>(pab: Reader<A, B>): Reader<E.Either<A, C>, E.Either<B, C>> =>
-  E.fold<A, C, E.Either<B, C>>((a) => E.left(pab(a)), E.right)
-const right_: Choice2<URI>['right'] = <A, B, C>(pbc: Reader<B, C>): Reader<E.Either<A, B>, E.Either<A, C>> =>
-  E.fold<A, B, E.Either<A, C>>(E.left, (b) => E.right(pbc(b)))
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -300,23 +294,12 @@ export const Strong: Strong2<URI> = {
   second: second_
 }
 
-/**
- * @internal instances
- */
-export const Choice: Choice2<URI> = {
-  URI,
-  map: map_,
-  promap: promap_,
-  left: left_,
-  right: right_
-}
-
 // TODO: remove in v3
 /**
  * @category instances
  * @since 2.0.0
  */
-export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> & Strong2<URI> & Choice2<URI> = {
+export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> & Strong2<URI> = {
   URI,
   map: map_,
   of,
@@ -326,7 +309,5 @@ export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> & Strong2<U
   compose: compose_,
   id,
   first: first_,
-  second: second_,
-  left: left_,
-  right: right_
+  second: second_
 }
