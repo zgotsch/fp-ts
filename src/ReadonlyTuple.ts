@@ -4,7 +4,6 @@
 import { Applicative, Applicative2C } from './Applicative'
 import { Apply2C } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
-import { Chain2C } from './Chain'
 import { Comonad2 } from './Comonad'
 import { Extend2 } from './Extend'
 import { Foldable2 } from './Foldable'
@@ -81,8 +80,8 @@ export function getApplicative<S>(M: Monoid<S>): Applicative2C<URI, S> {
  * @category instances
  * @since 2.5.0
  */
-export function getChain<S>(S: Semigroup<S>): Chain2C<URI, S> {
-  const A = getApply(S)
+export function getMonad<S>(M: Monoid<S>): Monad2C<URI, S> {
+  const A = getApply(M)
   return {
     URI,
     _E: undefined as any,
@@ -90,23 +89,8 @@ export function getChain<S>(S: Semigroup<S>): Chain2C<URI, S> {
     ap: A.ap,
     chain: (fa, f) => {
       const [b, s] = f(fst(fa))
-      return [b, S.concat(snd(fa), s)]
-    }
-  }
-}
-
-/**
- * @category instances
- * @since 2.5.0
- */
-export function getMonad<S>(M: Monoid<S>): Monad2C<URI, S> {
-  const C = getChain(M)
-  return {
-    URI,
-    _E: undefined as any,
-    map: C.map,
-    ap: C.ap,
-    chain: C.chain,
+      return [b, M.concat(snd(fa), s)]
+    },
     of: of(M)
   }
 }

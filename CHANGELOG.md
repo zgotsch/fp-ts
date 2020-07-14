@@ -48,6 +48,8 @@ high state of flux, you're at risk of it changing without notice.
       - remove `getFunctorWithIndexComposition` and related types (@gcanti)
     - `Traversable`
       - remove `getTraversableComposition` and related types (@gcanti)
+    - `Tuple`
+      - remove `getChain` constrained instance (@gcanti)
 - **New Feature**
   - `Either`
     - add `getFilterable` constrained instance (@gcanti)

@@ -4,17 +4,16 @@
 import { Applicative2C } from './Applicative'
 import { Apply2C } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
-import { Chain2C } from './Chain'
 import { Comonad2 } from './Comonad'
+import { Extend2 } from './Extend'
 import { Foldable2 } from './Foldable'
+import { Functor2 } from './Functor'
 import { Monad2C } from './Monad'
 import { Monoid } from './Monoid'
 import * as RT from './ReadonlyTuple'
 import { Semigroup } from './Semigroup'
 import { Semigroupoid2 } from './Semigroupoid'
-import { Traversable2, PipeableTraverse2 } from './Traversable'
-import { Functor2 } from './Functor'
-import { Extend2 } from './Extend'
+import { PipeableTraverse2, Traversable2 } from './Traversable'
 
 // tslint:disable:readonly-array
 
@@ -51,12 +50,6 @@ export const getApply: <S>(S: Semigroup<S>) => Apply2C<URI, S> = RT.getApply as 
  * @since 2.0.0
  */
 export const getApplicative: <S>(M: Monoid<S>) => Applicative2C<URI, S> = RT.getApplicative as any
-
-/**
- * @category instances
- * @since 2.0.0
- */
-export const getChain: <S>(S: Semigroup<S>) => Chain2C<URI, S> = RT.getChain as any
 
 /**
  * @category instances
