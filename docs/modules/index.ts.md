@@ -1,6 +1,6 @@
 ---
 title: index.ts
-nav_order: 36
+nav_order: 37
 parent: Modules
 ---
 
@@ -17,6 +17,7 @@ Added in v2.0.0
   - [alternative](#alternative)
   - [applicative](#applicative)
   - [apply](#apply)
+  - [array](#array)
   - [bifunctor](#bifunctor)
   - [boolean](#boolean)
   - [booleanAlgebra](#booleanalgebra)
@@ -55,12 +56,14 @@ Added in v2.0.0
   - [joinSemilattice](#joinsemilattice)
   - [lattice](#lattice)
   - [magma](#magma)
+  - [map](#map)
   - [meetSemilattice](#meetsemilattice)
   - [monad](#monad)
   - [monadIO](#monadio)
   - [monadTask](#monadtask)
   - [monadThrow](#monadthrow)
   - [monoid](#monoid)
+  - [nonEmptyArray](#nonemptyarray)
   - [option](#option)
   - [ord](#ord)
   - [ordering](#ordering)
@@ -70,16 +73,12 @@ Added in v2.0.0
   - [readerEither](#readereither)
   - [readerTask](#readertask)
   - [readerTaskEither](#readertaskeither)
-  - [readonlyArray](#readonlyarray)
-  - [readonlyMap](#readonlymap)
-  - [readonlyNonEmptyArray](#readonlynonemptyarray)
-  - [readonlyRecord](#readonlyrecord)
-  - [readonlySet](#readonlyset)
-  - [readonlyTuple](#readonlytuple)
+  - [record](#record)
   - [ring](#ring)
   - [semigroup](#semigroup)
   - [semigroupoid](#semigroupoid)
   - [semiring](#semiring)
+  - [set](#set)
   - [show](#show)
   - [state](#state)
   - [stateReaderTaskEither](#statereadertaskeither)
@@ -92,6 +91,7 @@ Added in v2.0.0
   - [traversable](#traversable)
   - [traversableWithIndex](#traversablewithindex)
   - [tree](#tree)
+  - [tuple](#tuple)
   - [unfoldable](#unfoldable)
   - [witherable](#witherable)
   - [writer](#writer)
@@ -139,6 +139,16 @@ export declare const apply: typeof apply
 ```
 
 Added in v2.0.0
+
+## array
+
+**Signature**
+
+```ts
+export declare const array: typeof array
+```
+
+Added in v3.0.0
 
 ## bifunctor
 
@@ -520,6 +530,16 @@ export declare const magma: typeof magma
 
 Added in v2.0.0
 
+## map
+
+**Signature**
+
+```ts
+export declare const map: typeof map
+```
+
+Added in v3.0.0
+
 ## meetSemilattice
 
 **Signature**
@@ -579,6 +599,16 @@ export declare const monoid: typeof monoid
 ```
 
 Added in v2.0.0
+
+## nonEmptyArray
+
+**Signature**
+
+```ts
+export declare const nonEmptyArray: typeof nonEmptyArray
+```
+
+Added in v3.0.0
 
 ## option
 
@@ -670,65 +700,15 @@ export declare const readerTaskEither: typeof readerTaskEither
 
 Added in v2.0.0
 
-## readonlyArray
+## record
 
 **Signature**
 
 ```ts
-export declare const readonlyArray: typeof readonlyArray
+export declare const record: typeof record
 ```
 
-Added in v2.5.0
-
-## readonlyMap
-
-**Signature**
-
-```ts
-export declare const readonlyMap: typeof readonlyMap
-```
-
-Added in v2.5.0
-
-## readonlyNonEmptyArray
-
-**Signature**
-
-```ts
-export declare const readonlyNonEmptyArray: typeof readonlyNonEmptyArray
-```
-
-Added in v2.5.0
-
-## readonlyRecord
-
-**Signature**
-
-```ts
-export declare const readonlyRecord: typeof readonlyRecord
-```
-
-Added in v2.5.0
-
-## readonlySet
-
-**Signature**
-
-```ts
-export declare const readonlySet: typeof readonlySet
-```
-
-Added in v2.5.0
-
-## readonlyTuple
-
-**Signature**
-
-```ts
-export declare const readonlyTuple: typeof readonlyTuple
-```
-
-Added in v2.5.0
+Added in v3.0.0
 
 ## ring
 
@@ -769,6 +749,16 @@ export declare const semiring: typeof semiring
 ```
 
 Added in v2.0.0
+
+## set
+
+**Signature**
+
+```ts
+export declare const set: typeof set
+```
+
+Added in v3.0.0
 
 ## show
 
@@ -889,6 +879,16 @@ export declare const tree: typeof tree
 ```
 
 Added in v2.0.0
+
+## tuple
+
+**Signature**
+
+```ts
+export declare const tuple: typeof tuple
+```
+
+Added in v3.0.0
 
 ## unfoldable
 

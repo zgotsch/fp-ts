@@ -1,10 +1,10 @@
 ---
-title: ReadonlySet.ts
-nav_order: 63
+title: Set.ts
+nav_order: 67
 parent: Modules
 ---
 
-## ReadonlySet overview
+## Set overview
 
 Added in v2.5.0
 
@@ -28,7 +28,7 @@ Added in v2.5.0
   - [fromSet](#fromset)
   - [singleton](#singleton)
 - [destructors](#destructors)
-  - [toReadonlyArray](#toreadonlyarray)
+  - [toArray](#toarray)
   - [toSet](#toset)
 - [instances](#instances)
   - [getEq](#geteq)
@@ -89,7 +89,7 @@ export declare function difference<A>(
 **Example**
 
 ```ts
-import { difference } from 'fp-ts/lib/ReadonlySet'
+import { difference } from 'fp-ts/lib/Set'
 import { eqNumber } from 'fp-ts/lib/Eq'
 import { pipe } from 'fp-ts/lib/function'
 
@@ -227,12 +227,12 @@ Added in v2.5.0
 
 # destructors
 
-## toReadonlyArray
+## toArray
 
 **Signature**
 
 ```ts
-export declare function toReadonlyArray<A>(O: Ord<A>): (set: ReadonlySet<A>) => ReadonlyArray<A>
+export declare function toArray<A>(O: Ord<A>): (set: ReadonlySet<A>) => ReadonlyArray<A>
 ```
 
 Added in v2.5.0

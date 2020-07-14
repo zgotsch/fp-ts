@@ -1,6 +1,6 @@
 ---
 title: Foldable.ts
-nav_order: 27
+nav_order: 28
 parent: Modules
 ---
 
@@ -258,7 +258,7 @@ export declare function traverse_<M, F>(
 **Example**
 
 ```ts
-import { Foldable } from 'fp-ts/lib/ReadonlyArray'
+import { Foldable } from 'fp-ts/lib/Array'
 import { traverse_ } from 'fp-ts/lib/Foldable'
 import { Applicative } from 'fp-ts/lib/IO'
 

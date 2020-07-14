@@ -100,7 +100,7 @@ const concat = <A>(x: ReadonlyArray<A>, y: ReadonlyArray<A>): ReadonlyArray<A> =
  * Returns a `Monoid` for `ReadonlyArray<A>`
  *
  * @example
- * import { getMonoid } from 'fp-ts/lib/ReadonlyArray'
+ * import { getMonoid } from 'fp-ts/lib/Array'
  *
  * const M = getMonoid<number>()
  * assert.deepStrictEqual(M.concat([1, 2], [3, 4]), [1, 2, 3, 4])
@@ -122,7 +122,7 @@ export function getMonoid<A = never>(): Monoid<ReadonlyArray<A>> {
  *
  * @example
  * import { eqString } from 'fp-ts/lib/Eq'
- * import { getEq } from 'fp-ts/lib/ReadonlyArray'
+ * import { getEq } from 'fp-ts/lib/Array'
  *
  * const E = getEq(eqString)
  * assert.strictEqual(E.equals(['a', 'b'], ['a', 'b']), true)
@@ -144,7 +144,7 @@ export function getEq<A>(E: Eq<A>): Eq<ReadonlyArray<A>> {
  * the same length, the result is equality.
  *
  * @example
- * import { getOrd } from 'fp-ts/lib/ReadonlyArray'
+ * import { getOrd } from 'fp-ts/lib/Array'
  * import { ordString } from 'fp-ts/lib/Ord'
  *
  * const O = getOrd(ordString)
@@ -175,7 +175,7 @@ export function getOrd<A>(O: Ord<A>): Ord<ReadonlyArray<A>> {
  * Return a list of length `n` with element `i` initialized with `f(i)`
  *
  * @example
- * import { makeBy } from 'fp-ts/lib/ReadonlyArray'
+ * import { makeBy } from 'fp-ts/lib/Array'
  *
  * const double = (n: number): number => n * 2
  * assert.deepStrictEqual(makeBy(5, double), [0, 2, 4, 6, 8])
@@ -196,7 +196,7 @@ export function makeBy<A>(n: number, f: (i: number) => A): ReadonlyArray<A> {
  * Create an array containing a range of integers, including both endpoints
  *
  * @example
- * import { range } from 'fp-ts/lib/ReadonlyArray'
+ * import { range } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(range(1, 5), [1, 2, 3, 4, 5])
  *
@@ -211,7 +211,7 @@ export function range(start: number, end: number): ReadonlyArray<number> {
  * Create an array containing a value repeated the specified number of times
  *
  * @example
- * import { replicate } from 'fp-ts/lib/ReadonlyArray'
+ * import { replicate } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(replicate(3, 'a'), ['a', 'a', 'a'])
  *
@@ -226,7 +226,7 @@ export function replicate<A>(n: number, a: A): ReadonlyArray<A> {
  * Removes one level of nesting
  *
  * @example
- * import { flatten } from 'fp-ts/lib/ReadonlyArray'
+ * import { flatten } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(flatten([[1], [2], [3]]), [1, 2, 3])
  *
@@ -256,7 +256,7 @@ export function flatten<A>(mma: ReadonlyArray<ReadonlyArray<A>>): ReadonlyArray<
  * Break an array into its first element and remaining elements
  *
  * @example
- * import { foldLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { foldLeft } from 'fp-ts/lib/Array'
  *
  * const len: <A>(as: ReadonlyArray<A>) => number = foldLeft(() => 0, (_, tail) => 1 + len(tail))
  * assert.strictEqual(len([1, 2, 3]), 3)
@@ -288,7 +288,7 @@ export function foldRight<A, B>(
  * Same as `reduce` but it carries over the intermediate steps
  *
  * ```ts
- * import { scanLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { scanLeft } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(scanLeft(10, (b, a: number) => b - a)([1, 2, 3]), [10, 9, 7, 4])
  * ```
@@ -313,7 +313,7 @@ export function scanLeft<A, B>(b: B, f: (b: B, a: A) => B): (as: ReadonlyArray<A
  * Fold an array from the right, keeping all intermediate results instead of only the final result
  *
  * @example
- * import { scanRight } from 'fp-ts/lib/ReadonlyArray'
+ * import { scanRight } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(scanRight(10, (a: number, b) => b - a)([1, 2, 3]), [4, 5, 7, 10])
  *
@@ -337,7 +337,7 @@ export function scanRight<A, B>(b: B, f: (a: A, b: B) => B): (as: ReadonlyArray<
  * Test whether an array is empty
  *
  * @example
- * import { isEmpty } from 'fp-ts/lib/ReadonlyArray'
+ * import { isEmpty } from 'fp-ts/lib/Array'
  *
  * assert.strictEqual(isEmpty([]), true)
  *
@@ -371,7 +371,7 @@ export function isOutOfBound<A>(i: number, as: ReadonlyArray<A>): boolean {
  * This function provides a safe way to read a value at a particular index from an array
  *
  * @example
- * import { lookup } from 'fp-ts/lib/ReadonlyArray'
+ * import { lookup } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  * import { pipe } from 'fp-ts/lib/function'
  *
@@ -391,7 +391,7 @@ export function lookup<A>(i: number, as?: ReadonlyArray<A>): Option<A> | (<A>(as
  * Attaches an element to the front of an array, creating a new non empty array
  *
  * @example
- * import { cons } from 'fp-ts/lib/ReadonlyArray'
+ * import { cons } from 'fp-ts/lib/Array'
  * import { pipe } from 'fp-ts/lib/function'
  *
  * assert.deepStrictEqual(pipe([1, 2, 3], cons(0)), [0, 1, 2, 3])
@@ -422,7 +422,7 @@ export function cons<A>(
  * Append an element to the end of an array, creating a new non empty array
  *
  * @example
- * import { snoc } from 'fp-ts/lib/ReadonlyArray'
+ * import { snoc } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
  *
@@ -443,7 +443,7 @@ export function snoc<A>(init: ReadonlyArray<A>, end: A): NonEmptyArray<A> {
  * Get the first element in an array, or `None` if the array is empty
  *
  * @example
- * import { head } from 'fp-ts/lib/ReadonlyArray'
+ * import { head } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(head([1, 2, 3]), some(1))
@@ -459,7 +459,7 @@ export function head<A>(as: ReadonlyArray<A>): Option<A> {
  * Get the last element in an array, or `None` if the array is empty
  *
  * @example
- * import { last } from 'fp-ts/lib/ReadonlyArray'
+ * import { last } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(last([1, 2, 3]), some(3))
@@ -475,7 +475,7 @@ export function last<A>(as: ReadonlyArray<A>): Option<A> {
  * Get all but the first element of an array, creating a new array, or `None` if the array is empty
  *
  * @example
- * import { tail } from 'fp-ts/lib/ReadonlyArray'
+ * import { tail } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(tail([1, 2, 3]), some([2, 3]))
@@ -491,7 +491,7 @@ export function tail<A>(as: ReadonlyArray<A>): Option<ReadonlyArray<A>> {
  * Get all but the last element of an array, creating a new array, or `None` if the array is empty
  *
  * @example
- * import { init } from 'fp-ts/lib/ReadonlyArray'
+ * import { init } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(init([1, 2, 3]), some([1, 2]))
@@ -509,7 +509,7 @@ export function init<A>(as: ReadonlyArray<A>): Option<ReadonlyArray<A>> {
  * `n` must be a natural number
  *
  * @example
- * import { takeLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { takeLeft } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(takeLeft(2)([1, 2, 3]), [1, 2])
  *
@@ -525,7 +525,7 @@ export function takeLeft(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<
  * `n` must be a natural number
  *
  * @example
- * import { takeRight } from 'fp-ts/lib/ReadonlyArray'
+ * import { takeRight } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(takeRight(2)([1, 2, 3, 4, 5]), [4, 5])
  *
@@ -539,7 +539,7 @@ export function takeRight(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray
  * Calculate the longest initial subarray for which all element satisfy the specified predicate, creating a new array
  *
  * @example
- * import { takeLeftWhile } from 'fp-ts/lib/ReadonlyArray'
+ * import { takeLeftWhile } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(takeLeftWhile((n: number) => n % 2 === 0)([2, 4, 3, 6]), [2, 4])
  *
@@ -584,7 +584,7 @@ export interface Spanned<I, R> {
  * 2. the remaining elements
  *
  * @example
- * import { spanLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { spanLeft } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(spanLeft((n: number) => n % 2 === 1)([1, 3, 2, 4, 5]), { init: [1, 3], rest: [2, 4, 5] })
  *
@@ -612,7 +612,7 @@ export function spanLeft<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>) => 
  * Drop a number of elements from the start of an array, creating a new array
  *
  * @example
- * import { dropLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { dropLeft } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(dropLeft(2)([1, 2, 3]), [3])
  *
@@ -627,7 +627,7 @@ export function dropLeft(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<
  * Drop a number of elements from the end of an array, creating a new array
  *
  * @example
- * import { dropRight } from 'fp-ts/lib/ReadonlyArray'
+ * import { dropRight } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(dropRight(2)([1, 2, 3, 4, 5]), [1, 2, 3])
  *
@@ -642,7 +642,7 @@ export function dropRight(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray
  * Remove the longest initial subarray for which all element satisfy the specified predicate, creating a new array
  *
  * @example
- * import { dropLeftWhile } from 'fp-ts/lib/ReadonlyArray'
+ * import { dropLeftWhile } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(dropLeftWhile((n: number) => n % 2 === 1)([1, 3, 2, 4, 5]), [2, 4, 5])
  *
@@ -665,7 +665,7 @@ export function dropLeftWhile<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>
  * Find the first index for which a predicate holds
  *
  * @example
- * import { findIndex } from 'fp-ts/lib/ReadonlyArray'
+ * import { findIndex } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(findIndex((n: number) => n === 2)([1, 2, 3]), some(1))
@@ -689,7 +689,7 @@ export function findIndex<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>) =>
  * Find the first element which satisfies a predicate (or a refinement) function
  *
  * @example
- * import { findFirst } from 'fp-ts/lib/ReadonlyArray'
+ * import { findFirst } from 'fp-ts/lib/Array'
  * import { some } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(findFirst((x: { a: number, b: number }) => x.a === 1)([{ a: 1, b: 1 }, { a: 1, b: 2 }]), some({ a: 1, b: 1 }))
@@ -714,7 +714,7 @@ export function findFirst<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>) =>
  * Find the first element returned by an option based selector function
  *
  * @example
- * import { findFirstMap } from 'fp-ts/lib/ReadonlyArray'
+ * import { findFirstMap } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * interface Person {
@@ -746,7 +746,7 @@ export function findFirstMap<A, B>(f: (a: A) => Option<B>): (as: ReadonlyArray<A
  * Find the last element which satisfies a predicate function
  *
  * @example
- * import { findLast } from 'fp-ts/lib/ReadonlyArray'
+ * import { findLast } from 'fp-ts/lib/Array'
  * import { some } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(findLast((x: { a: number, b: number }) => x.a === 1)([{ a: 1, b: 1 }, { a: 1, b: 2 }]), some({ a: 1, b: 2 }))
@@ -771,7 +771,7 @@ export function findLast<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>) => 
  * Find the last element returned by an option based selector function
  *
  * @example
- * import { findLastMap } from 'fp-ts/lib/ReadonlyArray'
+ * import { findLastMap } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * interface Person {
@@ -803,7 +803,7 @@ export function findLastMap<A, B>(f: (a: A) => Option<B>): (as: ReadonlyArray<A>
  * Returns the index of the last element of the list which matches the predicate
  *
  * @example
- * import { findLastIndex } from 'fp-ts/lib/ReadonlyArray'
+ * import { findLastIndex } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * interface X {
@@ -833,7 +833,7 @@ export function findLastIndex<A>(predicate: Predicate<A>): (as: ReadonlyArray<A>
  * Insert an element at the specified index, creating a new array, or returning `None` if the index is out of bounds
  *
  * @example
- * import { insertAt } from 'fp-ts/lib/ReadonlyArray'
+ * import { insertAt } from 'fp-ts/lib/Array'
  * import { some } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(insertAt(2, 5)([1, 2, 3, 4]), some([1, 2, 5, 3, 4]))
@@ -848,7 +848,7 @@ export function insertAt<A>(i: number, a: A): (as: ReadonlyArray<A>) => Option<R
  * Change the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
  *
  * @example
- * import { updateAt } from 'fp-ts/lib/ReadonlyArray'
+ * import { updateAt } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(updateAt(1, 1)([1, 2, 3]), some([1, 1, 3]))
@@ -864,7 +864,7 @@ export function updateAt<A>(i: number, a: A): (as: ReadonlyArray<A>) => Option<R
  * Delete the element at the specified index, creating a new array, or returning `None` if the index is out of bounds
  *
  * @example
- * import { deleteAt } from 'fp-ts/lib/ReadonlyArray'
+ * import { deleteAt } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * assert.deepStrictEqual(deleteAt(0)([1, 2, 3]), some([2, 3]))
@@ -881,7 +881,7 @@ export function deleteAt(i: number): <A>(as: ReadonlyArray<A>) => Option<Readonl
  * of bounds
  *
  * @example
- * import { modifyAt } from 'fp-ts/lib/ReadonlyArray'
+ * import { modifyAt } from 'fp-ts/lib/Array'
  * import { some, none } from 'fp-ts/lib/Option'
  *
  * const double = (x: number): number => x * 2
@@ -898,7 +898,7 @@ export function modifyAt<A>(i: number, f: (a: A) => A): (as: ReadonlyArray<A>) =
  * Reverse an array, creating a new array
  *
  * @example
- * import { reverse } from 'fp-ts/lib/ReadonlyArray'
+ * import { reverse } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(reverse([1, 2, 3]), [3, 2, 1])
  *
@@ -916,7 +916,7 @@ export function reverse<A>(as: ReadonlyArray<A>): ReadonlyArray<A> {
  * Extracts from an array of `Either` all the `Right` elements. All the `Right` elements are extracted in order
  *
  * @example
- * import { rights } from 'fp-ts/lib/ReadonlyArray'
+ * import { rights } from 'fp-ts/lib/Array'
  * import { right, left } from 'fp-ts/lib/Either'
  *
  * assert.deepStrictEqual(rights([right(1), left('foo'), right(2)]), [1, 2])
@@ -941,7 +941,7 @@ export function rights<E, A>(as: ReadonlyArray<Either<E, A>>): ReadonlyArray<A> 
  * Extracts from an array of `Either` all the `Left` elements. All the `Left` elements are extracted in order
  *
  * @example
- * import { lefts } from 'fp-ts/lib/ReadonlyArray'
+ * import { lefts } from 'fp-ts/lib/Array'
  * import { left, right } from 'fp-ts/lib/Either'
  *
  * assert.deepStrictEqual(lefts([right(1), left('foo'), right(2)]), ['foo'])
@@ -965,7 +965,7 @@ export function lefts<E, A>(as: ReadonlyArray<Either<E, A>>): ReadonlyArray<E> {
  * Sort the elements of an array in increasing order, creating a new array
  *
  * @example
- * import { sort } from 'fp-ts/lib/ReadonlyArray'
+ * import { sort } from 'fp-ts/lib/Array'
  * import { ordNumber } from 'fp-ts/lib/Ord'
  *
  * assert.deepStrictEqual(sort(ordNumber)([3, 2, 1]), [1, 2, 3])
@@ -983,7 +983,7 @@ export function sort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
  * input array is short, excess elements of the longer array are discarded.
  *
  * @example
- * import { zipWith } from 'fp-ts/lib/ReadonlyArray'
+ * import { zipWith } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n), ['a1', 'b2', 'c3'])
  *
@@ -1006,7 +1006,7 @@ export function zipWith<A, B, C>(fa: ReadonlyArray<A>, fb: ReadonlyArray<B>, f: 
  * longer array are discarded
  *
  * @example
- * import { zip } from 'fp-ts/lib/ReadonlyArray'
+ * import { zip } from 'fp-ts/lib/Array'
  * import { pipe } from 'fp-ts/lib/function'
  *
  * assert.deepStrictEqual(pipe([1, 2, 3], zip(['a', 'b', 'c', 'd'])), [[1, 'a'], [2, 'b'], [3, 'c']])
@@ -1030,7 +1030,7 @@ export function zip<A, B>(
  * The function is reverse of `zip`. Takes an array of pairs and return two corresponding arrays
  *
  * @example
- * import { unzip } from 'fp-ts/lib/ReadonlyArray'
+ * import { unzip } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(unzip([[1, 'a'], [2, 'b'], [3, 'c']]), [[1, 2, 3], ['a', 'b', 'c']])
  *
@@ -1054,7 +1054,7 @@ export function unzip<A, B>(as: ReadonlyArray<readonly [A, B]>): readonly [Reado
  * Rotate an array to the right by `n` steps
  *
  * @example
- * import { rotate } from 'fp-ts/lib/ReadonlyArray'
+ * import { rotate } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(rotate(2)([1, 2, 3, 4, 5]), [4, 5, 1, 2, 3])
  *
@@ -1081,7 +1081,7 @@ export function rotate(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<A>
  * an array of type `ReadonlyArray<A>`.
  *
  * @example
- * import { elem } from 'fp-ts/lib/ReadonlyArray'
+ * import { elem } from 'fp-ts/lib/Array'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  * import { pipe } from 'fp-ts/lib/function'
  *
@@ -1118,7 +1118,7 @@ export function elem<A>(E: Eq<A>): (a: A, as?: ReadonlyArray<A>) => boolean | ((
  * Remove duplicates from an array, keeping the first occurrence of an element.
  *
  * @example
- * import { uniq } from 'fp-ts/lib/ReadonlyArray'
+ * import { uniq } from 'fp-ts/lib/Array'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  *
  * assert.deepStrictEqual(uniq(eqNumber)([1, 2, 1]), [1, 2])
@@ -1148,7 +1148,7 @@ export function uniq<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
  * etc...
  *
  * @example
- * import { sortBy } from 'fp-ts/lib/ReadonlyArray'
+ * import { sortBy } from 'fp-ts/lib/Array'
  * import { ord, ordString, ordNumber } from 'fp-ts/lib/Ord'
  *
  * interface Person {
@@ -1183,7 +1183,7 @@ export function sortBy<A>(ords: ReadonlyArray<Ord<A>>): (as: ReadonlyArray<A>) =
  *
  * @example
  * import { Eq, eqNumber } from 'fp-ts/lib/Eq'
- * import { chop, spanLeft } from 'fp-ts/lib/ReadonlyArray'
+ * import { chop, spanLeft } from 'fp-ts/lib/Array'
  *
  * const group = <A>(S: Eq<A>): ((as: ReadonlyArray<A>) => ReadonlyArray<ReadonlyArray<A>>) => {
  *   return chop(as => {
@@ -1214,7 +1214,7 @@ export const chop = <A, B>(f: (as: NonEmptyArray<A>) => readonly [B, ReadonlyArr
  * Splits an array into two pieces, the first piece has `n` elements.
  *
  * @example
- * import { splitAt } from 'fp-ts/lib/ReadonlyArray'
+ * import { splitAt } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(splitAt(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4, 5]])
  *
@@ -1236,7 +1236,7 @@ export function splitAt(n: number): <A>(as: ReadonlyArray<A>) => readonly [Reado
  * whenever `n` evenly divides the length of `xs`.
  *
  * @example
- * import { chunksOf } from 'fp-ts/lib/ReadonlyArray'
+ * import { chunksOf } from 'fp-ts/lib/Array'
  *
  * assert.deepStrictEqual(chunksOf(2)([1, 2, 3, 4, 5]), [[1, 2], [3, 4], [5]])
  *
@@ -1256,7 +1256,7 @@ export function chunksOf(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<
  * ```
  *
  * @example
- * import { comprehension } from 'fp-ts/lib/ReadonlyArray'
+ * import { comprehension } from 'fp-ts/lib/Array'
  * import { tuple } from 'fp-ts/lib/function'
  *
  * assert.deepStrictEqual(comprehension([[1, 2, 3], ['a', 'b']], tuple, (a, b) => (a + b.length) % 2 === 0), [
@@ -1313,7 +1313,7 @@ export function comprehension<R>(
  * Creates an array of unique values, in order, from all given arrays using a `Eq` for equality comparisons
  *
  * @example
- * import { union } from 'fp-ts/lib/ReadonlyArray'
+ * import { union } from 'fp-ts/lib/Array'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  * import { pipe } from 'fp-ts/lib/function'
  *
@@ -1350,7 +1350,7 @@ export function union<A>(
  * comparisons. The order and references of result values are determined by the first array.
  *
  * @example
- * import { intersection } from 'fp-ts/lib/ReadonlyArray'
+ * import { intersection } from 'fp-ts/lib/Array'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  * import { pipe } from 'fp-ts/lib/function'
  *
@@ -1384,7 +1384,7 @@ export function intersection<A>(
  * comparisons. The order and references of result values are determined by the first array.
  *
  * @example
- * import { difference } from 'fp-ts/lib/ReadonlyArray'
+ * import { difference } from 'fp-ts/lib/Array'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  * import { pipe } from 'fp-ts/lib/function'
  *

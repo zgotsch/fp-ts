@@ -1,10 +1,10 @@
 ---
-title: ReadonlyMap.ts
-nav_order: 60
+title: Map.ts
+nav_order: 45
 parent: Modules
 ---
 
-## ReadonlyMap overview
+## Map overview
 
 Added in v2.5.0
 
@@ -30,8 +30,8 @@ Added in v2.5.0
   - [fromMap](#frommap)
   - [singleton](#singleton)
 - [destructors](#destructors)
+  - [toArray](#toarray)
   - [toMap](#tomap)
-  - [toReadonlyArray](#toreadonlyarray)
   - [toUnfoldable](#tounfoldable)
 - [instances](#instances)
   - [Compactable](#compactable-1)
@@ -238,24 +238,24 @@ Added in v2.5.0
 
 # destructors
 
-## toMap
-
-**Signature**
-
-```ts
-export declare function toMap<K, A>(m: ReadonlyMap<K, A>): Map<K, A>
-```
-
-Added in v2.5.0
-
-## toReadonlyArray
+## toArray
 
 Get a sorted of the key/value pairs contained in a map
 
 **Signature**
 
 ```ts
-export declare function toReadonlyArray<K>(O: Ord<K>): <A>(m: ReadonlyMap<K, A>) => ReadonlyArray<readonly [K, A]>
+export declare function toArray<K>(O: Ord<K>): <A>(m: ReadonlyMap<K, A>) => ReadonlyArray<readonly [K, A]>
+```
+
+Added in v2.5.0
+
+## toMap
+
+**Signature**
+
+```ts
+export declare function toMap<K, A>(m: ReadonlyMap<K, A>): Map<K, A>
 ```
 
 Added in v2.5.0

@@ -1,10 +1,10 @@
 ---
-title: ReadonlyRecord.ts
+title: Record.ts
 nav_order: 62
 parent: Modules
 ---
 
-## ReadonlyRecord overview
+## Record overview
 
 Added in v2.5.0
 
@@ -37,7 +37,7 @@ Added in v2.5.0
   - [fromRecord](#fromrecord)
   - [singleton](#singleton)
 - [destructors](#destructors)
-  - [toReadonlyArray](#toreadonlyarray)
+  - [toArray](#toarray)
   - [toRecord](#torecord)
   - [toUnfoldable](#tounfoldable)
 - [instances](#instances)
@@ -317,12 +317,12 @@ Added in v2.5.0
 
 # destructors
 
-## toReadonlyArray
+## toArray
 
 **Signature**
 
 ```ts
-export declare const toReadonlyArray: <K extends string, A>(r: Readonly<Record<K, A>>) => readonly (readonly [K, A])[]
+export declare const toArray: <K extends string, A>(r: Readonly<Record<K, A>>) => readonly (readonly [K, A])[]
 ```
 
 Added in v2.5.0
@@ -500,7 +500,7 @@ export declare function getMonoid<K extends string, A>(S: Semigroup<A>): Monoid<
 
 ```ts
 import { semigroupSum } from 'fp-ts/lib/Semigroup'
-import { getMonoid } from 'fp-ts/lib/ReadonlyRecord'
+import { getMonoid } from 'fp-ts/lib/Record'
 
 const M = getMonoid(semigroupSum)
 assert.deepStrictEqual(M.concat({ foo: 123 }, { foo: 456 }), { foo: 579 })
@@ -561,7 +561,7 @@ export declare function collect<K extends string, A, B>(
 **Example**
 
 ```ts
-import { collect } from 'fp-ts/lib/ReadonlyRecord'
+import { collect } from 'fp-ts/lib/Record'
 
 const x: { a: string; b: boolean } = { a: 'foo', b: false }
 assert.deepStrictEqual(collect((key, val) => ({ key: key, value: val }))(x), [
@@ -694,9 +694,9 @@ export declare function fromFoldableMap<F, B>(
 
 ```ts
 import { getLastSemigroup } from 'fp-ts/lib/Semigroup'
-import { readonlyArray, zip } from 'fp-ts/lib/ReadonlyArray'
+import { readonlyArray, zip } from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
-import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/ReadonlyRecord'
+import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/Record'
 
 // like lodash `zipObject` or ramda `zipObj`
 export const zipObject = <K extends string, A>(
