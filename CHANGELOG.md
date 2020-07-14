@@ -39,6 +39,8 @@ high state of flux, you're at risk of it changing without notice.
       - remove `getApplicativeComposition` and related types (@gcanti)
     - `Compactable`
       - remove `getCompactableComposition` and related types (@gcanti)
+    - `Eq`
+      - remove deprecated `strictEqual` function (@gcanti)
     - `Filterable`
       - remove `getFilterableComposition` and related types (@gcanti)
     - `Foldable`
@@ -49,6 +51,10 @@ high state of flux, you're at risk of it changing without notice.
       - remove `getFunctorComposition` and related types (@gcanti)
     - `FunctorWithIndex`
       - remove `getFunctorWithIndexComposition` and related types (@gcanti)
+    - `Ord`
+      - remove deprecated `getSemigroup` constrained instance (@gcanti)
+    - `Ordering`
+      - remove deprecated `semigroupOrdering` instance (@gcanti)
     - `Traversable`
       - remove `getTraversableComposition` and related types (@gcanti)
     - `Tuple`
