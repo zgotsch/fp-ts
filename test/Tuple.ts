@@ -2,9 +2,9 @@ import * as assert from 'assert'
 import { identity, pipe } from '../src/function'
 import { monoidString } from '../src/Monoid'
 import * as O from '../src/Option'
-import * as _ from '../src/ReadonlyTuple'
+import * as _ from '../src/Tuple'
 
-describe('ReadonlyTuple', () => {
+describe('Tuple', () => {
   describe('pipeables', () => {
     it('compose', () => {
       assert.deepStrictEqual(pipe([true, 2] as const, _.compose([1, 'a'])), [true, 'a'])

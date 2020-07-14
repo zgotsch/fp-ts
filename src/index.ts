@@ -62,7 +62,6 @@ import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
-import * as readonlyTuple from './ReadonlyTuple'
 import * as record from './Record'
 import * as ring from './Ring'
 import * as semigroup from './Semigroup'
@@ -81,6 +80,7 @@ import * as traced from './Traced'
 import * as traversable from './Traversable'
 import * as traversableWithIndex from './TraversableWithIndex'
 import * as tree from './Tree'
+import * as tuple from './Tuple'
 import * as unfoldable from './Unfoldable'
 import * as witherable from './Witherable'
 import * as writer from './Writer'
@@ -318,10 +318,6 @@ export {
    */
   readerTaskEither,
   /**
-   * @since 2.5.0
-   */
-  readonlyTuple,
-  /**
    * @since 2.3.0
    */
   readerTask,
@@ -401,6 +397,10 @@ export {
    * @since 2.0.0
    */
   tree,
+  /**
+   * @since 3.0.0
+   */
+  tuple,
   /**
    * @since 2.0.0
    */
