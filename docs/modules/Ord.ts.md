@@ -1,6 +1,6 @@
 ---
 title: Ord.ts
-nav_order: 59
+nav_order: 51
 parent: Modules
 ---
 
@@ -37,7 +37,6 @@ Added in v2.0.0
   - [ordDate](#orddate)
   - [ordNumber](#ordnumber)
   - [ordString](#ordstring)
-  - [~~getSemigroup~~](#getsemigroup)
 - [type classes](#type-classes)
   - [Ord (interface)](#ord-interface)
 - [utils](#utils)
@@ -136,7 +135,7 @@ export declare function getMonoid<A = never>(): Monoid<Ord<A>>
 **Example**
 
 ```ts
-import { sort } from 'fp-ts/lib/Array'
+import { sort } from 'fp-ts/lib/ReadonlyArray'
 import { contramap, getDualOrd, getMonoid, ordBoolean, ordNumber, ordString } from 'fp-ts/lib/Ord'
 import { pipe } from 'fp-ts/lib/function'
 import { fold } from 'fp-ts/lib/Monoid'
@@ -264,18 +263,6 @@ Added in v2.0.0
 
 ```ts
 export declare const ordString: Ord<string>
-```
-
-Added in v2.0.0
-
-## ~~getSemigroup~~
-
-Use `getMonoid` instead
-
-**Signature**
-
-```ts
-export declare function getSemigroup<A = never>(): Semigroup<Ord<A>>
 ```
 
 Added in v2.0.0

@@ -1,6 +1,6 @@
 ---
 title: Either.ts
-nav_order: 25
+nav_order: 21
 parent: Modules
 ---
 
@@ -78,7 +78,6 @@ Added in v2.0.0
   - [Alt](#alt-1)
   - [Applicative](#applicative-1)
   - [Bifunctor](#bifunctor-1)
-  - [ChainRec](#chainrec)
   - [Extend](#extend-1)
   - [Foldable](#foldable-1)
   - [Functor](#functor-1)
@@ -93,6 +92,7 @@ Added in v2.0.0
   - [getApplyMonoid](#getapplymonoid)
   - [getApplySemigroup](#getapplysemigroup)
   - [getEq](#geteq)
+  - [getFilterable](#getfilterable)
   - [getSemigroup](#getsemigroup)
   - [getShow](#getshow)
   - [getValidation](#getvalidation)
@@ -666,16 +666,6 @@ export declare const Bifunctor: Bifunctor2<'Either'>
 
 Added in v2.7.0
 
-## ChainRec
-
-**Signature**
-
-```ts
-export declare const ChainRec: ChainRec2<'Either'>
-```
-
-Added in v2.7.0
-
 ## Extend
 
 **Signature**
@@ -767,7 +757,6 @@ export declare const either: Monad2<'Either'> &
   Bifunctor2<'Either'> &
   Alt2<'Either'> &
   Extend2<'Either'> &
-  ChainRec2<'Either'> &
   MonadThrow2<'Either'>
 ```
 
@@ -839,6 +828,18 @@ export declare function getEq<E, A>(EL: Eq<E>, EA: Eq<A>): Eq<Either<E, A>>
 
 Added in v2.0.0
 
+## getFilterable
+
+Builds a `Filterable` instance for `Either` given `Monoid` for the left side
+
+**Signature**
+
+```ts
+export declare function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E>
+```
+
+Added in v3.0.0
+
 ## getSemigroup
 
 Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
@@ -888,7 +889,6 @@ export declare function getValidation<E>(
   Bifunctor2<URI> &
   Alt2C<URI, E> &
   Extend2<URI> &
-  ChainRec2C<URI, E> &
   MonadThrow2C<URI, E>
 ```
 
@@ -916,7 +916,7 @@ Added in v2.0.0
 
 ## getWitherable
 
-Builds `Witherable` instance for `Either` given `Monoid` for the left side
+Builds a `Witherable` instance for `Either` given `Monoid` for the left side
 
 **Signature**
 

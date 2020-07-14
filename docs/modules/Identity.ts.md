@@ -1,6 +1,6 @@
 ---
 title: Identity.ts
-nav_order: 40
+nav_order: 35
 parent: Modules
 ---
 
@@ -38,7 +38,6 @@ Added in v2.0.0
 - [instances](#instances)
   - [Alt](#alt-1)
   - [Applicative](#applicative-1)
-  - [ChainRec](#chainrec)
   - [Comonad](#comonad)
   - [Foldable](#foldable-1)
   - [Functor](#functor-1)
@@ -262,16 +261,6 @@ export declare const Applicative: Applicative1<'Identity'>
 
 Added in v2.7.0
 
-## ChainRec
-
-**Signature**
-
-```ts
-export declare const ChainRec: ChainRec1<'Identity'>
-```
-
-Added in v2.7.0
-
 ## Comonad
 
 **Signature**
@@ -371,8 +360,7 @@ export declare const identity: Monad1<'Identity'> &
   Foldable1<'Identity'> &
   Traversable1<'Identity'> &
   Alt1<'Identity'> &
-  Comonad1<'Identity'> &
-  ChainRec1<'Identity'>
+  Comonad1<'Identity'>
 ```
 
 Added in v2.0.0

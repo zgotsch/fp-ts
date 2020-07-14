@@ -172,13 +172,13 @@ export function intercalate<M, F>(M: Monoid<M>, F: Foldable<F>): (sep: M, fm: HK
  * final result.
  *
  * @example
- * import { array } from 'fp-ts/lib/Array'
+ * import { Foldable } from 'fp-ts/lib/ReadonlyArray'
  * import { traverse_ } from 'fp-ts/lib/Foldable'
- * import { io } from 'fp-ts/lib/IO'
+ * import { Applicative } from 'fp-ts/lib/IO'
  *
  * let log = ''
  * const append = (s: string) => () => (log += s)
- * traverse_(io, array)(['a', 'b', 'c'], append)()
+ * traverse_(Applicative, Foldable)(['a', 'b', 'c'], append)()
  * assert.strictEqual(log, 'abc')
  *
  * @since 2.0.0

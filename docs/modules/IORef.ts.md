@@ -1,6 +1,6 @@
 ---
 title: IORef.ts
-nav_order: 45
+nav_order: 40
 parent: Modules
 ---
 

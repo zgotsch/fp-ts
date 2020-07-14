@@ -6,7 +6,6 @@ import * as alt from './Alt'
 import * as alternative from './Alternative'
 import * as applicative from './Applicative'
 import * as apply from './Apply'
-import * as array from './Array'
 import * as bifunctor from './Bifunctor'
 import * as boolean from './boolean'
 import * as booleanAlgebra from './BooleanAlgebra'
@@ -45,14 +44,12 @@ import * as ioRef from './IORef'
 import * as joinSemilattice from './JoinSemilattice'
 import * as lattice from './Lattice'
 import * as magma from './Magma'
-import * as map from './Map'
 import * as meetSemilattice from './MeetSemilattice'
 import * as monad from './Monad'
 import * as monadIO from './MonadIO'
 import * as monadTask from './MonadTask'
 import * as monadThrow from './MonadThrow'
 import * as monoid from './Monoid'
-import * as nonEmptyArray from './NonEmptyArray'
 import * as option from './Option'
 import * as ord from './Ord'
 import * as ordering from './Ordering'
@@ -68,12 +65,10 @@ import * as readonlyNonEmptyArray from './ReadonlyNonEmptyArray'
 import * as readonlyRecord from './ReadonlyRecord'
 import * as readonlySet from './ReadonlySet'
 import * as readonlyTuple from './ReadonlyTuple'
-import * as record from './Record'
 import * as ring from './Ring'
 import * as semigroup from './Semigroup'
 import * as semigroupoid from './Semigroupoid'
 import * as semiring from './Semiring'
-import * as set from './Set'
 import * as show from './Show'
 import * as state from './State'
 import * as stateReaderTaskEither from './StateReaderTaskEither'
@@ -86,7 +81,6 @@ import * as traced from './Traced'
 import * as traversable from './Traversable'
 import * as traversableWithIndex from './TraversableWithIndex'
 import * as tree from './Tree'
-import * as tuple from './Tuple'
 import * as unfoldable from './Unfoldable'
 import * as witherable from './Witherable'
 import * as writer from './Writer'
@@ -107,10 +101,6 @@ export {
    * @since 2.0.0
    */
   apply,
-  /**
-   * @since 2.0.0
-   */
-  array,
   /**
    * @since 2.0.0
    */
@@ -262,10 +252,6 @@ export {
   /**
    * @since 2.0.0
    */
-  map,
-  /**
-   * @since 2.0.0
-   */
   meetSemilattice,
   /**
    * @since 2.0.0
@@ -287,10 +273,6 @@ export {
    * @since 2.0.0
    */
   monoid,
-  /**
-   * @since 2.0.0
-   */
-  nonEmptyArray,
   /**
    * @since 2.0.0
    */
@@ -354,10 +336,6 @@ export {
   /**
    * @since 2.0.0
    */
-  record,
-  /**
-   * @since 2.0.0
-   */
   ring,
   /**
    * @since 2.0.0
@@ -371,10 +349,6 @@ export {
    * @since 2.0.0
    */
   semiring,
-  /**
-   * @since 2.0.0
-   */
-  set,
   /**
    * @since 2.0.0
    */
@@ -427,10 +401,6 @@ export {
    * @since 2.0.0
    */
   tree,
-  /**
-   * @since 2.0.0
-   */
-  tuple,
   /**
    * @since 2.0.0
    */

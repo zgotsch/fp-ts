@@ -22,6 +22,13 @@ high state of flux, you're at risk of it changing without notice.
   - **Build**
     - change output to `es6` (@gcanti)
   - **Removed modules**
+    - mutable modules
+      - `Array`
+      - `Map`
+      - `NonEmptyArray`
+      - `Record`
+      - `Set`
+      - `Tuple`
     - `Chain` (@gcanti)
     - `ChainRec` (@gcanti)
     - `Choice` (@gcanti)
@@ -57,6 +64,8 @@ high state of flux, you're at risk of it changing without notice.
       - remove deprecated `semigroupOrdering` instance (@gcanti)
     - `Traversable`
       - remove `getTraversableComposition` and related types (@gcanti)
+    - `Tree`
+      - make `Forest` readonly (@gcanti)
     - `Tuple`
       - remove `getChain` constrained instance (@gcanti)
 - **New Feature**

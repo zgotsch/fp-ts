@@ -3,7 +3,7 @@
     "noEmit": true,
     "outDir": "./dist",
     "target": "es6",
-    "module": "es6",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["es6", "dom"],
     "sourceMap": false,

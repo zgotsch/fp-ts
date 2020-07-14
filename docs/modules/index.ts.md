@@ -1,6 +1,6 @@
 ---
 title: index.ts
-nav_order: 41
+nav_order: 36
 parent: Modules
 ---
 
@@ -17,7 +17,6 @@ Added in v2.0.0
   - [alternative](#alternative)
   - [applicative](#applicative)
   - [apply](#apply)
-  - [array](#array)
   - [bifunctor](#bifunctor)
   - [boolean](#boolean)
   - [booleanAlgebra](#booleanalgebra)
@@ -27,9 +26,6 @@ Added in v2.0.0
   - [boundedLattice](#boundedlattice)
   - [boundedMeetSemilattice](#boundedmeetsemilattice)
   - [category](#category)
-  - [chain](#chain)
-  - [chainRec](#chainrec)
-  - [choice](#choice)
   - [comonad](#comonad)
   - [compactable](#compactable)
   - [console](#console)
@@ -38,7 +34,6 @@ Added in v2.0.0
   - [date](#date)
   - [distributiveLattice](#distributivelattice)
   - [either](#either)
-  - [eitherT](#eithert)
   - [eq](#eq)
   - [extend](#extend)
   - [field](#field)
@@ -60,24 +55,19 @@ Added in v2.0.0
   - [joinSemilattice](#joinsemilattice)
   - [lattice](#lattice)
   - [magma](#magma)
-  - [map](#map)
   - [meetSemilattice](#meetsemilattice)
   - [monad](#monad)
   - [monadIO](#monadio)
   - [monadTask](#monadtask)
   - [monadThrow](#monadthrow)
   - [monoid](#monoid)
-  - [nonEmptyArray](#nonemptyarray)
   - [option](#option)
-  - [optionT](#optiont)
   - [ord](#ord)
   - [ordering](#ordering)
-  - [pipeable](#pipeable)
   - [profunctor](#profunctor)
   - [random](#random)
   - [reader](#reader)
   - [readerEither](#readereither)
-  - [readerT](#readert)
   - [readerTask](#readertask)
   - [readerTaskEither](#readertaskeither)
   - [readonlyArray](#readonlyarray)
@@ -86,33 +76,25 @@ Added in v2.0.0
   - [readonlyRecord](#readonlyrecord)
   - [readonlySet](#readonlyset)
   - [readonlyTuple](#readonlytuple)
-  - [record](#record)
   - [ring](#ring)
   - [semigroup](#semigroup)
   - [semigroupoid](#semigroupoid)
   - [semiring](#semiring)
-  - [set](#set)
   - [show](#show)
   - [state](#state)
   - [stateReaderTaskEither](#statereadertaskeither)
-  - [stateT](#statet)
   - [store](#store)
-  - [strong](#strong)
   - [task](#task)
   - [taskEither](#taskeither)
   - [taskThese](#taskthese)
   - [these](#these)
-  - [theseT](#theset)
   - [traced](#traced)
   - [traversable](#traversable)
   - [traversableWithIndex](#traversablewithindex)
   - [tree](#tree)
-  - [tuple](#tuple)
   - [unfoldable](#unfoldable)
-  - [validationT](#validationt)
   - [witherable](#witherable)
   - [writer](#writer)
-  - [writerT](#writert)
 
 ---
 
@@ -154,16 +136,6 @@ Added in v2.0.0
 
 ```ts
 export declare const apply: typeof apply
-```
-
-Added in v2.0.0
-
-## array
-
-**Signature**
-
-```ts
-export declare const array: typeof array
 ```
 
 Added in v2.0.0
@@ -258,36 +230,6 @@ export declare const category: typeof category
 
 Added in v2.0.0
 
-## chain
-
-**Signature**
-
-```ts
-export declare const chain: typeof chain
-```
-
-Added in v2.0.0
-
-## chainRec
-
-**Signature**
-
-```ts
-export declare const chainRec: typeof chainRec
-```
-
-Added in v2.0.0
-
-## choice
-
-**Signature**
-
-```ts
-export declare const choice: typeof choice
-```
-
-Added in v2.0.0
-
 ## comonad
 
 **Signature**
@@ -364,16 +306,6 @@ Added in v2.0.0
 
 ```ts
 export declare const either: typeof either
-```
-
-Added in v2.0.0
-
-## eitherT
-
-**Signature**
-
-```ts
-export declare const eitherT: typeof eitherT
 ```
 
 Added in v2.0.0
@@ -588,16 +520,6 @@ export declare const magma: typeof magma
 
 Added in v2.0.0
 
-## map
-
-**Signature**
-
-```ts
-export declare const map: typeof map
-```
-
-Added in v2.0.0
-
 ## meetSemilattice
 
 **Signature**
@@ -658,32 +580,12 @@ export declare const monoid: typeof monoid
 
 Added in v2.0.0
 
-## nonEmptyArray
-
-**Signature**
-
-```ts
-export declare const nonEmptyArray: typeof nonEmptyArray
-```
-
-Added in v2.0.0
-
 ## option
 
 **Signature**
 
 ```ts
 export declare const option: typeof option
-```
-
-Added in v2.0.0
-
-## optionT
-
-**Signature**
-
-```ts
-export declare const optionT: typeof optionT
 ```
 
 Added in v2.0.0
@@ -704,16 +606,6 @@ Added in v2.0.0
 
 ```ts
 export declare const ordering: typeof ordering
-```
-
-Added in v2.0.0
-
-## pipeable
-
-**Signature**
-
-```ts
-export declare const pipeable: typeof pipeable
 ```
 
 Added in v2.0.0
@@ -754,16 +646,6 @@ Added in v2.0.0
 
 ```ts
 export declare const readerEither: typeof readerEither
-```
-
-Added in v2.0.0
-
-## readerT
-
-**Signature**
-
-```ts
-export declare const readerT: typeof readerT
 ```
 
 Added in v2.0.0
@@ -848,16 +730,6 @@ export declare const readonlyTuple: typeof readonlyTuple
 
 Added in v2.5.0
 
-## record
-
-**Signature**
-
-```ts
-export declare const record: typeof record
-```
-
-Added in v2.0.0
-
 ## ring
 
 **Signature**
@@ -898,16 +770,6 @@ export declare const semiring: typeof semiring
 
 Added in v2.0.0
 
-## set
-
-**Signature**
-
-```ts
-export declare const set: typeof set
-```
-
-Added in v2.0.0
-
 ## show
 
 **Signature**
@@ -938,32 +800,12 @@ export declare const stateReaderTaskEither: typeof stateReaderTaskEither
 
 Added in v2.0.0
 
-## stateT
-
-**Signature**
-
-```ts
-export declare const stateT: typeof stateT
-```
-
-Added in v2.0.0
-
 ## store
 
 **Signature**
 
 ```ts
 export declare const store: typeof store
-```
-
-Added in v2.0.0
-
-## strong
-
-**Signature**
-
-```ts
-export declare const strong: typeof strong
 ```
 
 Added in v2.0.0
@@ -1008,16 +850,6 @@ export declare const these: typeof these
 
 Added in v2.0.0
 
-## theseT
-
-**Signature**
-
-```ts
-export declare const theseT: typeof theseT
-```
-
-Added in v2.4.0
-
 ## traced
 
 **Signature**
@@ -1058,32 +890,12 @@ export declare const tree: typeof tree
 
 Added in v2.0.0
 
-## tuple
-
-**Signature**
-
-```ts
-export declare const tuple: typeof tuple
-```
-
-Added in v2.0.0
-
 ## unfoldable
 
 **Signature**
 
 ```ts
 export declare const unfoldable: typeof unfoldable
-```
-
-Added in v2.0.0
-
-## validationT
-
-**Signature**
-
-```ts
-export declare const validationT: typeof validationT
 ```
 
 Added in v2.0.0
@@ -1107,13 +919,3 @@ export declare const writer: typeof writer
 ```
 
 Added in v2.0.0
-
-## writerT
-
-**Signature**
-
-```ts
-export declare const writerT: typeof writerT
-```
-
-Added in v2.4.0

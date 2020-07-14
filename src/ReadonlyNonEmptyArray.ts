@@ -15,7 +15,6 @@ import { Lazy, Predicate, Refinement } from './function'
 import { Functor1 } from './Functor'
 import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { Monad1 } from './Monad'
-import { NonEmptyArray } from './NonEmptyArray'
 import { none, Option, some } from './Option'
 import { Ord } from './Ord'
 import * as RA from './ReadonlyArray'
@@ -181,7 +180,8 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<Read
     // tslint:disable-next-line: readonly-array
     const r: Array<ReadonlyNonEmptyArray<A>> = []
     let head: A = as[0]
-    let nea: NonEmptyArray<A> = [head]
+    // tslint:disable-next-line: readonly-array
+    let nea: [A, ...ReadonlyArray<A>] = [head]
     for (let i = 1; i < len; i++) {
       const x = as[i]
       if (E.equals(x, head)) {
@@ -234,7 +234,8 @@ export function groupBy<A>(
   f: (a: A) => string
 ): (as: ReadonlyArray<A>) => ReadonlyRecord<string, ReadonlyNonEmptyArray<A>> {
   return (as) => {
-    const r: Record<string, NonEmptyArray<A>> = {}
+    // tslint:disable-next-line: readonly-array
+    const r: Record<string, [A, ...ReadonlyArray<A>]> = {}
     for (const a of as) {
       const k = f(a)
       if (r.hasOwnProperty(k)) {
