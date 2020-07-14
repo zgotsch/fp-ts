@@ -4,11 +4,11 @@ import { identity, pipe } from '../src/function'
 import * as M from '../src/Monoid'
 import * as O from '../src/Option'
 import * as Ord from '../src/Ord'
-import * as _ from '../src/ReadonlyNonEmptyArray'
+import * as _ from '../src/NonEmptyArray'
 import * as S from '../src/Semigroup'
 import { showString } from '../src/Show'
 
-describe('ReadonlyNonEmptyArray', () => {
+describe('NonEmptyArray', () => {
   describe('pipeables', () => {
     it('traverse', () => {
       assert.deepStrictEqual(
@@ -80,12 +80,12 @@ describe('ReadonlyNonEmptyArray', () => {
 
   it('ap', () => {
     const double = (n: number) => n * 2
-    const fab: _.ReadonlyNonEmptyArray<(n: number) => number> = [double, double]
+    const fab: _.NonEmptyArray<(n: number) => number> = [double, double]
     assert.deepStrictEqual(pipe(fab, _.ap([1, 2])), [2, 4, 2, 4])
   })
 
   it('chain', () => {
-    const f = (a: number): _.ReadonlyNonEmptyArray<number> => [a, 4]
+    const f = (a: number): _.NonEmptyArray<number> => [a, 4]
     assert.deepStrictEqual(pipe([1, 2], _.chain(f)), [1, 4, 2, 4])
   })
 
@@ -204,7 +204,7 @@ describe('ReadonlyNonEmptyArray', () => {
     const a2 = make2(1)
     const a3 = make2(2)
     const a4 = make2(3)
-    const arr: _.ReadonlyNonEmptyArray<{ readonly x: number }> = [a1, a2, a3]
+    const arr: _.NonEmptyArray<{ readonly x: number }> = [a1, a2, a3]
     assert.deepStrictEqual(_.updateAt(0, a4)(arr), O.some([a4, a2, a3]))
     assert.deepStrictEqual(_.updateAt(-1, a4)(arr), O.none)
     assert.deepStrictEqual(_.updateAt(3, a4)(arr), O.none)

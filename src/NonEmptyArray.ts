@@ -32,7 +32,7 @@ import { PipeableTraverseWithIndex1, TraversableWithIndex1 } from './Traversable
  * @category model
  * @since 2.5.0
  */
-export type ReadonlyNonEmptyArray<A> = ReadonlyArray<A> & {
+export type NonEmptyArray<A> = ReadonlyArray<A> & {
   readonly 0: A
 }
 
@@ -40,27 +40,27 @@ export type ReadonlyNonEmptyArray<A> = ReadonlyArray<A> & {
  * Append an element to the front of an array, creating a new non empty array
  *
  * @example
- * import { cons } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { cons } from 'fp-ts/lib/NonEmptyArray'
  *
  * assert.deepStrictEqual(cons(1, [2, 3, 4]), [1, 2, 3, 4])
  *
  * @category constructors
  * @since 2.5.0
  */
-export const cons: <A>(head: A, tail: ReadonlyArray<A>) => ReadonlyNonEmptyArray<A> = RA.cons
+export const cons: <A>(head: A, tail: ReadonlyArray<A>) => NonEmptyArray<A> = RA.cons
 
 /**
  * Append an element to the end of an array, creating a new non empty array
  *
  * @example
- * import { snoc } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { snoc } from 'fp-ts/lib/NonEmptyArray'
  *
  * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
  *
  * @category constructors
  * @since 2.5.0
  */
-export const snoc: <A>(init: ReadonlyArray<A>, end: A) => ReadonlyNonEmptyArray<A> = RA.snoc
+export const snoc: <A>(init: ReadonlyArray<A>, end: A) => NonEmptyArray<A> = RA.snoc
 
 /**
  * Builds a `ReadonlyNonEmptyArray` from an array returning `none` if `as` is an empty array
@@ -68,7 +68,7 @@ export const snoc: <A>(init: ReadonlyArray<A>, end: A) => ReadonlyNonEmptyArray<
  * @category constructors
  * @since 2.5.0
  */
-export function fromArray<A>(as: ReadonlyArray<A>): Option<ReadonlyNonEmptyArray<A>> {
+export function fromArray<A>(as: ReadonlyArray<A>): Option<NonEmptyArray<A>> {
   return RA.isNonEmpty(as) ? some(as) : none
 }
 
@@ -76,19 +76,19 @@ export function fromArray<A>(as: ReadonlyArray<A>): Option<ReadonlyNonEmptyArray
  * @category instances
  * @since 2.5.0
  */
-export const getShow: <A>(S: Show<A>) => Show<ReadonlyNonEmptyArray<A>> = RA.getShow
+export const getShow: <A>(S: Show<A>) => Show<NonEmptyArray<A>> = RA.getShow
 
 /**
  * @since 2.5.0
  */
-export function head<A>(nea: ReadonlyNonEmptyArray<A>): A {
+export function head<A>(nea: NonEmptyArray<A>): A {
   return nea[0]
 }
 
 /**
  * @since 2.5.0
  */
-export function tail<A>(nea: ReadonlyNonEmptyArray<A>): ReadonlyArray<A> {
+export function tail<A>(nea: NonEmptyArray<A>): ReadonlyArray<A> {
   return nea.slice(1)
 }
 
@@ -96,12 +96,12 @@ export function tail<A>(nea: ReadonlyNonEmptyArray<A>): ReadonlyArray<A> {
  * @category combinators
  * @since 2.5.0
  */
-export const reverse: <A>(nea: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<A> = RA.reverse as any
+export const reverse: <A>(nea: NonEmptyArray<A>) => NonEmptyArray<A> = RA.reverse as any
 
 /**
  * @since 2.5.0
  */
-export function min<A>(ord: Ord<A>): (nea: ReadonlyNonEmptyArray<A>) => A {
+export function min<A>(ord: Ord<A>): (nea: NonEmptyArray<A>) => A {
   const S = getMeetSemigroup(ord)
   return (nea) => nea.reduce(S.concat)
 }
@@ -109,7 +109,7 @@ export function min<A>(ord: Ord<A>): (nea: ReadonlyNonEmptyArray<A>) => A {
 /**
  * @since 2.5.0
  */
-export function max<A>(ord: Ord<A>): (nea: ReadonlyNonEmptyArray<A>) => A {
+export function max<A>(ord: Ord<A>): (nea: NonEmptyArray<A>) => A {
   const S = getJoinSemigroup(ord)
   return (nea) => nea.reduce(S.concat)
 }
@@ -120,7 +120,7 @@ export function max<A>(ord: Ord<A>): (nea: ReadonlyNonEmptyArray<A>) => A {
  * @category instances
  * @since 2.5.0
  */
-export function getSemigroup<A = never>(): Semigroup<ReadonlyNonEmptyArray<A>> {
+export function getSemigroup<A = never>(): Semigroup<NonEmptyArray<A>> {
   return {
     concat: concat
   }
@@ -128,7 +128,7 @@ export function getSemigroup<A = never>(): Semigroup<ReadonlyNonEmptyArray<A>> {
 
 /**
  * @example
- * import { getEq, cons } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { getEq, cons } from 'fp-ts/lib/NonEmptyArray'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  *
  * const E = getEq(eqNumber)
@@ -138,13 +138,13 @@ export function getSemigroup<A = never>(): Semigroup<ReadonlyNonEmptyArray<A>> {
  * @category instances
  * @since 2.5.0
  */
-export const getEq: <A>(E: Eq<A>) => Eq<ReadonlyNonEmptyArray<A>> = RA.getEq
+export const getEq: <A>(E: Eq<A>) => Eq<NonEmptyArray<A>> = RA.getEq
 
 /**
  * Group equal, consecutive elements of an array into non empty arrays.
  *
  * @example
- * import { cons, group } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { cons, group } from 'fp-ts/lib/NonEmptyArray'
  * import { ordNumber } from 'fp-ts/lib/Ord'
  *
  * assert.deepStrictEqual(group(ordNumber)([1, 2, 1, 1]), [
@@ -159,17 +159,17 @@ export const getEq: <A>(E: Eq<A>) => Eq<ReadonlyNonEmptyArray<A>> = RA.getEq
 export function group<A>(
   E: Eq<A>
 ): {
-  (as: ReadonlyNonEmptyArray<A>): ReadonlyNonEmptyArray<ReadonlyNonEmptyArray<A>>
-  (as: ReadonlyArray<A>): ReadonlyArray<ReadonlyNonEmptyArray<A>>
+  (as: NonEmptyArray<A>): NonEmptyArray<NonEmptyArray<A>>
+  (as: ReadonlyArray<A>): ReadonlyArray<NonEmptyArray<A>>
 }
-export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<ReadonlyNonEmptyArray<A>> {
+export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonEmptyArray<A>> {
   return (as) => {
     const len = as.length
     if (len === 0) {
       return RA.empty
     }
     // tslint:disable-next-line: readonly-array
-    const r: Array<ReadonlyNonEmptyArray<A>> = []
+    const r: Array<NonEmptyArray<A>> = []
     let head: A = as[0]
     // tslint:disable-next-line: readonly-array
     let nea: [A, ...ReadonlyArray<A>] = [head]
@@ -192,7 +192,7 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<Read
  * Sort and then group the elements of an array into non empty arrays.
  *
  * @example
- * import { cons, groupSort } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { cons, groupSort } from 'fp-ts/lib/NonEmptyArray'
  * import { ordNumber } from 'fp-ts/lib/Ord'
  *
  * assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [cons(1, [1, 1]), cons(2, [])])
@@ -200,7 +200,7 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<Read
  * @category combinators
  * @since 2.5.0
  */
-export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<ReadonlyNonEmptyArray<A>> {
+export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonEmptyArray<A>> {
   const sortO = RA.sort(O)
   const groupO = group(O)
   return (as) => groupO(sortO(as))
@@ -211,7 +211,7 @@ export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray
  * function on each element, and grouping the results according to values returned
  *
  * @example
- * import { cons, groupBy } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { cons, groupBy } from 'fp-ts/lib/NonEmptyArray'
  *
  * assert.deepStrictEqual(groupBy((s: string) => String(s.length))(['foo', 'bar', 'foobar']), {
  *   '3': cons('foo', ['bar']),
@@ -221,9 +221,7 @@ export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray
  * @category constructors
  * @since 2.5.0
  */
-export function groupBy<A>(
-  f: (a: A) => string
-): (as: ReadonlyArray<A>) => ReadonlyRecord<string, ReadonlyNonEmptyArray<A>> {
+export function groupBy<A>(f: (a: A) => string): (as: ReadonlyArray<A>) => ReadonlyRecord<string, NonEmptyArray<A>> {
   return (as) => {
     // tslint:disable-next-line: readonly-array
     const r: Record<string, [A, ...ReadonlyArray<A>]> = {}
@@ -242,7 +240,7 @@ export function groupBy<A>(
 /**
  * @since 2.5.0
  */
-export function last<A>(nea: ReadonlyNonEmptyArray<A>): A {
+export function last<A>(nea: NonEmptyArray<A>): A {
   return nea[nea.length - 1]
 }
 
@@ -250,14 +248,14 @@ export function last<A>(nea: ReadonlyNonEmptyArray<A>): A {
  * Get all but the last element of a non empty array, creating a new array.
  *
  * @example
- * import { init } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+ * import { init } from 'fp-ts/lib/NonEmptyArray'
  *
  * assert.deepStrictEqual(init([1, 2, 3]), [1, 2])
  * assert.deepStrictEqual(init([1]), [])
  *
  * @since 2.5.0
  */
-export function init<A>(nea: ReadonlyNonEmptyArray<A>): ReadonlyArray<A> {
+export function init<A>(nea: NonEmptyArray<A>): ReadonlyArray<A> {
   return nea.slice(0, -1)
 }
 
@@ -265,31 +263,28 @@ export function init<A>(nea: ReadonlyNonEmptyArray<A>): ReadonlyArray<A> {
  * @category combinators
  * @since 2.5.0
  */
-export function sort<A>(O: Ord<A>): (nea: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<A> {
+export function sort<A>(O: Ord<A>): (nea: NonEmptyArray<A>) => NonEmptyArray<A> {
   return RA.sort(O) as any
 }
 
 /**
  * @since 2.5.0
  */
-export function insertAt<A>(i: number, a: A): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
+export function insertAt<A>(i: number, a: A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
   return RA.insertAt(i, a) as any
 }
 
 /**
  * @since 2.5.0
  */
-export function updateAt<A>(i: number, a: A): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
+export function updateAt<A>(i: number, a: A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
   return RA.updateAt(i, a) as any
 }
 
 /**
  * @since 2.5.0
  */
-export function modifyAt<A>(
-  i: number,
-  f: (a: A) => A
-): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
+export function modifyAt<A>(i: number, f: (a: A) => A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
   return RA.modifyAt(i, f) as any
 }
 
@@ -298,11 +293,9 @@ export function modifyAt<A>(
  */
 export function filter<A, B extends A>(
   refinement: Refinement<A, B>
-): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>>
-export function filter<A>(predicate: Predicate<A>): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>>
-export function filter<A>(
-  predicate: Predicate<A>
-): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
+): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>>
+export function filter<A>(predicate: Predicate<A>): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>>
+export function filter<A>(predicate: Predicate<A>): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
   return filterWithIndex((_, a) => predicate(a))
 }
 
@@ -311,7 +304,7 @@ export function filter<A>(
  */
 export function filterWithIndex<A>(
   predicate: (i: number, a: A) => boolean
-): (nea: ReadonlyNonEmptyArray<A>) => Option<ReadonlyNonEmptyArray<A>> {
+): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
   return (nea) => fromArray(nea.filter((a, i) => predicate(i, a)))
 }
 
@@ -319,14 +312,14 @@ export function filterWithIndex<A>(
  * @category Applicative
  * @since 2.5.0
  */
-export const of: <A>(a: A) => ReadonlyNonEmptyArray<A> = RA.of as any
+export const of: <A>(a: A) => NonEmptyArray<A> = RA.of as any
 
 /**
  * @category constructors
  * @since 2.5.0
  */
-export function concat<A>(fx: ReadonlyArray<A>, fy: ReadonlyNonEmptyArray<A>): ReadonlyNonEmptyArray<A>
-export function concat<A>(fx: ReadonlyNonEmptyArray<A>, fy: ReadonlyArray<A>): ReadonlyNonEmptyArray<A>
+export function concat<A>(fx: ReadonlyArray<A>, fy: NonEmptyArray<A>): NonEmptyArray<A>
+export function concat<A>(fx: NonEmptyArray<A>, fy: ReadonlyArray<A>): NonEmptyArray<A>
 export function concat<A>(fx: ReadonlyArray<A>, fy: ReadonlyArray<A>): ReadonlyArray<A> {
   return fx.concat(fy)
 }
@@ -334,7 +327,7 @@ export function concat<A>(fx: ReadonlyArray<A>, fy: ReadonlyArray<A>): ReadonlyA
 /**
  * @since 2.5.0
  */
-export function fold<A>(S: Semigroup<A>): (fa: ReadonlyNonEmptyArray<A>) => A {
+export function fold<A>(S: Semigroup<A>): (fa: NonEmptyArray<A>) => A {
   return (fa) => fa.reduce(S.concat)
 }
 
@@ -343,26 +336,26 @@ export function fold<A>(S: Semigroup<A>): (fa: ReadonlyNonEmptyArray<A>) => A {
  * @since 2.5.1
  */
 export const zipWith: <A, B, C>(
-  fa: ReadonlyNonEmptyArray<A>,
-  fb: ReadonlyNonEmptyArray<B>,
+  fa: NonEmptyArray<A>,
+  fb: NonEmptyArray<B>,
   f: (a: A, b: B) => C
-) => ReadonlyNonEmptyArray<C> = RA.zipWith as any
+) => NonEmptyArray<C> = RA.zipWith as any
 
 /**
  * @category combinators
  * @since 2.5.1
  */
 export const zip: {
-  <B>(bs: ReadonlyNonEmptyArray<B>): <A>(as: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<readonly [A, B]>
-  <A, B>(as: ReadonlyNonEmptyArray<A>, bs: ReadonlyNonEmptyArray<B>): ReadonlyNonEmptyArray<readonly [A, B]>
+  <B>(bs: NonEmptyArray<B>): <A>(as: NonEmptyArray<A>) => NonEmptyArray<readonly [A, B]>
+  <A, B>(as: NonEmptyArray<A>, bs: NonEmptyArray<B>): NonEmptyArray<readonly [A, B]>
 } = RA.zip as any
 
 /**
  * @since 2.5.1
  */
 export const unzip: <A, B>(
-  as: ReadonlyNonEmptyArray<readonly [A, B]>
-) => readonly [ReadonlyNonEmptyArray<A>, ReadonlyNonEmptyArray<B>] = RA.unzip as any
+  as: NonEmptyArray<readonly [A, B]>
+) => readonly [NonEmptyArray<A>, NonEmptyArray<B>] = RA.unzip as any
 
 // -------------------------------------------------------------------------------------
 // non-pipeables
@@ -394,15 +387,14 @@ const traverseWithIndex_: TraversableWithIndex1<URI, number>['traverseWithIndex'
  * @category FoldableWithIndex
  * @since 2.5.0
  */
-export const foldMapWithIndex = <S>(S: Semigroup<S>) => <A>(f: (i: number, a: A) => S) => (
-  fa: ReadonlyNonEmptyArray<A>
-) => fa.slice(1).reduce((s, a, i) => S.concat(s, f(i + 1, a)), f(0, fa[0]))
+export const foldMapWithIndex = <S>(S: Semigroup<S>) => <A>(f: (i: number, a: A) => S) => (fa: NonEmptyArray<A>) =>
+  fa.slice(1).reduce((s, a, i) => S.concat(s, f(i + 1, a)), f(0, fa[0]))
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const foldMap = <S>(S: Semigroup<S>) => <A>(f: (a: A) => S) => (fa: ReadonlyNonEmptyArray<A>) =>
+export const foldMap = <S>(S: Semigroup<S>) => <A>(f: (a: A) => S) => (fa: NonEmptyArray<A>) =>
   fa.slice(1).reduce((s, a) => S.concat(s, f(a)), f(fa[0]))
 
 /**
@@ -412,17 +404,13 @@ export const foldMap = <S>(S: Semigroup<S>) => <A>(f: (a: A) => S) => (fa: Reado
  * @category Alt
  * @since 2.6.2
  */
-export const alt: <A>(
-  that: Lazy<ReadonlyNonEmptyArray<A>>
-) => (fa: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<A> = RA.alt as any
+export const alt: <A>(that: Lazy<NonEmptyArray<A>>) => (fa: NonEmptyArray<A>) => NonEmptyArray<A> = RA.alt as any
 
 /**
  * @category Apply
  * @since 2.5.0
  */
-export const ap: <A>(
-  fa: ReadonlyNonEmptyArray<A>
-) => <B>(fab: ReadonlyNonEmptyArray<(a: A) => B>) => ReadonlyNonEmptyArray<B> = RA.ap as any
+export const ap: <A>(fa: NonEmptyArray<A>) => <B>(fab: NonEmptyArray<(a: A) => B>) => NonEmptyArray<B> = RA.ap as any
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -430,9 +418,7 @@ export const ap: <A>(
  * @category Apply
  * @since 2.5.0
  */
-export const apFirst: <B>(
-  fb: ReadonlyNonEmptyArray<B>
-) => <A>(fa: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<A> = RA.apFirst as any
+export const apFirst: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<A> = RA.apFirst as any
 
 /**
  * Combine two effectful actions, keeping only the result of the second.
@@ -440,9 +426,7 @@ export const apFirst: <B>(
  * @category Apply
  * @since 2.5.0
  */
-export const apSecond: <B>(
-  fb: ReadonlyNonEmptyArray<B>
-) => <A>(fa: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<B> = RA.apSecond as any
+export const apSecond: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.apSecond as any
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation.
@@ -451,8 +435,8 @@ export const apSecond: <B>(
  * @since 2.5.0
  */
 export const chain: <A, B>(
-  f: (a: A) => ReadonlyNonEmptyArray<B>
-) => (ma: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<B> = RA.chain as any
+  f: (a: A) => NonEmptyArray<B>
+) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = RA.chain as any
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation and
@@ -462,32 +446,28 @@ export const chain: <A, B>(
  * @since 2.5.0
  */
 export const chainFirst: <A, B>(
-  f: (a: A) => ReadonlyNonEmptyArray<B>
-) => (ma: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<A> = RA.chainFirst as any
+  f: (a: A) => NonEmptyArray<B>
+) => (ma: NonEmptyArray<A>) => NonEmptyArray<A> = RA.chainFirst as any
 
 /**
  * @category Extend
  * @since 2.5.0
  */
-export const duplicate: <A>(
-  ma: ReadonlyNonEmptyArray<A>
-) => ReadonlyNonEmptyArray<ReadonlyNonEmptyArray<A>> = RA.duplicate as any
+export const duplicate: <A>(ma: NonEmptyArray<A>) => NonEmptyArray<NonEmptyArray<A>> = RA.duplicate as any
 
 /**
  * @category Extend
  * @since 2.5.0
  */
 export const extend: <A, B>(
-  f: (fa: ReadonlyNonEmptyArray<A>) => B
-) => (ma: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<B> = RA.extend as any
+  f: (fa: NonEmptyArray<A>) => B
+) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = RA.extend as any
 
 /**
  * @category Monad
  * @since 2.5.0
  */
-export const flatten: <A>(
-  mma: ReadonlyNonEmptyArray<ReadonlyNonEmptyArray<A>>
-) => ReadonlyNonEmptyArray<A> = RA.flatten as any
+export const flatten: <A>(mma: NonEmptyArray<NonEmptyArray<A>>) => NonEmptyArray<A> = RA.flatten as any
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -496,7 +476,7 @@ export const flatten: <A>(
  * @category Functor
  * @since 2.5.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<B> = RA.map as any
+export const map: <A, B>(f: (a: A) => B) => (fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.map as any
 
 /**
  * @category FunctorWithIndex
@@ -504,35 +484,33 @@ export const map: <A, B>(f: (a: A) => B) => (fa: ReadonlyNonEmptyArray<A>) => Re
  */
 export const mapWithIndex: <A, B>(
   f: (i: number, a: A) => B
-) => (fa: ReadonlyNonEmptyArray<A>) => ReadonlyNonEmptyArray<B> = RA.mapWithIndex as any
+) => (fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.mapWithIndex as any
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: ReadonlyNonEmptyArray<A>) => B = RA.reduce
+export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: NonEmptyArray<A>) => B = RA.reduce
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
-export const reduceWithIndex: <A, B>(b: B, f: (i: number, b: B, a: A) => B) => (fa: ReadonlyNonEmptyArray<A>) => B =
+export const reduceWithIndex: <A, B>(b: B, f: (i: number, b: B, a: A) => B) => (fa: NonEmptyArray<A>) => B =
   RA.reduceWithIndex
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: ReadonlyNonEmptyArray<A>) => B = RA.reduceRight
+export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: NonEmptyArray<A>) => B = RA.reduceRight
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
-export const reduceRightWithIndex: <A, B>(
-  b: B,
-  f: (i: number, a: A, b: B) => B
-) => (fa: ReadonlyNonEmptyArray<A>) => B = RA.reduceRightWithIndex
+export const reduceRightWithIndex: <A, B>(b: B, f: (i: number, a: A, b: B) => B) => (fa: NonEmptyArray<A>) => B =
+  RA.reduceRightWithIndex
 
 /**
  * @since 2.6.3
@@ -562,7 +540,7 @@ export const extract: Comonad1<URI>['extract'] = head
  * @category instances
  * @since 2.5.0
  */
-export const URI = 'ReadonlyNonEmptyArray'
+export const URI = 'NonEmptyArray'
 
 /**
  * @category instances
@@ -572,7 +550,7 @@ export type URI = typeof URI
 
 declare module './HKT' {
   interface URItoKind<A> {
-    readonly [URI]: ReadonlyNonEmptyArray<A>
+    readonly [URI]: NonEmptyArray<A>
   }
 }
 

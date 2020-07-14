@@ -25,7 +25,7 @@ import { Monad1 } from './Monad'
 import { Monoid } from './Monoid'
 import { isSome, none, Option, some } from './Option'
 import { fromCompare, getMonoid as getOrdMonoid, Ord, ordNumber } from './Ord'
-import { ReadonlyNonEmptyArray } from './ReadonlyNonEmptyArray'
+import { NonEmptyArray } from './NonEmptyArray'
 import { Show } from './Show'
 import { PipeableTraverse1, Traversable1 } from './Traversable'
 import { PipeableTraverseWithIndex1, TraversableWithIndex1 } from './TraversableWithIndex'
@@ -353,7 +353,7 @@ export function isEmpty<A>(as: ReadonlyArray<A>): boolean {
  * @category guards
  * @since 2.5.0
  */
-export function isNonEmpty<A>(as: ReadonlyArray<A>): as is ReadonlyNonEmptyArray<A> {
+export function isNonEmpty<A>(as: ReadonlyArray<A>): as is NonEmptyArray<A> {
   return as.length > 0
 }
 
@@ -399,12 +399,12 @@ export function lookup<A>(i: number, as?: ReadonlyArray<A>): Option<A> | (<A>(as
  * @category constructors
  * @since 2.5.0
  */
-export function cons<A>(head: A): (tail: ReadonlyArray<A>) => ReadonlyNonEmptyArray<A>
-export function cons<A>(head: A, tail: ReadonlyArray<A>): ReadonlyNonEmptyArray<A>
+export function cons<A>(head: A): (tail: ReadonlyArray<A>) => NonEmptyArray<A>
+export function cons<A>(head: A, tail: ReadonlyArray<A>): NonEmptyArray<A>
 export function cons<A>(
   head: A,
   tail?: ReadonlyArray<A>
-): ReadonlyNonEmptyArray<A> | ((tail: ReadonlyArray<A>) => ReadonlyNonEmptyArray<A>) {
+): NonEmptyArray<A> | ((tail: ReadonlyArray<A>) => NonEmptyArray<A>) {
   if (tail === undefined) {
     return (tail) => cons(head, tail)
   }
@@ -414,7 +414,7 @@ export function cons<A>(
     r[i + 1] = tail[i]
   }
   r[0] = head
-  return (r as unknown) as ReadonlyNonEmptyArray<A>
+  return (r as unknown) as NonEmptyArray<A>
 }
 
 // TODO: curry and make data-last in v3
@@ -429,14 +429,14 @@ export function cons<A>(
  * @category constructors
  * @since 2.5.0
  */
-export function snoc<A>(init: ReadonlyArray<A>, end: A): ReadonlyNonEmptyArray<A> {
+export function snoc<A>(init: ReadonlyArray<A>, end: A): NonEmptyArray<A> {
   const len = init.length
   const r = Array(len + 1)
   for (let i = 0; i < len; i++) {
     r[i] = init[i]
   }
   r[len] = end
-  return (r as unknown) as ReadonlyNonEmptyArray<A>
+  return (r as unknown) as NonEmptyArray<A>
 }
 
 /**
@@ -1196,7 +1196,7 @@ export function sortBy<A>(ords: ReadonlyArray<Ord<A>>): (as: ReadonlyArray<A>) =
  * @category combinators
  * @since 2.5.0
  */
-export const chop = <A, B>(f: (as: ReadonlyNonEmptyArray<A>) => readonly [B, ReadonlyArray<A>]) => (
+export const chop = <A, B>(f: (as: NonEmptyArray<A>) => readonly [B, ReadonlyArray<A>]) => (
   as: ReadonlyArray<A>
 ): ReadonlyArray<B> => {
   // tslint:disable-next-line: readonly-array

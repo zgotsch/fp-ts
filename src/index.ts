@@ -52,6 +52,7 @@ import * as monadIO from './MonadIO'
 import * as monadTask from './MonadTask'
 import * as monadThrow from './MonadThrow'
 import * as monoid from './Monoid'
+import * as nonEmptyArray from './NonEmptyArray'
 import * as option from './Option'
 import * as ord from './Ord'
 import * as ordering from './Ordering'
@@ -61,7 +62,6 @@ import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
-import * as readonlyNonEmptyArray from './ReadonlyNonEmptyArray'
 import * as readonlyRecord from './ReadonlyRecord'
 import * as readonlySet from './ReadonlySet'
 import * as readonlyTuple from './ReadonlyTuple'
@@ -282,6 +282,10 @@ export {
    */
   monoid,
   /**
+   * @since 3.0.0
+   */
+  nonEmptyArray,
+  /**
    * @since 2.0.0
    */
   option,
@@ -313,10 +317,6 @@ export {
    * @since 2.0.0
    */
   readerTaskEither,
-  /**
-   * @since 2.5.0
-   */
-  readonlyNonEmptyArray,
   /**
    * @since 2.5.0
    */

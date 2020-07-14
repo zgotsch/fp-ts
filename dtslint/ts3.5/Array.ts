@@ -122,5 +122,5 @@ _.zip(['a', 'b']) // $ExpectType <A>(as: readonly A[]) => readonly (readonly [A,
 // cons
 //
 
-_.cons(0, [1, 2]) // $ExpectType ReadonlyNonEmptyArray<number>
-_.cons(0) // $ExpectType (tail: readonly number[]) => ReadonlyNonEmptyArray<number>
+_.cons(0, [1, 2]) // $ExpectType NonEmptyArray<number>
+_.cons(0) // $ExpectType (tail: readonly number[]) => NonEmptyArray<number>

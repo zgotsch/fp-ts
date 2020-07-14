@@ -6,7 +6,7 @@ import * as A from '../../src/Array'
 //
 
 // should handle generics
-_.flip(A.snoc) // $ExpectType <A>(b: A, a: readonly A[]) => ReadonlyNonEmptyArray<A>
+_.flip(A.snoc) // $ExpectType <A>(b: A, a: readonly A[]) => NonEmptyArray<A>
 
 //
 // tuple
