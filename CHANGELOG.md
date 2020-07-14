@@ -45,6 +45,7 @@ high state of flux, you're at risk of it changing without notice.
     - rename `ReadonlyArray` module to `Array` (@gcanti)
     - rename `ReadonlyMap` module to `Map` (@gcanti)
     - rename `ReadonlyNonEmptyArray` module to `NonEmptyArray` (@gcanti)
+    - rename `ReadonlyRecord` module to `Record` (@gcanti)
     - `Applicative`
       - remove `getApplicativeComposition` and related types (@gcanti)
     - `Compactable`

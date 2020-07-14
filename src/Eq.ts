@@ -11,7 +11,7 @@
  */
 import { Contravariant1 } from './Contravariant'
 import { Monoid } from './Monoid'
-import { ReadonlyRecord } from './ReadonlyRecord'
+import { ReadonlyRecord } from './Record'
 
 // -------------------------------------------------------------------------------------
 // model

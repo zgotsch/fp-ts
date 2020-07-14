@@ -62,9 +62,9 @@ import * as reader from './Reader'
 import * as readerEither from './ReaderEither'
 import * as readerTask from './ReaderTask'
 import * as readerTaskEither from './ReaderTaskEither'
-import * as readonlyRecord from './ReadonlyRecord'
 import * as readonlySet from './ReadonlySet'
 import * as readonlyTuple from './ReadonlyTuple'
+import * as record from './Record'
 import * as ring from './Ring'
 import * as semigroup from './Semigroup'
 import * as semigroupoid from './Semigroupoid'
@@ -320,10 +320,6 @@ export {
   /**
    * @since 2.5.0
    */
-  readonlyRecord,
-  /**
-   * @since 2.5.0
-   */
   readonlySet,
   /**
    * @since 2.5.0
@@ -333,6 +329,10 @@ export {
    * @since 2.3.0
    */
   readerTask,
+  /**
+   * @since 3.0.0
+   */
+  record,
   /**
    * @since 2.0.0
    */

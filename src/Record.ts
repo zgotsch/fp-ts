@@ -87,7 +87,7 @@ export function keys<K extends string>(r: ReadonlyRecord<K, unknown>): ReadonlyA
  * Map a record into an array
  *
  * @example
- * import {collect} from 'fp-ts/lib/ReadonlyRecord'
+ * import {collect} from 'fp-ts/lib/Record'
  *
  * const x: { a: string, b: boolean } = { a: 'foo', b: false }
  * assert.deepStrictEqual(
@@ -290,7 +290,7 @@ export function getEq<A>(E: Eq<A>): Eq<ReadonlyRecord<string, A>> {
  *
  * @example
  * import { semigroupSum } from 'fp-ts/lib/Semigroup'
- * import { getMonoid } from 'fp-ts/lib/ReadonlyRecord'
+ * import { getMonoid } from 'fp-ts/lib/Record'
  *
  * const M = getMonoid(semigroupSum)
  * assert.deepStrictEqual(M.concat({ foo: 123 }, { foo: 456 }), { foo: 579 })
@@ -641,7 +641,7 @@ export function fromFoldable<F, A>(
  * import { getLastSemigroup } from 'fp-ts/lib/Semigroup'
  * import { readonlyArray, zip } from 'fp-ts/lib/Array'
  * import { identity } from 'fp-ts/lib/function'
- * import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/ReadonlyRecord'
+ * import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/Record'
  *
  * // like lodash `zipObject` or ramda `zipObj`
  * export const zipObject = <K extends string, A>(keys: ReadonlyArray<K>, values: ReadonlyArray<A>): ReadonlyRecord<K, A> =>

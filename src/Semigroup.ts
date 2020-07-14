@@ -8,7 +8,7 @@
 import { identity } from './function'
 import { Magma } from './Magma'
 import { max, min, Ord } from './Ord'
-import { ReadonlyRecord } from './ReadonlyRecord'
+import { ReadonlyRecord } from './Record'
 
 /**
  * @category type classes

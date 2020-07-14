@@ -1,4 +1,4 @@
-import * as _ from '../../src/ReadonlyRecord'
+import * as _ from '../../src/Record'
 import { identity, pipe } from '../../src/function'
 import * as O from '../../src/Option'
 import * as A from '../../src/Array'

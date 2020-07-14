@@ -3,7 +3,7 @@
  */
 import { Bounded } from './Bounded'
 import { Endomorphism, identity } from './function'
-import { ReadonlyRecord } from './ReadonlyRecord'
+import { ReadonlyRecord } from './Record'
 import {
   fold as foldSemigroup,
   getDualSemigroup,

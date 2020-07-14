@@ -6,7 +6,7 @@ import * as IO from '../src/IO'
 import { monoidString } from '../src/Monoid'
 import * as O from '../src/Option'
 import * as A from '../src/Array'
-import * as _ from '../src/ReadonlyRecord'
+import * as _ from '../src/Record'
 import { getFirstSemigroup, getLastSemigroup, semigroupSum } from '../src/Semigroup'
 import { showString } from '../src/Show'
 import * as T from '../src/Task'
@@ -15,7 +15,7 @@ const p = (n: number) => n > 2
 
 const noPrototype = Object.create(null)
 
-describe('ReadonlyRecord', () => {
+describe('Record', () => {
   describe('pipeables', () => {
     it('map', () => {
       const double = (n: number): number => n * 2
