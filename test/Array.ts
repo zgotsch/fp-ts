@@ -43,15 +43,11 @@ describe('Array', () => {
     })
 
     it('lookup', () => {
-      assert.deepStrictEqual(_.lookup(0, [1, 2, 3]), O.some(1))
-      assert.deepStrictEqual(_.lookup(3, [1, 2, 3]), O.none)
       assert.deepStrictEqual(pipe([1, 2, 3], _.lookup(0)), O.some(1))
       assert.deepStrictEqual(pipe([1, 2, 3], _.lookup(3)), O.none)
     })
 
     it('elem', () => {
-      assert.deepStrictEqual(_.elem(Eq.eqNumber)(2, [1, 2, 3]), true)
-      assert.deepStrictEqual(_.elem(Eq.eqNumber)(0, [1, 2, 3]), false)
       assert.deepStrictEqual(pipe([1, 2, 3], _.elem(Eq.eqNumber)(2)), true)
       assert.deepStrictEqual(pipe([1, 2, 3], _.elem(Eq.eqNumber)(0)), false)
     })
@@ -375,16 +371,14 @@ describe('Array', () => {
   })
 
   it('cons', () => {
-    assert.deepStrictEqual(_.cons(0, [1, 2, 3]), [0, 1, 2, 3])
-    assert.deepStrictEqual(_.cons([1], [[2]]), [[1], [2]])
     assert.deepStrictEqual(pipe([1, 2, 3], _.cons(0)), [0, 1, 2, 3])
     assert.deepStrictEqual(pipe([[2]], _.cons([1])), [[1], [2]])
   })
 
   it('snoc', () => {
     const as: ReadonlyArray<number> = [1, 2, 3]
-    assert.deepStrictEqual(_.snoc(as, 4), [1, 2, 3, 4])
-    assert.deepStrictEqual(_.snoc([[1]], [2]), [[1], [2]])
+    assert.deepStrictEqual(pipe(as, _.snoc(4)), [1, 2, 3, 4])
+    assert.deepStrictEqual(pipe([[1]], _.snoc([2])), [[1], [2]])
   })
 
   it('head', () => {
@@ -600,17 +594,15 @@ describe('Array', () => {
 
   it('zipWith', () => {
     assert.deepStrictEqual(
-      _.zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n),
+      pipe(
+        [1, 2, 3],
+        _.zipWith(['a', 'b', 'c', 'd'], (n, s) => s + n)
+      ),
       ['a1', 'b2', 'c3']
     )
   })
 
   it('zip', () => {
-    assert.deepStrictEqual(_.zip([1, 2, 3], ['a', 'b', 'c', 'd']), [
-      [1, 'a'],
-      [2, 'b'],
-      [3, 'c']
-    ])
     assert.deepStrictEqual(pipe([1, 2, 3], _.zip(['a', 'b', 'c', 'd'])), [
       [1, 'a'],
       [2, 'b'],
@@ -889,27 +881,18 @@ describe('Array', () => {
   })
 
   it('union', () => {
-    assert.deepStrictEqual(_.union(Eq.eqNumber)([1, 2], [3, 4]), [1, 2, 3, 4])
-    assert.deepStrictEqual(_.union(Eq.eqNumber)([1, 2], [2, 3]), [1, 2, 3])
-    assert.deepStrictEqual(_.union(Eq.eqNumber)([1, 2], [1, 2]), [1, 2])
     assert.deepStrictEqual(pipe([1, 2], _.union(Eq.eqNumber)([3, 4])), [1, 2, 3, 4])
     assert.deepStrictEqual(pipe([1, 2], _.union(Eq.eqNumber)([2, 3])), [1, 2, 3])
     assert.deepStrictEqual(pipe([1, 2], _.union(Eq.eqNumber)([1, 2])), [1, 2])
   })
 
   it('intersection', () => {
-    assert.deepStrictEqual(_.intersection(Eq.eqNumber)([1, 2], [3, 4]), [])
-    assert.deepStrictEqual(_.intersection(Eq.eqNumber)([1, 2], [2, 3]), [2])
-    assert.deepStrictEqual(_.intersection(Eq.eqNumber)([1, 2], [1, 2]), [1, 2])
     assert.deepStrictEqual(pipe([1, 2], _.intersection(Eq.eqNumber)([3, 4])), [])
     assert.deepStrictEqual(pipe([1, 2], _.intersection(Eq.eqNumber)([2, 3])), [2])
     assert.deepStrictEqual(pipe([1, 2], _.intersection(Eq.eqNumber)([1, 2])), [1, 2])
   })
 
   it('difference', () => {
-    assert.deepStrictEqual(_.difference(Eq.eqNumber)([1, 2], [3, 4]), [1, 2])
-    assert.deepStrictEqual(_.difference(Eq.eqNumber)([1, 2], [2, 3]), [1])
-    assert.deepStrictEqual(_.difference(Eq.eqNumber)([1, 2], [1, 2]), [])
     assert.deepStrictEqual(pipe([1, 2], _.difference(Eq.eqNumber)([3, 4])), [1, 2])
     assert.deepStrictEqual(pipe([1, 2], _.difference(Eq.eqNumber)([2, 3])), [1])
     assert.deepStrictEqual(pipe([1, 2], _.difference(Eq.eqNumber)([1, 2])), [])

@@ -286,12 +286,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export declare function fold<A>(
-  S: Semigroup<A>
-): {
-  (a: A): (as: ReadonlyArray<A>) => A
-  (a: A, as: ReadonlyArray<A>): A
-}
+export declare const fold: <A>(S: Semigroup<A>) => (a: A) => (as: readonly A[]) => A
 ```
 
 **Example**

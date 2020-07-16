@@ -59,9 +59,6 @@ describe('Set', () => {
   })
 
   it('isSubset', () => {
-    assert.deepStrictEqual(_.isSubset(Eq.eqNumber)(new Set([1, 2]), new Set([1, 2, 3])), true)
-    assert.deepStrictEqual(_.isSubset(Eq.eqNumber)(new Set([1, 2, 4]), new Set([1, 2, 3])), false)
-
     assert.deepStrictEqual(pipe(new Set([1, 2]), _.isSubset(Eq.eqNumber)(new Set([1, 2, 3]))), true)
     assert.deepStrictEqual(pipe(new Set([1, 2, 4]), _.isSubset(Eq.eqNumber)(new Set([1, 2, 3]))), false)
   })
@@ -94,14 +91,10 @@ describe('Set', () => {
   })
 
   it('union', () => {
-    assert.deepStrictEqual(_.union(Eq.eqNumber)(new Set([1, 2]), new Set([1, 3])), new Set([1, 2, 3]))
-
     assert.deepStrictEqual(pipe(new Set([1, 2]), _.union(Eq.eqNumber)(new Set([1, 3]))), new Set([1, 2, 3]))
   })
 
   it('intersection', () => {
-    assert.deepStrictEqual(_.intersection(Eq.eqNumber)(new Set([1, 2]), new Set([1, 3])), new Set([1]))
-
     assert.deepStrictEqual(pipe(new Set([1, 2]), _.intersection(Eq.eqNumber)(new Set([1, 3]))), new Set([1]))
   })
 
@@ -150,8 +143,6 @@ describe('Set', () => {
   })
 
   it('difference', () => {
-    assert.deepStrictEqual(_.difference(Eq.eqNumber)(new Set([1, 2]), new Set([1, 3])), new Set([2]))
-
     assert.deepStrictEqual(pipe(new Set([1, 2]), _.difference(Eq.eqNumber)(new Set([1, 3]))), new Set([2]))
   })
 

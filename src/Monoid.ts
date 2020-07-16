@@ -4,28 +4,13 @@
 import { Bounded } from './Bounded'
 import { Endomorphism, identity } from './function'
 import { ReadonlyRecord } from './Record'
-import {
-  fold as foldSemigroup,
-  getDualSemigroup,
-  getFunctionSemigroup,
-  getJoinSemigroup,
-  getMeetSemigroup,
-  getStructSemigroup,
-  getTupleSemigroup,
-  Semigroup,
-  semigroupAll,
-  semigroupAny,
-  semigroupProduct,
-  semigroupString,
-  semigroupSum,
-  semigroupVoid
-} from './Semigroup'
+import * as S from './Semigroup'
 
 /**
  * @category type classes
  * @since 2.0.0
  */
-export interface Monoid<A> extends Semigroup<A> {
+export interface Monoid<A> extends S.Semigroup<A> {
   readonly empty: A
 }
 
@@ -36,7 +21,7 @@ export interface Monoid<A> extends Semigroup<A> {
  * @since 2.0.0
  */
 export const monoidAll: Monoid<boolean> = {
-  concat: semigroupAll.concat,
+  concat: S.semigroupAll.concat,
   empty: true
 }
 
@@ -47,7 +32,7 @@ export const monoidAll: Monoid<boolean> = {
  * @since 2.0.0
  */
 export const monoidAny: Monoid<boolean> = {
-  concat: semigroupAny.concat,
+  concat: S.semigroupAny.concat,
   empty: false
 }
 
@@ -58,7 +43,7 @@ export const monoidAny: Monoid<boolean> = {
  * @since 2.0.0
  */
 export const monoidSum: Monoid<number> = {
-  concat: semigroupSum.concat,
+  concat: S.semigroupSum.concat,
   empty: 0
 }
 
@@ -69,7 +54,7 @@ export const monoidSum: Monoid<number> = {
  * @since 2.0.0
  */
 export const monoidProduct: Monoid<number> = {
-  concat: semigroupProduct.concat,
+  concat: S.semigroupProduct.concat,
   empty: 1
 }
 
@@ -78,7 +63,7 @@ export const monoidProduct: Monoid<number> = {
  * @since 2.0.0
  */
 export const monoidString: Monoid<string> = {
-  concat: semigroupString.concat,
+  concat: S.semigroupString.concat,
   empty: ''
 }
 
@@ -87,17 +72,14 @@ export const monoidString: Monoid<string> = {
  * @since 2.0.0
  */
 export const monoidVoid: Monoid<void> = {
-  concat: semigroupVoid.concat,
+  concat: S.semigroupVoid.concat,
   empty: undefined
 }
 
 /**
  * @since 2.0.0
  */
-export function fold<A>(M: Monoid<A>): (as: ReadonlyArray<A>) => A {
-  const foldM = foldSemigroup(M)
-  return (as) => foldM(M.empty, as)
-}
+export const fold = <A>(M: Monoid<A>): ((as: ReadonlyArray<A>) => A) => S.fold(M)(M.empty)
 
 /**
  * Given a tuple of monoids returns a monoid for the tuple
@@ -116,9 +98,9 @@ export function fold<A>(M: Monoid<A>): (as: ReadonlyArray<A>) => A {
  */
 export function getTupleMonoid<T extends ReadonlyArray<Monoid<any>>>(
   ...monoids: T
-): Monoid<{ [K in keyof T]: T[K] extends Semigroup<infer A> ? A : never }> {
+): Monoid<{ [K in keyof T]: T[K] extends S.Semigroup<infer A> ? A : never }> {
   return {
-    concat: getTupleSemigroup(...monoids).concat,
+    concat: S.getTupleSemigroup(...monoids).concat,
     empty: monoids.map((m) => m.empty)
   } as any
 }
@@ -136,7 +118,7 @@ export function getTupleMonoid<T extends ReadonlyArray<Monoid<any>>>(
  */
 export function getDualMonoid<A>(M: Monoid<A>): Monoid<A> {
   return {
-    concat: getDualSemigroup(M).concat,
+    concat: S.getDualSemigroup(M).concat,
     empty: M.empty
   }
 }
@@ -147,7 +129,7 @@ export function getDualMonoid<A>(M: Monoid<A>): Monoid<A> {
  */
 export function getFunctionMonoid<M>(M: Monoid<M>): <A = never>() => Monoid<(a: A) => M> {
   return () => ({
-    concat: getFunctionSemigroup(M)<any>().concat,
+    concat: S.getFunctionSemigroup(M)<any>().concat,
     empty: () => M.empty
   })
 }
@@ -175,7 +157,7 @@ export function getStructMonoid<O extends ReadonlyRecord<string, any>>(
     empty[key] = monoids[key].empty
   }
   return {
-    concat: getStructSemigroup<O>(monoids).concat,
+    concat: S.getStructSemigroup<O>(monoids).concat,
     empty
   }
 }
@@ -186,7 +168,7 @@ export function getStructMonoid<O extends ReadonlyRecord<string, any>>(
  */
 export function getMeetMonoid<A>(B: Bounded<A>): Monoid<A> {
   return {
-    concat: getMeetSemigroup(B).concat,
+    concat: S.getMeetSemigroup(B).concat,
     empty: B.top
   }
 }
@@ -197,7 +179,7 @@ export function getMeetMonoid<A>(B: Bounded<A>): Monoid<A> {
  */
 export function getJoinMonoid<A>(B: Bounded<A>): Monoid<A> {
   return {
-    concat: getJoinSemigroup(B).concat,
+    concat: S.getJoinSemigroup(B).concat,
     empty: B.bottom
   }
 }

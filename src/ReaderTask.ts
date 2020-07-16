@@ -69,13 +69,6 @@ export const asks: <R, A = never>(f: (r: R) => A) => ReaderTask<R, A> = (f) => (
 // combinators
 // -------------------------------------------------------------------------------------
 
-// TODO: remove in v3
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const local: <Q, R>(f: (f: Q) => R) => <A>(ma: ReaderTask<R, A>) => ReaderTask<Q, A> = R.local
-
 /**
  * @category combinators
  * @since 2.4.0
@@ -298,7 +291,7 @@ export const Monad: Monad2<URI> = {
   chain: chain_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.3.0
@@ -313,7 +306,7 @@ export const readerTask: MonadTask2<URI> = {
   fromTask
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * Like `readerTask` but `ap` is sequential
  *
@@ -328,17 +321,4 @@ export const readerTaskSeq: typeof readerTask = {
   chain: chain_,
   fromIO,
   fromTask
-}
-
-// -------------------------------------------------------------------------------------
-// utils
-// -------------------------------------------------------------------------------------
-
-// TODO: remove in v3
-/**
- * @since 2.4.0
- */
-/* istanbul ignore next */
-export function run<R, A>(ma: ReaderTask<R, A>, r: R): Promise<A> {
-  return ma(r)()
 }

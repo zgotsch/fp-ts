@@ -103,7 +103,6 @@ export const left = <E = never, A = never>(e: E): Either<E, A> => ({ _tag: 'Left
  */
 export const right = <E = never, A = never>(a: A): Either<E, A> => ({ _tag: 'Right', right: a })
 
-// TODO: make lazy in v3
 /**
  * Takes a default and a nullable value, if the value is not nully, turn it into a `Right`, if the value is nully use
  * the provided default as a `Left`
@@ -111,7 +110,7 @@ export const right = <E = never, A = never>(a: A): Either<E, A> => ({ _tag: 'Rig
  * @example
  * import { fromNullable, left, right } from 'fp-ts/lib/Either'
  *
- * const parse = fromNullable('nully')
+ * const parse = fromNullable(() => 'nully')
  *
  * assert.deepStrictEqual(parse(1), right(1))
  * assert.deepStrictEqual(parse(null), left('nully'))
@@ -119,11 +118,9 @@ export const right = <E = never, A = never>(a: A): Either<E, A> => ({ _tag: 'Rig
  * @category constructors
  * @since 2.0.0
  */
-export function fromNullable<E>(e: E): <A>(a: A) => Either<E, NonNullable<A>> {
-  return <A>(a: A) => (a == null ? left(e) : right(a as NonNullable<A>))
-}
+export const fromNullable = <E>(e: Lazy<E>) => <A>(a: A): Either<E, NonNullable<A>> =>
+  a == null ? left(e()) : right(a as NonNullable<A>)
 
-// TODO: `onError => Lazy<A> => Either` in v3
 /**
  * Constructs a new `Either` from a function that might throw
  *
@@ -175,24 +172,22 @@ export interface JsonRecord {
  */
 export interface JsonArray extends ReadonlyArray<Json> {}
 
-// TODO curry in v3
 /**
  * Converts a JavaScript Object Notation (JSON) string into an object.
  *
  * @example
  * import { parseJSON, toError, right, left } from 'fp-ts/lib/Either'
+ * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(parseJSON('{"a":1}', toError), right({ a: 1 }))
- * assert.deepStrictEqual(parseJSON('{"a":}', toError), left(new SyntaxError('Unexpected token } in JSON at position 5')))
+ * assert.deepStrictEqual(pipe('{"a":1}', parseJSON(toError)), right({ a: 1 }))
+ * assert.deepStrictEqual(pipe('{"a":}', parseJSON(toError)), left(new SyntaxError('Unexpected token } in JSON at position 5')))
  *
  * @category constructors
  * @since 2.0.0
  */
-export function parseJSON<E>(s: string, onError: (reason: unknown) => E): Either<E, Json> {
-  return tryCatch(() => JSON.parse(s), onError)
-}
+export const parseJSON = <E>(onError: (reason: unknown) => E) => (s: string): Either<E, Json> =>
+  tryCatch(() => JSON.parse(s), onError)
 
-// TODO curry in v3
 /**
  * Converts a JavaScript value to a JavaScript Object Notation (JSON) string.
  *
@@ -200,12 +195,13 @@ export function parseJSON<E>(s: string, onError: (reason: unknown) => E): Either
  * import * as E from 'fp-ts/lib/Either'
  * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(E.stringifyJSON({ a: 1 }, E.toError), E.right('{"a":1}'))
+ * assert.deepStrictEqual(pipe({ a: 1 }, E.stringifyJSON(E.toError)), E.right('{"a":1}'))
  * const circular: any = { ref: null }
  * circular.ref = circular
  * assert.deepStrictEqual(
  *   pipe(
- *     E.stringifyJSON(circular, E.toError),
+ *     circular,
+ *     E.stringifyJSON(E.toError),
  *     E.mapLeft(e => e.message.includes('Converting circular structure to JSON'))
  *   ),
  *   E.left(true)
@@ -214,9 +210,8 @@ export function parseJSON<E>(s: string, onError: (reason: unknown) => E): Either
  * @category constructors
  * @since 2.0.0
  */
-export function stringifyJSON<E>(u: unknown, onError: (reason: unknown) => E): Either<E, string> {
-  return tryCatch(() => JSON.stringify(u), onError)
-}
+export const stringifyJSON = <E>(onError: (reason: unknown) => E) => (u: unknown): Either<E, string> =>
+  tryCatch(() => JSON.stringify(u), onError)
 
 /**
  * @category constructors
@@ -768,7 +763,7 @@ export function getAltValidation<E>(SE: Semigroup<E>): Alt2C<URI, E> {
   }
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0
@@ -913,18 +908,6 @@ export const MonadThrow: MonadThrow2<URI> = {
   of,
   chain: chain_,
   throwError: throwError
-}
-
-// TODO: remove in v3
-/**
- * @category instances
- * @since 2.0.0
- */
-export function getValidationMonoid<E, A>(SE: Semigroup<E>, SA: Monoid<A>): Monoid<Either<E, A>> {
-  return {
-    concat: getValidationSemigroup(SE, SA).concat,
-    empty: right(SA.empty)
-  }
 }
 
 /**

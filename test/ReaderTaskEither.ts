@@ -169,15 +169,6 @@ describe('ReaderTaskEither', () => {
     return assert.deepStrictEqual(e, E.right(3))
   })
 
-  it('local', async () => {
-    const len = (s: string): number => s.length
-    const e = await pipe(
-      _.asks((n: number) => n + 1),
-      _.local(len)
-    )('aaa')()
-    assert.deepStrictEqual(e, E.right(4))
-  })
-
   it('leftTask', async () => {
     const e = await _.leftTask(T.of(1))({})()
     assert.deepStrictEqual(e, E.left(1))
@@ -327,15 +318,11 @@ describe('ReaderTaskEither', () => {
   it('getApplicativeReaderTaskValidation', async () => {
     const A = _.getApplicativeReaderTaskValidation(T.ApplicativePar, semigroupString)
     assert.deepStrictEqual(await sequenceT(A)(_.left('a'), _.left('b'))(null)(), E.left('ab'))
-    const AV = _.getReaderTaskValidation(semigroupString)
-    assert.deepStrictEqual(await sequenceT(AV)(_.left('a'), _.left('b'))(null)(), E.left('ab'))
   })
 
   it('getAltReaderTaskValidation', async () => {
     const A = _.getAltReaderTaskValidation(semigroupString)
     assert.deepStrictEqual(await A.alt(_.left('a'), () => _.left('b'))(null)(), E.left('ab'))
-    const AV = _.getReaderTaskValidation(semigroupString)
-    assert.deepStrictEqual(await AV.alt(_.left('a'), () => _.left('b'))(null)(), E.left('ab'))
   })
 
   describe('bracket', () => {

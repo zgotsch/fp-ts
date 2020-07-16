@@ -41,26 +41,28 @@ export type NonEmptyArray<A> = ReadonlyArray<A> & {
  *
  * @example
  * import { cons } from 'fp-ts/lib/NonEmptyArray'
+ * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(cons(1, [2, 3, 4]), [1, 2, 3, 4])
+ * assert.deepStrictEqual(pipe([2, 3, 4], cons(1)), [1, 2, 3, 4])
  *
  * @category constructors
  * @since 2.5.0
  */
-export const cons: <A>(head: A, tail: ReadonlyArray<A>) => NonEmptyArray<A> = RA.cons
+export const cons: <A>(head: A) => (tail: ReadonlyArray<A>) => NonEmptyArray<A> = RA.cons
 
 /**
  * Append an element to the end of an array, creating a new non empty array
  *
  * @example
  * import { snoc } from 'fp-ts/lib/NonEmptyArray'
+ * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ * assert.deepStrictEqual(pipe([1, 2, 3], snoc(4)), [1, 2, 3, 4])
  *
  * @category constructors
  * @since 2.5.0
  */
-export const snoc: <A>(init: ReadonlyArray<A>, end: A) => NonEmptyArray<A> = RA.snoc
+export const snoc: <A>(end: A) => (init: ReadonlyArray<A>) => NonEmptyArray<A> = RA.snoc
 
 /**
  * Builds a `ReadonlyNonEmptyArray` from an array returning `none` if `as` is an empty array
@@ -128,12 +130,12 @@ export function getSemigroup<A = never>(): Semigroup<NonEmptyArray<A>> {
 
 /**
  * @example
- * import { getEq, cons } from 'fp-ts/lib/NonEmptyArray'
+ * import { getEq } from 'fp-ts/lib/NonEmptyArray'
  * import { eqNumber } from 'fp-ts/lib/Eq'
  *
  * const E = getEq(eqNumber)
- * assert.strictEqual(E.equals(cons(1, [2]), [1, 2]), true)
- * assert.strictEqual(E.equals(cons(1, [2]), [1, 3]), false)
+ * assert.strictEqual(E.equals([1, 2], [1, 2]), true)
+ * assert.strictEqual(E.equals([1, 2], [1, 3]), false)
  *
  * @category instances
  * @since 2.5.0
@@ -144,13 +146,13 @@ export const getEq: <A>(E: Eq<A>) => Eq<NonEmptyArray<A>> = RA.getEq
  * Group equal, consecutive elements of an array into non empty arrays.
  *
  * @example
- * import { cons, group } from 'fp-ts/lib/NonEmptyArray'
+ * import { group } from 'fp-ts/lib/NonEmptyArray'
  * import { ordNumber } from 'fp-ts/lib/Ord'
  *
  * assert.deepStrictEqual(group(ordNumber)([1, 2, 1, 1]), [
- *   cons(1, []),
- *   cons(2, []),
- *   cons(1, [1])
+ *   [1],
+ *   [2],
+ *   [1, 1]
  * ])
  *
  * @category combinators
@@ -192,10 +194,10 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonE
  * Sort and then group the elements of an array into non empty arrays.
  *
  * @example
- * import { cons, groupSort } from 'fp-ts/lib/NonEmptyArray'
+ * import { groupSort } from 'fp-ts/lib/NonEmptyArray'
  * import { ordNumber } from 'fp-ts/lib/Ord'
  *
- * assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [cons(1, [1, 1]), cons(2, [])])
+ * assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [[1, 1, 1], [2]])
  *
  * @category combinators
  * @since 2.5.0
@@ -211,11 +213,11 @@ export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray
  * function on each element, and grouping the results according to values returned
  *
  * @example
- * import { cons, groupBy } from 'fp-ts/lib/NonEmptyArray'
+ * import { groupBy } from 'fp-ts/lib/NonEmptyArray'
  *
  * assert.deepStrictEqual(groupBy((s: string) => String(s.length))(['foo', 'bar', 'foobar']), {
- *   '3': cons('foo', ['bar']),
- *   '6': cons('foobar', [])
+ *   '3': ['foo', 'bar'],
+ *   '6': ['foobar']
  * })
  *
  * @category constructors
@@ -675,7 +677,7 @@ export const Comonad: Comonad1<URI> = {
   extract
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.5.0

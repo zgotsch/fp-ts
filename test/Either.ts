@@ -4,7 +4,7 @@ import { eqNumber, eqString } from '../src/Eq'
 import { identity, pipe } from '../src/function'
 import { monoidString, monoidSum } from '../src/Monoid'
 import * as O from '../src/Option'
-import { semigroupSum } from '../src/Semigroup'
+import { semigroupSum, semigroupString } from '../src/Semigroup'
 import { showString } from '../src/Show'
 import * as T from '../src/Task'
 import { sequenceT } from '../src/Apply'
@@ -284,20 +284,21 @@ describe('Either', () => {
   })
 
   it('parseJSON', () => {
-    assert.deepStrictEqual(_.parseJSON('{"a":1}', _.toError), _.right({ a: 1 }))
+    assert.deepStrictEqual(pipe('{"a":1}', _.parseJSON(_.toError)), _.right({ a: 1 }))
     assert.deepStrictEqual(
-      _.parseJSON('{"a":}', _.toError),
+      pipe('{"a":}', _.parseJSON(_.toError)),
       _.left(new SyntaxError('Unexpected token } in JSON at position 5'))
     )
   })
 
   it('stringifyJSON', () => {
-    assert.deepStrictEqual(_.stringifyJSON({ a: 1 }, _.toError), _.right('{"a":1}'))
+    assert.deepStrictEqual(pipe({ a: 1 }, _.stringifyJSON(_.toError)), _.right('{"a":1}'))
     const circular: any = { ref: null }
     circular.ref = circular
     assert.deepStrictEqual(
       pipe(
-        _.stringifyJSON(circular, _.toError),
+        circular,
+        _.stringifyJSON(_.toError),
         _.mapLeft((e) => e.message.includes('Converting circular structure to JSON'))
       ),
       _.left(true)
@@ -307,7 +308,7 @@ describe('Either', () => {
       readonly age: number
     }
     const person: Person = { name: 'Giulio', age: 45 }
-    assert.deepStrictEqual(_.stringifyJSON(person, _.toError), _.right('{"name":"Giulio","age":45}'))
+    assert.deepStrictEqual(pipe(person, _.stringifyJSON(_.toError)), _.right('{"name":"Giulio","age":45}'))
   })
 
   describe('lifting functions', () => {
@@ -328,9 +329,9 @@ describe('Either', () => {
     })
 
     it('fromNullable', () => {
-      assert.deepStrictEqual(_.fromNullable('default')(null), _.left('default'))
-      assert.deepStrictEqual(_.fromNullable('default')(undefined), _.left('default'))
-      assert.deepStrictEqual(_.fromNullable('default')(1), _.right(1))
+      assert.deepStrictEqual(_.fromNullable(() => 'default')(null), _.left('default'))
+      assert.deepStrictEqual(_.fromNullable(() => 'default')(undefined), _.left('default'))
+      assert.deepStrictEqual(_.fromNullable(() => 'default')(1), _.right(1))
     })
 
     it('tryCatch', () => {
@@ -521,16 +522,6 @@ describe('Either', () => {
     )
   })
 
-  it('getValidationMonoid', () => {
-    const M = _.getValidationMonoid(monoidString, monoidSum)
-    assert.deepStrictEqual(M.concat(_.right(1), _.right(2)), _.right(3))
-    assert.deepStrictEqual(M.concat(_.right(1), _.left('foo')), _.left('foo'))
-    assert.deepStrictEqual(M.concat(_.left('foo'), _.right(1)), _.left('foo'))
-    assert.deepStrictEqual(M.concat(_.left('foo'), _.left('bar')), _.left('foobar'))
-    assert.deepStrictEqual(M.concat(_.right(1), M.empty), _.right(1))
-    assert.deepStrictEqual(M.concat(M.empty, _.right(1)), _.right(1))
-  })
-
   it('fromOption', () => {
     assert.deepStrictEqual(_.fromOption(() => 'none')(O.none), _.left('none'))
     assert.deepStrictEqual(_.fromOption(() => 'none')(O.some(1)), _.right(1))
@@ -541,5 +532,13 @@ describe('Either', () => {
     assert.deepStrictEqual(gt2(_.left('a')), false)
     assert.deepStrictEqual(gt2(_.right(1)), false)
     assert.deepStrictEqual(gt2(_.right(3)), true)
+  })
+
+  it('getValidationSemigroup', () => {
+    const M = _.getValidationSemigroup(semigroupString, semigroupSum)
+    assert.deepStrictEqual(M.concat(_.right(1), _.right(2)), _.right(3))
+    assert.deepStrictEqual(M.concat(_.right(1), _.left('foo')), _.left('foo'))
+    assert.deepStrictEqual(M.concat(_.left('foo'), _.right(1)), _.left('foo'))
+    assert.deepStrictEqual(M.concat(_.left('foo'), _.left('bar')), _.left('foobar'))
   })
 })

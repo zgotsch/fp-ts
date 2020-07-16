@@ -6,7 +6,6 @@ import {
   constUndefined,
   constVoid,
   decrement,
-  flip,
   identity,
   increment,
   not,
@@ -22,11 +21,6 @@ const f = (n: number) => n + 1
 const g = (n: number) => n * 2
 
 describe('function', () => {
-  it('flip', () => {
-    const f = (a: number, b: string) => a - b.length
-    assert.deepStrictEqual(flip(f)('aaa', 2), -1)
-  })
-
   it('not', () => {
     const n = not(Boolean)
     assert.deepStrictEqual(n(false), true)

@@ -47,7 +47,6 @@ Added in v2.0.0
   - [fromEitherK](#fromeitherk)
   - [fromIOEitherK](#fromioeitherk)
   - [fromTaskEitherK](#fromtaskeitherk)
-  - [local](#local)
   - [orElse](#orelse)
   - [swap](#swap)
 - [constructors](#constructors)
@@ -85,7 +84,6 @@ Added in v2.0.0
   - [getApplicativeReaderTaskValidation](#getapplicativereadertaskvalidation)
   - [getApplyMonoid](#getapplymonoid)
   - [getApplySemigroup](#getapplysemigroup)
-  - [getReaderTaskValidation](#getreadertaskvalidation)
   - [getSemigroup](#getsemigroup)
   - [readerTaskEither](#readertaskeither)
   - [readerTaskEitherSeq](#readertaskeitherseq)
@@ -93,7 +91,6 @@ Added in v2.0.0
   - [ReaderTaskEither (interface)](#readertaskeither-interface)
 - [utils](#utils)
   - [bracket](#bracket)
-  - [run](#run)
 
 ---
 
@@ -439,16 +436,6 @@ export declare function fromTaskEitherK<E, A extends ReadonlyArray<unknown>, B>(
 ```
 
 Added in v2.4.0
-
-## local
-
-**Signature**
-
-```ts
-export declare const local: <Q, R>(f: (f: Q) => R) => <E, A>(ma: ReaderTaskEither<R, E, A>) => ReaderTaskEither<Q, E, A>
-```
-
-Added in v2.0.0
 
 ## orElse
 
@@ -813,18 +800,6 @@ export declare function getApplySemigroup<R, E, A>(S: Semigroup<A>): Semigroup<R
 
 Added in v2.0.0
 
-## getReaderTaskValidation
-
-**Signature**
-
-```ts
-export declare function getReaderTaskValidation<E>(
-  SE: Semigroup<E>
-): Monad3C<URI, E> & Bifunctor3<URI> & Alt3C<URI, E> & MonadTask3C<URI, E> & MonadThrow3C<URI, E>
-```
-
-Added in v2.3.0
-
 ## getSemigroup
 
 Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
@@ -902,13 +877,3 @@ export declare function bracket<R, E, A, B>(
 ```
 
 Added in v2.0.4
-
-## run
-
-**Signature**
-
-```ts
-export declare function run<R, E, A>(ma: ReaderTaskEither<R, E, A>, r: R): Promise<Either<E, A>>
-```
-
-Added in v2.0.0

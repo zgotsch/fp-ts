@@ -35,7 +35,6 @@ Added in v2.0.0
   - [chainEitherKW](#chaineitherkw)
   - [filterOrElse](#filterorelse)
   - [fromEitherK](#fromeitherk)
-  - [local](#local)
   - [orElse](#orelse)
   - [swap](#swap)
 - [constructors](#constructors)
@@ -65,7 +64,6 @@ Added in v2.0.0
   - [getApplicativeReaderValidation](#getapplicativereadervalidation)
   - [getApplyMonoid](#getapplymonoid)
   - [getApplySemigroup](#getapplysemigroup)
-  - [getReaderValidation](#getreadervalidation)
   - [getSemigroup](#getsemigroup)
   - [readerEither](#readereither)
 - [model](#model)
@@ -296,16 +294,6 @@ export declare function fromEitherK<E, A extends ReadonlyArray<unknown>, B>(
 ```
 
 Added in v2.4.0
-
-## local
-
-**Signature**
-
-```ts
-export declare function local<Q, R>(f: (f: Q) => R): <E, A>(ma: ReaderEither<R, E, A>) => ReaderEither<Q, E, A>
-```
-
-Added in v2.0.0
 
 ## orElse
 
@@ -589,18 +577,6 @@ export declare function getApplySemigroup<R, E, A>(S: Semigroup<A>): Semigroup<R
 ```
 
 Added in v2.0.0
-
-## getReaderValidation
-
-**Signature**
-
-```ts
-export declare function getReaderValidation<E>(
-  SE: Semigroup<E>
-): Monad3C<URI, E> & Bifunctor3<URI> & Alt3C<URI, E> & MonadThrow3C<URI, E>
-```
-
-Added in v2.3.0
 
 ## getSemigroup
 

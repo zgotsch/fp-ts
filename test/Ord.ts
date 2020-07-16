@@ -91,15 +91,15 @@ describe('Ord', () => {
   })
 
   it('leq', () => {
-    assert.deepStrictEqual(_.leq(_.ordNumber)(0, 1), true)
-    assert.deepStrictEqual(_.leq(_.ordNumber)(1, 1), true)
-    assert.deepStrictEqual(_.leq(_.ordNumber)(2, 1), false)
+    assert.deepStrictEqual(_.leq(_.ordNumber)(1)(0), true)
+    assert.deepStrictEqual(_.leq(_.ordNumber)(1)(1), true)
+    assert.deepStrictEqual(_.leq(_.ordNumber)(1)(2), false)
   })
 
   it('geq', () => {
-    assert.deepStrictEqual(_.geq(_.ordNumber)(0, 1), false)
-    assert.deepStrictEqual(_.geq(_.ordNumber)(1, 1), true)
-    assert.deepStrictEqual(_.geq(_.ordNumber)(2, 1), true)
+    assert.deepStrictEqual(_.geq(_.ordNumber)(1)(0), false)
+    assert.deepStrictEqual(_.geq(_.ordNumber)(1)(1), true)
+    assert.deepStrictEqual(_.geq(_.ordNumber)(1)(2), true)
   })
 
   it('fromCompare', () => {

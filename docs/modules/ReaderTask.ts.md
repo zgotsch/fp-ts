@@ -30,7 +30,6 @@ Added in v2.3.0
   - [chainTaskK](#chaintaskk)
   - [fromIOK](#fromiok)
   - [fromTaskK](#fromtaskk)
-  - [local](#local)
 - [constructors](#constructors)
   - [ask](#ask)
   - [asks](#asks)
@@ -49,8 +48,6 @@ Added in v2.3.0
   - [readerTaskSeq](#readertaskseq)
 - [model](#model)
   - [ReaderTask (interface)](#readertask-interface)
-- [utils](#utils)
-  - [run](#run)
 
 ---
 
@@ -213,16 +210,6 @@ export declare function fromTaskK<A extends ReadonlyArray<unknown>, B>(
 
 Added in v2.4.0
 
-## local
-
-**Signature**
-
-```ts
-export declare const local: <Q, R>(f: (f: Q) => R) => <A>(ma: ReaderTask<R, A>) => ReaderTask<Q, A>
-```
-
-Added in v2.3.0
-
 # constructors
 
 ## ask
@@ -382,15 +369,3 @@ export interface ReaderTask<R, A> {
 ```
 
 Added in v2.3.0
-
-# utils
-
-## run
-
-**Signature**
-
-```ts
-export declare function run<R, A>(ma: ReaderTask<R, A>, r: R): Promise<A>
-```
-
-Added in v2.4.0

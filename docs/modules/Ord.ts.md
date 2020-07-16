@@ -314,7 +314,7 @@ Test whether one value is _non-strictly greater than_ another
 **Signature**
 
 ```ts
-export declare function geq<A>(O: Ord<A>): (x: A, y: A) => boolean
+export declare const geq: <A>(O: Ord<A>) => (y: A) => (x: A) => boolean
 ```
 
 Added in v2.0.0
@@ -326,7 +326,7 @@ Test whether one value is _strictly greater than_ another
 **Signature**
 
 ```ts
-export declare function gt<A>(O: Ord<A>): (x: A, y: A) => boolean
+export declare const gt: <A>(O: Ord<A>) => (y: A) => (x: A) => boolean
 ```
 
 Added in v2.0.0
@@ -338,7 +338,7 @@ Test whether one value is _non-strictly less than_ another
 **Signature**
 
 ```ts
-export declare function leq<A>(O: Ord<A>): (x: A, y: A) => boolean
+export declare const leq: <A>(O: Ord<A>) => (y: A) => (x: A) => boolean
 ```
 
 Added in v2.0.0
@@ -350,7 +350,7 @@ Test whether one value is _strictly less than_ another
 **Signature**
 
 ```ts
-export declare function lt<A>(O: Ord<A>): (x: A, y: A) => boolean
+export declare const lt: <A>(O: Ord<A>) => (y: A) => (x: A) => boolean
 ```
 
 Added in v2.0.0
@@ -362,7 +362,7 @@ Take the maximum of two values. If they are considered equal, the first argument
 **Signature**
 
 ```ts
-export declare function max<A>(O: Ord<A>): (x: A, y: A) => A
+export declare const max: <A>(O: Ord<A>) => (y: A) => (x: A) => A
 ```
 
 Added in v2.0.0
@@ -374,7 +374,7 @@ Take the minimum of two values. If they are considered equal, the first argument
 **Signature**
 
 ```ts
-export declare function min<A>(O: Ord<A>): (x: A, y: A) => A
+export declare const min: <A>(O: Ord<A>) => (y: A) => (x: A) => A
 ```
 
 Added in v2.0.0

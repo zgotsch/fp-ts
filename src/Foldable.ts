@@ -1,9 +1,7 @@
 /**
  * @since 2.0.0
  */
-import { Applicative, Applicative1, Applicative2, Applicative2C, Applicative3 } from './Applicative'
-import { constant } from './function'
-import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3, URIS4, Kind4 } from './HKT'
+import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
 import { Monad, Monad1, Monad2, Monad2C, Monad3, Monad3C } from './Monad'
 import { Monoid } from './Monoid'
 
@@ -86,47 +84,46 @@ export interface Foldable4<F extends URIS4> {
   readonly reduceRight: <S, R, E, A, B>(fa: Kind4<F, S, R, E, A>, b: B, f: (a: A, b: B) => B) => B
 }
 
-// TODO: rename to `reduceM` in v3
 /**
  * Similar to 'reduce', but the result is encapsulated in a monad.
  *
  * Note: this function is not generally stack-safe, e.g., for monads which build up thunks a la `IO`.
  *
  * @example
- * import { foldM } from 'fp-ts/lib/Foldable'
+ * import { reduceM } from 'fp-ts/lib/Foldable'
  * import { option, some } from 'fp-ts/lib/Option'
  * import { make, tree } from 'fp-ts/lib/Tree'
  *
  * const t = make(1, [make(2, []), make(3, []), make(4, [])])
- * assert.deepStrictEqual(foldM(option, tree)(t, 0, (b, a) => (a > 2 ? some(b + a) : some(b))), some(7))
+ * assert.deepStrictEqual(reduceM(option, tree)(t, 0, (b, a) => (a > 2 ? some(b + a) : some(b))), some(7))
  *
  * @since 2.0.0
  */
-export function foldM<M extends URIS3, F extends URIS>(
+export function reduceM<M extends URIS3, F extends URIS>(
   M: Monad3<M>,
   F: Foldable1<F>
 ): <R, E, A, B>(fa: Kind<F, A>, b: B, f: (b: B, a: A) => Kind3<M, R, E, B>) => Kind3<M, R, E, B>
-export function foldM<M extends URIS3, F extends URIS, E>(
+export function reduceM<M extends URIS3, F extends URIS, E>(
   M: Monad3C<M, E>,
   F: Foldable1<F>
 ): <R, A, B>(fa: Kind<F, A>, b: B, f: (b: B, a: A) => Kind3<M, R, E, B>) => Kind3<M, R, E, B>
-export function foldM<M extends URIS2, F extends URIS>(
+export function reduceM<M extends URIS2, F extends URIS>(
   M: Monad2<M>,
   F: Foldable1<F>
 ): <E, A, B>(fa: Kind<F, A>, b: B, f: (b: B, a: A) => Kind2<M, E, B>) => Kind2<M, E, B>
-export function foldM<M extends URIS2, F extends URIS, E>(
+export function reduceM<M extends URIS2, F extends URIS, E>(
   M: Monad2C<M, E>,
   F: Foldable1<F>
 ): <A, B>(fa: Kind<F, A>, b: B, f: (b: B, a: A) => Kind2<M, E, B>) => Kind2<M, E, B>
-export function foldM<M extends URIS, F extends URIS>(
+export function reduceM<M extends URIS, F extends URIS>(
   M: Monad1<M>,
   F: Foldable1<F>
 ): <A, B>(fa: Kind<F, A>, b: B, f: (b: B, a: A) => Kind<M, B>) => Kind<M, B>
-export function foldM<M, F>(
+export function reduceM<M, F>(
   M: Monad<M>,
   F: Foldable<F>
 ): <A, B>(fa: HKT<F, A>, b: B, f: (b: B, a: A) => HKT<M, B>) => HKT<M, B>
-export function foldM<M, F>(
+export function reduceM<M, F>(
   M: Monad<M>,
   F: Foldable<F>
 ): <A, B>(fa: HKT<F, A>, b: B, f: (b: B, a: A) => HKT<M, B>) => HKT<M, B> {
@@ -164,50 +161,4 @@ export function intercalate<M, F>(M: Monoid<M>, F: Foldable<F>): (sep: M, fm: HK
       init ? { init: false, acc: x } : { init: false, acc: M.concat(M.concat(acc, sep), x) }
     return F.reduce(fm, { init: true, acc: M.empty }, go).acc
   }
-}
-
-// TODO: remove in v3
-/**
- * Traverse a data structure, performing some effects encoded by an `Applicative` functor at each value, ignoring the
- * final result.
- *
- * @example
- * import { Foldable } from 'fp-ts/lib/Array'
- * import { traverse_ } from 'fp-ts/lib/Foldable'
- * import { Applicative } from 'fp-ts/lib/IO'
- *
- * let log = ''
- * const append = (s: string) => () => (log += s)
- * traverse_(Applicative, Foldable)(['a', 'b', 'c'], append)()
- * assert.strictEqual(log, 'abc')
- *
- * @since 2.0.0
- */
-export function traverse_<M extends URIS3, F extends URIS>(
-  M: Applicative3<M>,
-  F: Foldable1<F>
-): <R, E, A, B>(fa: Kind<F, A>, f: (a: A) => Kind3<M, R, E, B>) => Kind3<M, R, E, void>
-export function traverse_<M extends URIS2, F extends URIS>(
-  M: Applicative2<M>,
-  F: Foldable1<F>
-): <E, A, B>(fa: Kind<F, A>, f: (a: A) => Kind2<M, E, B>) => Kind2<M, E, void>
-export function traverse_<M extends URIS2, F extends URIS, E>(
-  M: Applicative2C<M, E>,
-  F: Foldable1<F>
-): <A, B>(fa: Kind<F, A>, f: (a: A) => Kind2<M, E, B>) => Kind2<M, E, void>
-export function traverse_<M extends URIS, F extends URIS>(
-  M: Applicative1<M>,
-  F: Foldable1<F>
-): <A, B>(fa: Kind<F, A>, f: (a: A) => Kind<M, B>) => Kind<M, void>
-export function traverse_<M, F>(
-  M: Applicative<M>,
-  F: Foldable<F>
-): <A, B>(fa: HKT<F, A>, f: (a: A) => HKT<M, B>) => HKT<M, void>
-export function traverse_<M, F>(
-  M: Applicative<M>,
-  F: Foldable<F>
-): <A, B>(fa: HKT<F, A>, f: (a: A) => HKT<M, B>) => HKT<M, void> {
-  const applyFirst = <B>(mu: HKT<M, void>, mb: HKT<M, B>): HKT<M, void> => M.ap(M.map(mu, constant), mb)
-  const mu: HKT<M, void> = M.of(undefined)
-  return (fa, f) => F.reduce(fa, mu, (mu, a) => applyFirst(mu, f(a)))
 }

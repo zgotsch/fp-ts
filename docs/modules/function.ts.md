@@ -26,7 +26,6 @@ Added in v2.0.0
   - [constVoid](#constvoid)
   - [constant](#constant)
   - [decrement](#decrement)
-  - [flip](#flip)
   - [flow](#flow)
   - [hole](#hole)
   - [identity](#identity)
@@ -198,18 +197,6 @@ Added in v2.0.0
 
 ```ts
 export declare function decrement(n: number): number
-```
-
-Added in v2.0.0
-
-## flip
-
-Flips the order of the arguments of a function of two arguments.
-
-**Signature**
-
-```ts
-export declare function flip<A, B, C>(f: (a: A, b: B) => C): (b: B, a: A) => C
 ```
 
 Added in v2.0.0

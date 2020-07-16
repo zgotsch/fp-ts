@@ -11,13 +11,17 @@ declare const rtns: ReadonlyArray<readonly [number, string]>
 // zip
 //
 
-_.zip(rns, rss) // $ExpectType readonly (readonly [number, string])[]
+pipe(rns, _.zip(rss)) // $ExpectType readonly (readonly [number, string])[]
 
 //
 // zipWith
 //
 
-_.zipWith(rns, rss, (n, s) => [n, s] as const) // $ExpectType readonly (readonly [number, string])[]
+// $ExpectType readonly (readonly [number, string])[]
+pipe(
+  rns,
+  _.zipWith(rss, (n, s) => [n, s] as const)
+)
 
 //
 // unzip
@@ -80,47 +84,40 @@ pipe(
 // lookup
 //
 
-_.lookup(0, [1, 2, 3]) // $ExpectType Option<number>
 _.lookup(0) // $ExpectType <A>(as: readonly A[]) => Option<A>
 
 //
 // elem
 //
 
-_.elem(eqNumber)(1, [1, 2, 3]) // $ExpectType boolean
 _.elem(eqNumber)(1) // $ExpectType (as: readonly number[]) => boolean
 
 //
 // difference
 //
 
-_.difference(eqNumber)([1, 2], [3, 4]) // $ExpectType readonly number[]
-_.difference(eqNumber)([3, 4]) // $ExpectType (ys: readonly number[]) => readonly number[]
+_.difference(eqNumber)([3, 4]) // $ExpectType (xs: readonly number[]) => readonly number[]
 
 //
 // intersection
 //
 
-_.intersection(eqNumber)([1, 2], [3, 4]) // $ExpectType readonly number[]
-_.intersection(eqNumber)([3, 4]) // $ExpectType (ys: readonly number[]) => readonly number[]
+_.intersection(eqNumber)([3, 4]) // $ExpectType (xs: readonly number[]) => readonly number[]
 
 //
 // union
 //
 
-_.union(eqNumber)([1, 2], [3, 4]) // $ExpectType readonly number[]
-_.union(eqNumber)([3, 4]) // $ExpectType (ys: readonly number[]) => readonly number[]
+_.union(eqNumber)([3, 4]) // $ExpectType (xs: readonly number[]) => readonly number[]
 
 //
 // zip
 //
 
-_.zip([1, 2], ['a', 'b']) // $ExpectType readonly (readonly [number, string])[]
 _.zip(['a', 'b']) // $ExpectType <A>(as: readonly A[]) => readonly (readonly [A, string])[]
 
 //
 // cons
 //
 
-_.cons(0, [1, 2]) // $ExpectType NonEmptyArray<number>
 _.cons(0) // $ExpectType (tail: readonly number[]) => NonEmptyArray<number>

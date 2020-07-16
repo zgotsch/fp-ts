@@ -70,7 +70,7 @@ export function toArray<A>(O: Ord<A>): (set: ReadonlySet<A>) => ReadonlyArray<A>
  */
 export function getEq<A>(E: Eq<A>): Eq<ReadonlySet<A>> {
   const subsetE = isSubset(E)
-  return fromEquals((x, y) => subsetE(x, y) && subsetE(y, x))
+  return fromEquals((x, y) => subsetE(y)(x) && subsetE(x)(y))
 }
 
 interface Next<A> {
@@ -106,7 +106,7 @@ export function map<B>(E: Eq<B>): <A>(f: (x: A) => B) => (set: ReadonlySet<A>) =
     const r = new Set<B>()
     set.forEach((e) => {
       const v = f(e)
-      if (!elemE(v, r)) {
+      if (!elemE(v)(r)) {
         r.add(v)
       }
     })
@@ -131,7 +131,7 @@ export function chain<B>(E: Eq<B>): <A>(f: (x: A) => ReadonlySet<B>) => (set: Re
     const r = new Set<B>()
     set.forEach((e) => {
       f(e).forEach((e) => {
-        if (!elemE(e, r)) {
+        if (!elemE(e)(r)) {
           r.add(e)
         }
       })
@@ -140,29 +140,14 @@ export function chain<B>(E: Eq<B>): <A>(f: (x: A) => ReadonlySet<B>) => (set: Re
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * `true` if and only if every element in the first set is an element of the second set
  *
  * @since 2.5.0
  */
-export function isSubset<A>(
-  E: Eq<A>
-): {
-  (that: ReadonlySet<A>): (me: ReadonlySet<A>) => boolean
-  (me: ReadonlySet<A>, that: ReadonlySet<A>): boolean
-}
-export function isSubset<A>(
-  E: Eq<A>
-): (me: ReadonlySet<A>, that?: ReadonlySet<A>) => boolean | ((me: ReadonlySet<A>) => boolean) {
+export const isSubset = <A>(E: Eq<A>): ((that: ReadonlySet<A>) => (me: ReadonlySet<A>) => boolean) => {
   const elemE = elem(E)
-  return (me, that?) => {
-    if (that === undefined) {
-      const isSubsetE = isSubset(E)
-      return (that) => isSubsetE(that, me)
-    }
-    return every((a: A) => elemE(a, that))(me)
-  }
+  return (that) => every((a: A) => elemE(a)(that))
 }
 
 /**
@@ -217,57 +202,31 @@ export function partition<A>(
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test if a value is a member of a set
  *
  * @since 2.5.0
  */
-export function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): (set: ReadonlySet<A>) => boolean
-  (a: A, set: ReadonlySet<A>): boolean
-}
-export function elem<A>(E: Eq<A>): (a: A, set?: ReadonlySet<A>) => boolean | ((set: ReadonlySet<A>) => boolean) {
-  return (a, set?) => {
-    if (set === undefined) {
-      const elemE = elem(E)
-      return (set) => elemE(a, set)
-    }
-    const values = set.values()
-    let e: Next<A>
-    let found = false
-    // tslint:disable-next-line: strict-boolean-expressions
-    while (!found && !(e = values.next()).done) {
-      found = E.equals(a, e.value)
-    }
-    return found
+export const elem = <A>(E: Eq<A>) => (a: A) => (set: ReadonlySet<A>): boolean => {
+  const values = set.values()
+  let e: Next<A>
+  let found = false
+  // tslint:disable-next-line: strict-boolean-expressions
+  while (!found && !(e = values.next()).done) {
+    found = E.equals(a, e.value)
   }
+  return found
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Form the union of two sets
  *
  * @category combinators
  * @since 2.5.0
  */
-export function union<A>(
-  E: Eq<A>
-): {
-  (that: ReadonlySet<A>): (me: ReadonlySet<A>) => ReadonlySet<A>
-  (me: ReadonlySet<A>, that: ReadonlySet<A>): ReadonlySet<A>
-}
-export function union<A>(
-  E: Eq<A>
-): (me: ReadonlySet<A>, that?: ReadonlySet<A>) => ReadonlySet<A> | ((me: ReadonlySet<A>) => ReadonlySet<A>) {
+export const union = <A>(E: Eq<A>): ((that: ReadonlySet<A>) => (me: ReadonlySet<A>) => ReadonlySet<A>) => {
   const elemE = elem(E)
-  return (me, that?) => {
-    if (that === undefined) {
-      const unionE = union(E)
-      return (that) => unionE(me, that)
-    }
+  return (that) => (me) => {
     if (me === empty) {
       return that
     }
@@ -276,7 +235,7 @@ export function union<A>(
     }
     const r = new Set(me)
     that.forEach((e) => {
-      if (!elemE(e, r)) {
+      if (!elemE(e)(r)) {
         r.add(e)
       }
     })
@@ -284,34 +243,21 @@ export function union<A>(
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * The set of elements which are in both the first and second set
  *
  * @category combinators
  * @since 2.5.0
  */
-export function intersection<A>(
-  E: Eq<A>
-): {
-  (that: ReadonlySet<A>): (me: ReadonlySet<A>) => ReadonlySet<A>
-  (me: ReadonlySet<A>, that: ReadonlySet<A>): ReadonlySet<A>
-}
-export function intersection<A>(
-  E: Eq<A>
-): (me: ReadonlySet<A>, that?: ReadonlySet<A>) => ReadonlySet<A> | ((that: ReadonlySet<A>) => ReadonlySet<A>) {
+export const intersection = <A>(E: Eq<A>): ((that: ReadonlySet<A>) => (me: ReadonlySet<A>) => ReadonlySet<A>) => {
   const elemE = elem(E)
-  return (me, that?) => {
-    if (that === undefined) {
-      const intersectionE = intersection(E)
-      return (that) => intersectionE(that, me)
-    }
+  return (that) => (me) => {
     if (me === empty || that === empty) {
       return empty
     }
     const r = new Set<A>()
     me.forEach((e) => {
-      if (elemE(e, that)) {
+      if (elemE(e)(that)) {
         r.add(e)
       }
     })
@@ -338,12 +284,12 @@ export function partitionMap<B, C>(
       const v = f(e.value)
       switch (v._tag) {
         case 'Left':
-          if (!hasB(v.left, left)) {
+          if (!hasB(v.left)(left)) {
             left.add(v.left)
           }
           break
         case 'Right':
-          if (!hasC(v.right, right)) {
+          if (!hasC(v.right)(right)) {
             right.add(v.right)
           }
           break
@@ -353,7 +299,6 @@ export function partitionMap<B, C>(
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Form the set difference (`x` - `y`)
  *
@@ -367,23 +312,9 @@ export function partitionMap<B, C>(
  * @category combinators
  * @since 2.5.0
  */
-export function difference<A>(
-  E: Eq<A>
-): {
-  (that: ReadonlySet<A>): (me: ReadonlySet<A>) => ReadonlySet<A>
-  (me: ReadonlySet<A>, that: ReadonlySet<A>): ReadonlySet<A>
-}
-export function difference<A>(
-  E: Eq<A>
-): (me: ReadonlySet<A>, that?: ReadonlySet<A>) => ReadonlySet<A> | ((me: ReadonlySet<A>) => ReadonlySet<A>) {
+export const difference = <A>(E: Eq<A>): ((that: ReadonlySet<A>) => (me: ReadonlySet<A>) => ReadonlySet<A>) => {
   const elemE = elem(E)
-  return (me, that?) => {
-    if (that === undefined) {
-      const differenceE = difference(E)
-      return (that) => differenceE(that, me)
-    }
-    return filter((a: A) => !elemE(a, that))(me)
-  }
+  return (that) => (me) => filter((a: A) => !elemE(a)(that))(me)
 }
 
 /**
@@ -391,8 +322,9 @@ export function difference<A>(
  * @since 2.5.0
  */
 export function getUnionMonoid<A>(E: Eq<A>): Monoid<ReadonlySet<A>> {
+  const unionE = union(E)
   return {
-    concat: union(E),
+    concat: (x, y) => unionE(y)(x),
     empty
   }
 }
@@ -402,8 +334,9 @@ export function getUnionMonoid<A>(E: Eq<A>): Monoid<ReadonlySet<A>> {
  * @since 2.5.0
  */
 export function getIntersectionSemigroup<A>(E: Eq<A>): Semigroup<ReadonlySet<A>> {
+  const intersectionE = intersection(E)
   return {
-    concat: intersection(E)
+    concat: (x, y) => intersectionE(y)(x)
   }
 }
 
@@ -475,7 +408,7 @@ export function fromArray<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlySet<A>
     const has = elem(E)
     for (let i = 0; i < len; i++) {
       const a = as[i]
-      if (!has(a, r)) {
+      if (!has(a)(r)) {
         r.add(a)
       }
     }
@@ -506,12 +439,12 @@ export function separate<E, A>(
     fa.forEach((e) => {
       switch (e._tag) {
         case 'Left':
-          if (!elemEE(e.left, left)) {
+          if (!elemEE(e.left)(left)) {
             left.add(e.left)
           }
           break
         case 'Right':
-          if (!elemEA(e.right, right)) {
+          if (!elemEA(e.right)(right)) {
             right.add(e.right)
           }
           break
@@ -531,7 +464,7 @@ export function filterMap<B>(E: Eq<B>): <A>(f: (a: A) => Option<B>) => (fa: Read
     const r: Set<B> = new Set()
     fa.forEach((a) => {
       const ob = f(a)
-      if (ob._tag === 'Some' && !elemE(ob.value, r)) {
+      if (ob._tag === 'Some' && !elemE(ob.value)(r)) {
         r.add(ob.value)
       }
     })

@@ -13,6 +13,7 @@ import { Contravariant1 } from './Contravariant'
 import { Eq } from './Eq'
 import { Monoid } from './Monoid'
 import { monoidOrdering, Ordering } from './Ordering'
+import { flow } from './function'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -62,65 +63,47 @@ export const ordBoolean: Ord<boolean> = {
   compare
 }
 
-// TODO: curry in v3
 /**
  * Test whether one value is _strictly less than_ another
  *
  * @since 2.0.0
  */
-export function lt<A>(O: Ord<A>): (x: A, y: A) => boolean {
-  return (x, y) => O.compare(x, y) === -1
-}
+export const lt = <A>(O: Ord<A>) => (y: A) => (x: A): boolean => O.compare(x, y) === -1
 
-// TODO: curry in v3
 /**
  * Test whether one value is _strictly greater than_ another
  *
  * @since 2.0.0
  */
-export function gt<A>(O: Ord<A>): (x: A, y: A) => boolean {
-  return (x, y) => O.compare(x, y) === 1
-}
+export const gt = <A>(O: Ord<A>) => (y: A) => (x: A): boolean => O.compare(x, y) === 1
 
-// TODO: curry in v3
 /**
  * Test whether one value is _non-strictly less than_ another
  *
  * @since 2.0.0
  */
-export function leq<A>(O: Ord<A>): (x: A, y: A) => boolean {
-  return (x, y) => O.compare(x, y) !== 1
-}
+export const leq = <A>(O: Ord<A>) => (y: A) => (x: A): boolean => O.compare(x, y) !== 1
 
-// TODO: curry in v3
 /**
  * Test whether one value is _non-strictly greater than_ another
  *
  * @since 2.0.0
  */
-export function geq<A>(O: Ord<A>): (x: A, y: A) => boolean {
-  return (x, y) => O.compare(x, y) !== -1
-}
+export const geq = <A>(O: Ord<A>) => (y: A) => (x: A): boolean => O.compare(x, y) !== -1
 
-// TODO: curry in v3
 /**
  * Take the minimum of two values. If they are considered equal, the first argument is chosen
  *
  * @since 2.0.0
  */
-export function min<A>(O: Ord<A>): (x: A, y: A) => A {
-  return (x, y) => (O.compare(x, y) === 1 ? y : x)
-}
+export const min = <A>(O: Ord<A>) => (y: A) => (x: A): A => (O.compare(x, y) === 1 ? y : x)
 
-// TODO: curry in v3
 /**
  * Take the maximum of two values. If they are considered equal, the first argument is chosen
  *
  * @since 2.0.0
  */
-export function max<A>(O: Ord<A>): (x: A, y: A) => A {
-  return (x, y) => (O.compare(x, y) === -1 ? y : x)
-}
+export const max = <A>(O: Ord<A>) => (y: A) => (x: A): A => (O.compare(x, y) === -1 ? y : x)
 
 /**
  * Clamp a value between a minimum and a maximum
@@ -130,7 +113,7 @@ export function max<A>(O: Ord<A>): (x: A, y: A) => A {
 export function clamp<A>(O: Ord<A>): (low: A, hi: A) => (x: A) => A {
   const minO = min(O)
   const maxO = max(O)
-  return (low, hi) => (x) => maxO(minO(x, hi), low)
+  return (low, hi) => flow(minO(hi), maxO(low))
 }
 
 /**
@@ -139,9 +122,13 @@ export function clamp<A>(O: Ord<A>): (low: A, hi: A) => (x: A) => A {
  * @since 2.0.0
  */
 export function between<A>(O: Ord<A>): (low: A, hi: A) => (x: A) => boolean {
-  const lessThanO = lt(O)
-  const greaterThanO = gt(O)
-  return (low, hi) => (x) => (lessThanO(x, low) || greaterThanO(x, hi) ? false : true)
+  const ltO = lt(O)
+  const gtO = gt(O)
+  return (low, hi) => {
+    const lt = ltO(low)
+    const gt = gtO(hi)
+    return (x) => (lt(x) || gt(x) ? false : true)
+  }
 }
 
 /**
@@ -317,7 +304,7 @@ export const Contravariant: Contravariant1<URI> = {
   contramap: contramap_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0

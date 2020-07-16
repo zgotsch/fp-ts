@@ -1026,7 +1026,7 @@ export const MonadThrow: MonadThrow1<URI> = {
   throwError
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0

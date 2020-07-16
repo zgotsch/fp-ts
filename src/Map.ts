@@ -8,7 +8,7 @@ import { Eq, fromEquals } from './Eq'
 import { Filterable2 } from './Filterable'
 import { FilterableWithIndex2C } from './FilterableWithIndex'
 import { Foldable, Foldable1, Foldable2, Foldable3 } from './Foldable'
-import { pipe, Predicate, Refinement } from './function'
+import { pipe, Predicate, Refinement, flow } from './function'
 import { Functor2 } from './Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
 import { Magma } from './Magma'
@@ -80,27 +80,14 @@ export function isEmpty<K, A>(d: ReadonlyMap<K, A>): boolean {
   return d.size === 0
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test whether or not a key exists in a map
  *
  * @since 2.5.0
  */
-export function member<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => boolean
-  <A>(k: K, m: ReadonlyMap<K, A>): boolean
-}
-export function member<K>(E: Eq<K>): <A>(k: K, m?: ReadonlyMap<K, A>) => boolean | ((m: ReadonlyMap<K, A>) => boolean) {
+export const member = <K>(E: Eq<K>): ((k: K) => <A>(m: ReadonlyMap<K, A>) => boolean) => {
   const lookupE = lookup(E)
-  return (k, m?) => {
-    if (m === undefined) {
-      const memberE = member(E)
-      return (m) => memberE(k, m)
-    }
-    return O.isSome(lookupE(k, m))
-  }
+  return (k) => flow(lookupE(k), O.isSome)
 }
 
 interface Next<A> {
@@ -108,35 +95,22 @@ interface Next<A> {
   readonly value: A
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test whether or not a value is a member of a map
  *
  * @since 2.5.0
  */
-export function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): <K>(m: ReadonlyMap<K, A>) => boolean
-  <K>(a: A, m: ReadonlyMap<K, A>): boolean
-}
-export function elem<A>(E: Eq<A>): <K>(a: A, m?: ReadonlyMap<K, A>) => boolean | ((m: ReadonlyMap<K, A>) => boolean) {
-  return (a, m?) => {
-    if (m === undefined) {
-      const elemE = elem(E)
-      return (m) => elemE(a, m)
+export const elem = <A>(E: Eq<A>) => (a: A) => <K>(m: ReadonlyMap<K, A>): boolean => {
+  const values = m.values()
+  let e: Next<A>
+  // tslint:disable-next-line: strict-boolean-expressions
+  while (!(e = values.next()).done) {
+    const v = e.value
+    if (E.equals(a, v)) {
+      return true
     }
-    const values = m.values()
-    let e: Next<A>
-    // tslint:disable-next-line: strict-boolean-expressions
-    while (!(e = values.next()).done) {
-      const v = e.value
-      if (E.equals(a, v)) {
-        return true
-      }
-    }
-    return false
   }
+  return false
 }
 
 /**
@@ -214,18 +188,21 @@ export function toUnfoldable<K, F>(
  */
 export function insertAt<K>(E: Eq<K>): <A>(k: K, a: A) => (m: ReadonlyMap<K, A>) => ReadonlyMap<K, A> {
   const lookupWithKeyE = lookupWithKey(E)
-  return (k, a) => (m) => {
-    const found = lookupWithKeyE(k, m)
-    if (O.isNone(found)) {
-      const r = new Map(m)
-      r.set(k, a)
-      return r
-    } else if (found.value[1] !== a) {
-      const r = new Map(m)
-      r.set(found.value[0], a)
-      return r
+  return (k, a) => {
+    const lookupWithKeyEk = lookupWithKeyE(k)
+    return (m) => {
+      const found = lookupWithKeyEk(m)
+      if (O.isNone(found)) {
+        const r = new Map(m)
+        r.set(k, a)
+        return r
+      } else if (found.value[1] !== a) {
+        const r = new Map(m)
+        r.set(found.value[0], a)
+        return r
+      }
+      return m
     }
-    return m
   }
 }
 
@@ -237,14 +214,17 @@ export function insertAt<K>(E: Eq<K>): <A>(k: K, a: A) => (m: ReadonlyMap<K, A>)
  */
 export function deleteAt<K>(E: Eq<K>): (k: K) => <A>(m: ReadonlyMap<K, A>) => ReadonlyMap<K, A> {
   const lookupWithKeyE = lookupWithKey(E)
-  return (k) => (m) => {
-    const found = lookupWithKeyE(k, m)
-    if (O.isSome(found)) {
-      const r = new Map(m)
-      r.delete(found.value[0])
-      return r
+  return (k) => {
+    const lookupWithKeyEk = lookupWithKeyE(k)
+    return (m) => {
+      const found = lookupWithKeyEk(m)
+      if (O.isSome(found)) {
+        const r = new Map(m)
+        r.delete(found.value[0])
+        return r
+      }
+      return m
     }
-    return m
   }
 }
 
@@ -253,14 +233,17 @@ export function deleteAt<K>(E: Eq<K>): (k: K) => <A>(m: ReadonlyMap<K, A>) => Re
  */
 export function updateAt<K>(E: Eq<K>): <A>(k: K, a: A) => (m: ReadonlyMap<K, A>) => Option<ReadonlyMap<K, A>> {
   const lookupWithKeyE = lookupWithKey(E)
-  return (k, a) => (m) => {
-    const found = lookupWithKeyE(k, m)
-    if (O.isNone(found)) {
-      return O.none
+  return (k, a) => {
+    const lookupWithKeyEk = lookupWithKeyE(k)
+    return (m) => {
+      const found = lookupWithKeyEk(m)
+      if (O.isNone(found)) {
+        return O.none
+      }
+      const r = new Map(m)
+      r.set(found.value[0], a)
+      return O.some(r)
     }
-    const r = new Map(m)
-    r.set(found.value[0], a)
-    return O.some(r)
   }
 }
 
@@ -271,14 +254,17 @@ export function modifyAt<K>(
   E: Eq<K>
 ): <A>(k: K, f: (a: A) => A) => (m: ReadonlyMap<K, A>) => Option<ReadonlyMap<K, A>> {
   const lookupWithKeyE = lookupWithKey(E)
-  return (k, f) => (m) => {
-    const found = lookupWithKeyE(k, m)
-    if (O.isNone(found)) {
-      return O.none
+  return (k, f) => {
+    const lookupWithKeyEk = lookupWithKeyE(k)
+    return (m) => {
+      const found = lookupWithKeyEk(m)
+      if (O.isNone(found)) {
+        return O.none
+      }
+      const r = new Map(m)
+      r.set(found.value[0], f(found.value[1]))
+      return O.some(r)
     }
-    const r = new Map(m)
-    r.set(found.value[0], f(found.value[1]))
-    return O.some(r)
   }
 }
 
@@ -294,103 +280,61 @@ export function pop<K>(E: Eq<K>): (k: K) => <A>(m: ReadonlyMap<K, A>) => Option<
     const deleteAtEk = deleteAtE(k)
     return (m) =>
       pipe(
-        lookupE(k, m),
+        lookupE(k)(m),
         O.map((a) => [a, deleteAtEk(m)])
       )
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Lookup the value for a key in a `Map`.
  * If the result is a `Some`, the existing key is also returned.
  *
  * @since 2.5.0
  */
-export function lookupWithKey<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => Option<readonly [K, A]>
-  <A>(k: K, m: ReadonlyMap<K, A>): Option<readonly [K, A]>
-}
-export function lookupWithKey<K>(
-  E: Eq<K>
-): <A>(k: K, m?: ReadonlyMap<K, A>) => Option<readonly [K, A]> | ((m: ReadonlyMap<K, A>) => Option<readonly [K, A]>) {
-  return <A>(k: K, m?: ReadonlyMap<K, A>) => {
-    if (m === undefined) {
-      const lookupWithKeyE = lookupWithKey(E)
-      return (m) => lookupWithKeyE(k, m)
+export const lookupWithKey = <K>(E: Eq<K>) => (k: K) => <A>(m: ReadonlyMap<K, A>): Option<readonly [K, A]> => {
+  const entries = m.entries()
+  let e: Next<readonly [K, A]>
+  // tslint:disable-next-line: strict-boolean-expressions
+  while (!(e = entries.next()).done) {
+    const [ka, a] = e.value
+    if (E.equals(ka, k)) {
+      return O.some([ka, a])
     }
-    const entries = m.entries()
-    let e: Next<readonly [K, A]>
-    // tslint:disable-next-line: strict-boolean-expressions
-    while (!(e = entries.next()).done) {
-      const [ka, a] = e.value
-      if (E.equals(ka, k)) {
-        return O.some([ka, a])
-      }
-    }
-    return O.none
   }
+  return O.none
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Lookup the value for a key in a `Map`.
  *
  * @since 2.5.0
  */
-export function lookup<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => Option<A>
-  <A>(k: K, m: ReadonlyMap<K, A>): Option<A>
-}
-export function lookup<K>(
-  E: Eq<K>
-): <A>(k: K, m?: ReadonlyMap<K, A>) => Option<A> | ((m: ReadonlyMap<K, A>) => Option<A>) {
+export const lookup = <K>(E: Eq<K>): ((k: K) => <A>(m: ReadonlyMap<K, A>) => Option<A>) => {
   const lookupWithKeyE = lookupWithKey(E)
-  return (k, m?) => {
-    if (m === undefined) {
-      const lookupE = lookup(E)
-      return (m) => lookupE(k, m)
-    }
-    return pipe(
-      lookupWithKeyE(k, m),
+  return (k) =>
+    flow(
+      lookupWithKeyE(k),
       O.map(([_, a]) => a)
     )
-  }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test whether or not one `Map` contains all of the keys and values contained in another `Map`
  *
  * @since 2.5.0
  */
-export function isSubmap<K, A>(
-  SK: Eq<K>,
-  SA: Eq<A>
-): {
-  (that: ReadonlyMap<K, A>): (me: ReadonlyMap<K, A>) => boolean
-  (me: ReadonlyMap<K, A>, that: ReadonlyMap<K, A>): boolean
-}
-export function isSubmap<K, A>(
-  SK: Eq<K>,
-  SA: Eq<A>
-): (me: ReadonlyMap<K, A>, that?: ReadonlyMap<K, A>) => boolean | ((me: ReadonlyMap<K, A>) => boolean) {
+export const isSubmap = <K, A>(SK: Eq<K>, SA: Eq<A>) => (
+  that: ReadonlyMap<K, A>
+): ((me: ReadonlyMap<K, A>) => boolean) => {
   const lookupWithKeyS = lookupWithKey(SK)
-  return (me: ReadonlyMap<K, A>, that?: ReadonlyMap<K, A>) => {
-    if (that === undefined) {
-      const isSubmapSKSA = isSubmap(SK, SA)
-      return (that) => isSubmapSKSA(that, me)
-    }
+  return (me: ReadonlyMap<K, A>) => {
     const entries = me.entries()
     let e: Next<readonly [K, A]>
     // tslint:disable-next-line: strict-boolean-expressions
     while (!(e = entries.next()).done) {
       const [k, a] = e.value
-      const d2OptA = lookupWithKeyS(k, that)
+      const d2OptA = lookupWithKeyS(k)(that)
       if (O.isNone(d2OptA) || !SK.equals(k, d2OptA.value[0]) || !SA.equals(a, d2OptA.value[1])) {
         return false
       }
@@ -409,8 +353,8 @@ export const empty: ReadonlyMap<never, never> = new Map<never, never>()
  * @since 2.5.0
  */
 export function getEq<K, A>(SK: Eq<K>, SA: Eq<A>): Eq<ReadonlyMap<K, A>> {
-  const isSubmap_ = isSubmap(SK, SA)
-  return fromEquals((x, y) => isSubmap_(x, y) && isSubmap_(y, x))
+  const isSubmapSKSA = isSubmap(SK, SA)
+  return fromEquals((x, y) => isSubmapSKSA(x)(y) && isSubmapSKSA(y)(x))
 }
 
 /**
@@ -435,7 +379,7 @@ export function getMonoid<K, A>(SK: Eq<K>, SA: Semigroup<A>): Monoid<ReadonlyMap
       // tslint:disable-next-line: strict-boolean-expressions
       while (!(e = entries.next()).done) {
         const [k, a] = e.value
-        const mxOptA = lookupWithKeyS(k, mx)
+        const mxOptA = lookupWithKeyS(k)(mx)
         if (O.isSome(mxOptA)) {
           r.set(mxOptA.value[0], SA.concat(mxOptA.value[1], a))
         } else {
@@ -493,7 +437,7 @@ export function fromFoldable<F, K, A>(
   return (fka: HKT<F, readonly [K, A]>) => {
     const lookupWithKeyE = lookupWithKey(E)
     return F.reduce<readonly [K, A], Map<K, A>>(fka, new Map<K, A>(), (b, [k, a]) => {
-      const bOpt = lookupWithKeyE(k, b)
+      const bOpt = lookupWithKeyE(k)(b)
       if (O.isSome(bOpt)) {
         b.set(bOpt.value[0], M.concat(bOpt.value[1], a))
       } else {
@@ -890,7 +834,7 @@ export const Filterable: Filterable2<URI> = {
   partitionMap: partitionMap_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.5.0

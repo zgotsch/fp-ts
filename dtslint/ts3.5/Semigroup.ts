@@ -10,5 +10,4 @@ _.getTupleSemigroup(_.semigroupString, _.semigroupSum, _.semigroupAll) // $Expec
 // fold
 //
 
-_.fold(_.semigroupString)('', ['a']) // $ExpectType string
 _.fold(_.semigroupString)('') // $ExpectType (as: readonly string[]) => string

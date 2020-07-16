@@ -20,16 +20,16 @@ const l1 = { a: 1 }
 declare const keyString: string
 
 //
-// hasOwnProperty
+// has
 //
 
-if (_.hasOwnProperty(keyString, d1)) {
+if (_.has(keyString, d1)) {
   keyString // $ExpectType string
 }
-if (_.hasOwnProperty(keyString, recordString)) {
+if (_.has(keyString, recordString)) {
   keyString // $ExpectType string
 }
-if (_.hasOwnProperty(keyString, r1)) {
+if (_.has(keyString, r1)) {
   keyString // $ExpectType "a" | "b"
 }
 
@@ -170,19 +170,16 @@ _.fromFoldable(getFirstSemigroup<number>(), fromFoldableF1)(fromFoldableInput1) 
 // isSubrecord
 //
 
-_.isSubrecord(eqNumber)(recordString, recordString) // $ExpectType boolean
 _.isSubrecord(eqNumber)(recordString) // $ExpectType (me: Readonly<Record<string, number>>) => boolean
 
 //
 // lookup
 //
 
-_.lookup('a', recordString) // $ExpectType Option<number>
 _.lookup('a') // $ExpectType <A>(r: Readonly<Record<string, A>>) => Option<A>
 
 //
 // elem
 //
 
-_.elem(eqNumber)(1, recordString) // $ExpectType boolean
 _.elem(eqNumber)(1) // $ExpectType (fa: Readonly<Record<string, number>>) => boolean

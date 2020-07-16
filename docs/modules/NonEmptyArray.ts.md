@@ -329,10 +329,10 @@ export declare function group<A>(
 **Example**
 
 ```ts
-import { cons, group } from 'fp-ts/lib/NonEmptyArray'
+import { group } from 'fp-ts/lib/NonEmptyArray'
 import { ordNumber } from 'fp-ts/lib/Ord'
 
-assert.deepStrictEqual(group(ordNumber)([1, 2, 1, 1]), [cons(1, []), cons(2, []), cons(1, [1])])
+assert.deepStrictEqual(group(ordNumber)([1, 2, 1, 1]), [[1], [2], [1, 1]])
 ```
 
 Added in v2.5.0
@@ -350,10 +350,10 @@ export declare function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => Reado
 **Example**
 
 ```ts
-import { cons, groupSort } from 'fp-ts/lib/NonEmptyArray'
+import { groupSort } from 'fp-ts/lib/NonEmptyArray'
 import { ordNumber } from 'fp-ts/lib/Ord'
 
-assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [cons(1, [1, 1]), cons(2, [])])
+assert.deepStrictEqual(groupSort(ordNumber)([1, 2, 1, 1]), [[1, 1, 1], [2]])
 ```
 
 Added in v2.5.0
@@ -425,15 +425,16 @@ Append an element to the front of an array, creating a new non empty array
 **Signature**
 
 ```ts
-export declare const cons: <A>(head: A, tail: readonly A[]) => NonEmptyArray<A>
+export declare const cons: <A>(head: A) => (tail: readonly A[]) => NonEmptyArray<A>
 ```
 
 **Example**
 
 ```ts
 import { cons } from 'fp-ts/lib/NonEmptyArray'
+import { pipe } from 'fp-ts/lib/function'
 
-assert.deepStrictEqual(cons(1, [2, 3, 4]), [1, 2, 3, 4])
+assert.deepStrictEqual(pipe([2, 3, 4], cons(1)), [1, 2, 3, 4])
 ```
 
 Added in v2.5.0
@@ -466,11 +467,11 @@ export declare function groupBy<A>(
 **Example**
 
 ```ts
-import { cons, groupBy } from 'fp-ts/lib/NonEmptyArray'
+import { groupBy } from 'fp-ts/lib/NonEmptyArray'
 
 assert.deepStrictEqual(groupBy((s: string) => String(s.length))(['foo', 'bar', 'foobar']), {
-  '3': cons('foo', ['bar']),
-  '6': cons('foobar', []),
+  '3': ['foo', 'bar'],
+  '6': ['foobar'],
 })
 ```
 
@@ -483,15 +484,16 @@ Append an element to the end of an array, creating a new non empty array
 **Signature**
 
 ```ts
-export declare const snoc: <A>(init: readonly A[], end: A) => NonEmptyArray<A>
+export declare const snoc: <A>(end: A) => (init: readonly A[]) => NonEmptyArray<A>
 ```
 
 **Example**
 
 ```ts
 import { snoc } from 'fp-ts/lib/NonEmptyArray'
+import { pipe } from 'fp-ts/lib/function'
 
-assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+assert.deepStrictEqual(pipe([1, 2, 3], snoc(4)), [1, 2, 3, 4])
 ```
 
 Added in v2.5.0
@@ -629,12 +631,12 @@ export declare const getEq: <A>(E: Eq<A>) => Eq<NonEmptyArray<A>>
 **Example**
 
 ```ts
-import { getEq, cons } from 'fp-ts/lib/NonEmptyArray'
+import { getEq } from 'fp-ts/lib/NonEmptyArray'
 import { eqNumber } from 'fp-ts/lib/Eq'
 
 const E = getEq(eqNumber)
-assert.strictEqual(E.equals(cons(1, [2]), [1, 2]), true)
-assert.strictEqual(E.equals(cons(1, [2]), [1, 3]), false)
+assert.strictEqual(E.equals([1, 2], [1, 2]), true)
+assert.strictEqual(E.equals([1, 2], [1, 3]), false)
 ```
 
 Added in v2.5.0

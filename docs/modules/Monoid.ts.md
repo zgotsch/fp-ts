@@ -119,7 +119,7 @@ Given a tuple of monoids returns a monoid for the tuple
 ```ts
 export declare function getTupleMonoid<T extends ReadonlyArray<Monoid<any>>>(
   ...monoids: T
-): Monoid<{ [K in keyof T]: T[K] extends Semigroup<infer A> ? A : never }>
+): Monoid<{ [K in keyof T]: T[K] extends S.Semigroup<infer A> ? A : never }>
 ```
 
 **Example**
@@ -211,7 +211,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export interface Monoid<A> extends Semigroup<A> {
+export interface Monoid<A> extends S.Semigroup<A> {
   readonly empty: A
 }
 ```
@@ -225,7 +225,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export declare function fold<A>(M: Monoid<A>): (as: ReadonlyArray<A>) => A
+export declare const fold: <A>(M: Monoid<A>) => (as: readonly A[]) => A
 ```
 
 Added in v2.0.0

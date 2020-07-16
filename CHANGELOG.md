@@ -50,28 +50,104 @@ high state of flux, you're at risk of it changing without notice.
     - rename `ReadonlyTuple` module to `Tuple` (@gcanti)
     - `Applicative`
       - remove `getApplicativeComposition` and related types (@gcanti)
+    - `Array`
+      - remove deprecated `lookup` overloading (@gcanti)
+      - remove deprecated `cons` overloading (@gcanti)
+      - make `snoc` data-last (@gcanti)
+      - curry and make `zipWith` data-last (@gcanti)
+      - remove deprecated `zip` overloading (@gcanti)
+      - remove deprecated `elem` overloading (@gcanti)
+      - remove deprecated `union` overloading (@gcanti)
+      - remove deprecated `intersection` overloading (@gcanti)
+      - remove deprecated `difference` overloading (@gcanti)
     - `Compactable`
       - remove `getCompactableComposition` and related types (@gcanti)
+    - `Either`
+      - make `fromNullable` lazy (@gcanti)
+      - curry `parseJSON` (@gcanti)
+      - curry `stringifyJSON` (@gcanti)
+      - remove `getValidationMonoid` constrained instance (@gcanti)
     - `Eq`
       - remove deprecated `strictEqual` function (@gcanti)
     - `Filterable`
       - remove `getFilterableComposition` and related types (@gcanti)
     - `Foldable`
       - remove `getFoldableComposition` and related types (@gcanti)
+      - rename `foldM` to `reduceM` (@gcanti)
     - `FoldableWithIndex`
       - remove `getFoldableWithIndexComposition` and related types (@gcanti)
+    - `function`
+      - remove `flip` function (@gcanti)
     - `Functor`
       - remove `getFunctorComposition` and related types (@gcanti)
     - `FunctorWithIndex`
       - remove `getFunctorWithIndexComposition` and related types (@gcanti)
+    - `IOEither`
+      - remove `getIOValidation` constrained instance (@gcanti)
+    - `Map`
+      - remove deprecated `member` overloading (@gcanti)
+      - remove deprecated `elem` overloading (@gcanti)
+      - remove deprecated `lookupWithKey` overloading (@gcanti)
+      - remove deprecated `lookup` overloading (@gcanti)
+      - remove deprecated `isSubmap` overloading (@gcanti)
+    - `NonEmptyArray`
+      - make `cons` data-last (@gcanti)
+      - make `snoc` data-last (@gcanti)
     - `Ord`
       - remove deprecated `getSemigroup` constrained instance (@gcanti)
+      - curry `lt` (@gcanti)
+      - curry `gt` (@gcanti)
+      - curry `leq` (@gcanti)
+      - curry `geq` (@gcanti)
+      - curry `min` (@gcanti)
+      - curry `max` (@gcanti)
     - `Ordering`
       - remove deprecated `semigroupOrdering` instance (@gcanti)
+    - `ReaderEither`
+      - remove `local` combinator (@gcanti)
+      - remove `getReaderValidation` constrained instance (@gcanti)
+    - `ReaderTask`
+      - remove `local` combinator (@gcanti)
+      - remove `run` util (@gcanti)
+    - `ReaderTaskEither`
+      - remove `local` combinator (@gcanti)
+      - remove `getReaderTaskValidation` constrained instance (@gcanti)
+      - remove `run` util (@gcanti)
+    - `Record`
+      - rename `hasOwnProperty` to `has` (@gcanti)
+      - remove deprecated `isSubrecord` overloading (@gcanti)
+      - remove deprecated `lookup` overloading (@gcanti)
+      - remove deprecated `elem` overloading (@gcanti)
+    - `Semigroup`
+      - remove deprecated `fold` overloading (@gcanti)
+    - `Set`
+      - remove deprecated `isSubset` overloading (@gcanti)
+      - remove deprecated `elem` overloading (@gcanti)
+      - remove deprecated `union` overloading (@gcanti)
+      - remove deprecated `intersection` overloading (@gcanti)
+      - remove deprecated `difference` overloading (@gcanti)
+    - `State`
+      - rename `eval` to `evaluate` (@gcanti)
+      - rename `exec` to `execute` (@gcanti)
+    - `StateReaderTaskEither`
+      - remove `run` util (@gcanti)
+      - rename `eval` to `evaluate` (@gcanti)
+      - rename `exec` to `execute` (@gcanti)
+    - `TaskEither`
+      - remove `getTaskValidation` constrained instance (@gcanti)
+    - `TaskThese`
+      - make `toTuple` lazy (@gcanti)
+    - `These`
+      - make `toTuple` lazy (@gcanti)
+      - make `leftOrBoth` lazy (@gcanti)
+      - make `rightOrBoth` lazy (@gcanti)
+    - `Traced`
+      - curry `tracks` (@gcanti)
     - `Traversable`
       - remove `getTraversableComposition` and related types (@gcanti)
     - `Tree`
       - make `Forest` readonly (@gcanti)
+      - curry `elem` (@gcanti)
     - `Tuple`
       - remove `getChain` constrained instance (@gcanti)
 - **New Feature**

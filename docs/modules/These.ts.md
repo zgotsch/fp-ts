@@ -217,7 +217,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export declare function leftOrBoth<E>(e: E): <A>(ma: Option<A>) => These<E, A>
+export declare function leftOrBoth<E>(e: Lazy<E>): <A>(ma: Option<A>) => These<E, A>
 ```
 
 **Example**
@@ -226,8 +226,9 @@ export declare function leftOrBoth<E>(e: E): <A>(ma: Option<A>) => These<E, A>
 import { leftOrBoth, left, both } from 'fp-ts/lib/These'
 import { none, some } from 'fp-ts/lib/Option'
 
-assert.deepStrictEqual(leftOrBoth('a')(none), left('a'))
-assert.deepStrictEqual(leftOrBoth('a')(some(1)), both('a', 1))
+const f = leftOrBoth(() => 'a')
+assert.deepStrictEqual(f(none), left('a'))
+assert.deepStrictEqual(f(some(1)), both('a', 1))
 ```
 
 Added in v2.0.0
@@ -247,7 +248,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export declare function rightOrBoth<A>(a: A): <E>(me: Option<E>) => These<E, A>
+export declare function rightOrBoth<A>(a: Lazy<A>): <E>(me: Option<E>) => These<E, A>
 ```
 
 **Example**
@@ -256,8 +257,9 @@ export declare function rightOrBoth<A>(a: A): <E>(me: Option<E>) => These<E, A>
 import { rightOrBoth, right, both } from 'fp-ts/lib/These'
 import { none, some } from 'fp-ts/lib/Option'
 
-assert.deepStrictEqual(rightOrBoth(1)(none), right(1))
-assert.deepStrictEqual(rightOrBoth(1)(some('a')), both('a', 1))
+const f = rightOrBoth(() => 1)
+assert.deepStrictEqual(f(none), right(1))
+assert.deepStrictEqual(f(some('a')), both('a', 1))
 ```
 
 Added in v2.0.0
@@ -375,7 +377,7 @@ Added in v2.0.0
 **Signature**
 
 ```ts
-export declare function toTuple<E, A>(e: E, a: A): (fa: These<E, A>) => [E, A]
+export declare function toTuple<E, A>(e: Lazy<E>, a: Lazy<A>): (fa: These<E, A>) => [E, A]
 ```
 
 **Example**
@@ -383,9 +385,13 @@ export declare function toTuple<E, A>(e: E, a: A): (fa: These<E, A>) => [E, A]
 ```ts
 import { toTuple, left, right, both } from 'fp-ts/lib/These'
 
-assert.deepStrictEqual(toTuple('a', 1)(left('b')), ['b', 1])
-assert.deepStrictEqual(toTuple('a', 1)(right(2)), ['a', 2])
-assert.deepStrictEqual(toTuple('a', 1)(both('b', 2)), ['b', 2])
+const f = toTuple(
+  () => 'a',
+  () => 1
+)
+assert.deepStrictEqual(f(left('b')), ['b', 1])
+assert.deepStrictEqual(f(right(2)), ['a', 2])
+assert.deepStrictEqual(f(both('b', 2)), ['b', 2])
 ```
 
 Added in v2.0.0

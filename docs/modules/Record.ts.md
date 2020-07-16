@@ -68,7 +68,7 @@ Added in v2.5.0
   - [foldMapWithIndex](#foldmapwithindex)
   - [fromFoldable](#fromfoldable)
   - [fromFoldableMap](#fromfoldablemap)
-  - [hasOwnProperty (function)](#hasownproperty-function)
+  - [has](#has)
   - [isEmpty](#isempty)
   - [isSubrecord](#issubrecord)
   - [keys](#keys)
@@ -95,7 +95,7 @@ Added in v2.5.0
 **Signature**
 
 ```ts
-export declare const compact: <A>(fa: Readonly<Record<string, Option<A>>>) => Readonly<Record<string, A>>
+export declare const compact: <A>(fa: Readonly<Record<string, O.Option<A>>>) => Readonly<Record<string, A>>
 ```
 
 Added in v2.5.0
@@ -133,7 +133,7 @@ Added in v2.5.0
 
 ```ts
 export declare const filterMap: <A, B>(
-  f: (a: A) => Option<B>
+  f: (a: A) => O.Option<B>
 ) => (fa: Readonly<Record<string, A>>) => Readonly<Record<string, B>>
 ```
 
@@ -577,12 +577,7 @@ Added in v2.5.0
 **Signature**
 
 ```ts
-export declare function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): (fa: ReadonlyRecord<string, A>) => boolean
-  (a: A, fa: ReadonlyRecord<string, A>): boolean
-}
+export declare const elem: <A>(E: Eq<A>) => (a: A) => (fa: Readonly<Record<string, A>>) => boolean
 ```
 
 Added in v2.5.0
@@ -694,7 +689,7 @@ export declare function fromFoldableMap<F, B>(
 
 ```ts
 import { getLastSemigroup } from 'fp-ts/lib/Semigroup'
-import { readonlyArray, zip } from 'fp-ts/lib/Array'
+import { Foldable, zip } from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
 import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/Record'
 
@@ -702,7 +697,7 @@ import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/Record'
 export const zipObject = <K extends string, A>(
   keys: ReadonlyArray<K>,
   values: ReadonlyArray<A>
-): ReadonlyRecord<K, A> => fromFoldableMap(getLastSemigroup<A>(), readonlyArray)(zip(keys, values), identity)
+): ReadonlyRecord<K, A> => fromFoldableMap(getLastSemigroup<A>(), Foldable)(zip(values)(keys), identity)
 
 assert.deepStrictEqual(zipObject(['a', 'b'], [1, 2, 3]), { a: 1, b: 2 })
 
@@ -719,7 +714,7 @@ const users: ReadonlyArray<User> = [
 ]
 
 assert.deepStrictEqual(
-  fromFoldableMap(getLastSemigroup<User>(), readonlyArray)(users, (user) => [user.id, user]),
+  fromFoldableMap(getLastSemigroup<User>(), Foldable)(users, (user) => [user.id, user]),
   {
     id1: { id: 'id1', name: 'name3' },
     id2: { id: 'id2', name: 'name2' },
@@ -729,12 +724,12 @@ assert.deepStrictEqual(
 
 Added in v2.5.0
 
-## hasOwnProperty (function)
+## has
 
 **Signature**
 
 ```ts
-export declare function hasOwnProperty<K extends string>(k: string, r: ReadonlyRecord<K, unknown>): k is K
+export declare function has<K extends string>(k: string, r: ReadonlyRecord<K, unknown>): k is K
 ```
 
 Added in v2.5.0
@@ -758,12 +753,9 @@ Test whether one record contains all of the keys and values contained in another
 **Signature**
 
 ```ts
-export declare function isSubrecord<A>(
+export declare const isSubrecord: <A>(
   E: Eq<A>
-): {
-  (that: ReadonlyRecord<string, A>): (me: ReadonlyRecord<string, A>) => boolean
-  (me: ReadonlyRecord<string, A>, that: ReadonlyRecord<string, A>): boolean
-}
+) => (that: Readonly<Record<string, A>>) => (me: Readonly<Record<string, A>>) => boolean
 ```
 
 Added in v2.5.0
@@ -785,8 +777,7 @@ Lookup the value for a key in a record
 **Signature**
 
 ```ts
-export declare function lookup(k: string): <A>(r: ReadonlyRecord<string, A>) => Option<A>
-export declare function lookup<A>(k: string, r: ReadonlyRecord<string, A>): Option<A>
+export declare const lookup: (k: string) => <A>(r: Readonly<Record<string, A>>) => O.Option<A>
 ```
 
 Added in v2.5.0

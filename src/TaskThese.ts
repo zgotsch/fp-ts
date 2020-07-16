@@ -4,7 +4,7 @@
 import { Applicative2, Applicative2C } from './Applicative'
 import { Apply1 } from './Apply'
 import { Bifunctor2 } from './Bifunctor'
-import { flow, pipe } from './function'
+import { flow, pipe, Lazy } from './function'
 import { Functor2 } from './Functor'
 import { IO } from './IO'
 import { IOEither } from './IOEither'
@@ -108,13 +108,12 @@ export const fold: <E, B, A>(
   /*#__PURE__*/
   flow(TH.fold, T.chain)
 
-// TODO: make lazy in v3
 /* tslint:disable:readonly-array */
 /**
  * @category destructors
  * @since 2.4.0
  */
-export const toTuple: <E, A>(e: E, a: A) => (fa: TaskThese<E, A>) => Task<[E, A]> =
+export const toTuple: <E, A>(e: Lazy<E>, a: Lazy<A>) => (fa: TaskThese<E, A>) => Task<[E, A]> =
   /*#__PURE__*/
   flow(TH.toTuple, T.map)
 /* tslint:enable:readonly-array */
@@ -241,7 +240,7 @@ export function getApplicative<E>(A: Apply1<T.URI>, SE: Semigroup<E>): Applicati
   }
 }
 
-// TODO: remove in v3
+// TODO: do not return MonadTask2C
 /**
  * @category instances
  * @since 2.4.0
@@ -296,7 +295,7 @@ export const bifunctorTaskThese: Bifunctor2<URI> = {
   mapLeft: mapLeft_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.4.0

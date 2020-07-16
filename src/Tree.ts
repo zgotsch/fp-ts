@@ -210,17 +210,11 @@ export function unfoldForestM<M>(
     )
 }
 
-// TODO: curry in v3
 /**
  * @since 2.0.0
  */
-export function elem<A>(E: Eq<A>): (a: A, fa: Tree<A>) => boolean {
-  const go = (a: A, fa: Tree<A>): boolean => {
-    if (E.equals(a, fa.value)) {
-      return true
-    }
-    return fa.forest.some((tree) => go(a, tree))
-  }
+export const elem = <A>(E: Eq<A>): ((a: A) => (fa: Tree<A>) => boolean) => {
+  const go = (a: A) => (fa: Tree<A>) => (E.equals(a, fa.value) ? true : fa.forest.some(go(a)))
   return go
 }
 
@@ -539,7 +533,7 @@ export const Comonad: Comonad1<URI> = {
   extract
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0

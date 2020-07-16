@@ -23,9 +23,9 @@ import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
 import { Monoid } from './Monoid'
+import { NonEmptyArray } from './NonEmptyArray'
 import { isSome, none, Option, some } from './Option'
 import { fromCompare, getMonoid as getOrdMonoid, Ord, ordNumber } from './Ord'
-import { NonEmptyArray } from './NonEmptyArray'
 import { Show } from './Show'
 import { PipeableTraverse1, Traversable1 } from './Traversable'
 import { PipeableTraverseWithIndex1, TraversableWithIndex1 } from './TraversableWithIndex'
@@ -366,7 +366,6 @@ export function isOutOfBound<A>(i: number, as: ReadonlyArray<A>): boolean {
   return i < 0 || i >= as.length
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * This function provides a safe way to read a value at a particular index from an array
  *
@@ -380,13 +379,8 @@ export function isOutOfBound<A>(i: number, as: ReadonlyArray<A>): boolean {
  *
  * @since 2.5.0
  */
-export function lookup(i: number): <A>(as: ReadonlyArray<A>) => Option<A>
-export function lookup<A>(i: number, as: ReadonlyArray<A>): Option<A>
-export function lookup<A>(i: number, as?: ReadonlyArray<A>): Option<A> | (<A>(as: ReadonlyArray<A>) => Option<A>) {
-  return as === undefined ? (as) => lookup(i, as) : isOutOfBound(i, as) ? none : some(as[i])
-}
+export const lookup = (i: number) => <A>(as: ReadonlyArray<A>): Option<A> => (isOutOfBound(i, as) ? none : some(as[i]))
 
-// TODO: remove non-curried overloading in v3
 /**
  * Attaches an element to the front of an array, creating a new non empty array
  *
@@ -399,15 +393,7 @@ export function lookup<A>(i: number, as?: ReadonlyArray<A>): Option<A> | (<A>(as
  * @category constructors
  * @since 2.5.0
  */
-export function cons<A>(head: A): (tail: ReadonlyArray<A>) => NonEmptyArray<A>
-export function cons<A>(head: A, tail: ReadonlyArray<A>): NonEmptyArray<A>
-export function cons<A>(
-  head: A,
-  tail?: ReadonlyArray<A>
-): NonEmptyArray<A> | ((tail: ReadonlyArray<A>) => NonEmptyArray<A>) {
-  if (tail === undefined) {
-    return (tail) => cons(head, tail)
-  }
+export const cons = <A>(head: A) => (tail: ReadonlyArray<A>): NonEmptyArray<A> => {
   const len = tail.length
   const r = Array(len + 1)
   for (let i = 0; i < len; i++) {
@@ -417,19 +403,19 @@ export function cons<A>(
   return (r as unknown) as NonEmptyArray<A>
 }
 
-// TODO: curry and make data-last in v3
 /**
  * Append an element to the end of an array, creating a new non empty array
  *
  * @example
  * import { snoc } from 'fp-ts/lib/Array'
+ * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+ * assert.deepStrictEqual(pipe([1, 2, 3], snoc(4)), [1, 2, 3, 4])
  *
  * @category constructors
  * @since 2.5.0
  */
-export function snoc<A>(init: ReadonlyArray<A>, end: A): NonEmptyArray<A> {
+export const snoc = <A>(end: A) => (init: ReadonlyArray<A>): NonEmptyArray<A> => {
   const len = init.length
   const r = Array(len + 1)
   for (let i = 0; i < len; i++) {
@@ -467,9 +453,7 @@ export function head<A>(as: ReadonlyArray<A>): Option<A> {
  *
  * @since 2.5.0
  */
-export function last<A>(as: ReadonlyArray<A>): Option<A> {
-  return lookup(as.length - 1, as)
-}
+export const last = <A>(as: ReadonlyArray<A>): Option<A> => lookup(as.length - 1)(as)
 
 /**
  * Get all but the first element of an array, creating a new array, or `None` if the array is empty
@@ -977,20 +961,22 @@ export function sort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
   return (as) => (isEmpty(as) ? as : as.slice().sort(O.compare))
 }
 
-// TODO: curry and make data-last in v3
 /**
  * Apply a function to pairs of elements at the same index in two arrays, collecting the results in a new array. If one
  * input array is short, excess elements of the longer array are discarded.
  *
  * @example
  * import { zipWith } from 'fp-ts/lib/Array'
+ * import { pipe } from 'fp-ts/lib/function'
  *
- * assert.deepStrictEqual(zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n), ['a1', 'b2', 'c3'])
+ * assert.deepStrictEqual(pipe([1, 2, 3], zipWith(['a', 'b', 'c', 'd'], (n, s) => s + n)), ['a1', 'b2', 'c3'])
  *
  * @category combinators
  * @since 2.5.0
  */
-export function zipWith<A, B, C>(fa: ReadonlyArray<A>, fb: ReadonlyArray<B>, f: (a: A, b: B) => C): ReadonlyArray<C> {
+export const zipWith = <A, B, C>(fb: ReadonlyArray<B>, f: (a: A, b: B) => C) => (
+  fa: ReadonlyArray<A>
+): ReadonlyArray<C> => {
   // tslint:disable-next-line: readonly-array
   const fc: Array<C> = []
   const len = Math.min(fa.length, fb.length)
@@ -1000,7 +986,6 @@ export function zipWith<A, B, C>(fa: ReadonlyArray<A>, fb: ReadonlyArray<B>, f: 
   return fc
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Takes two arrays and returns an array of corresponding pairs. If one input array is short, excess elements of the
  * longer array are discarded
@@ -1014,17 +999,8 @@ export function zipWith<A, B, C>(fa: ReadonlyArray<A>, fb: ReadonlyArray<B>, f: 
  * @category combinators
  * @since 2.5.0
  */
-export function zip<B>(bs: ReadonlyArray<B>): <A>(as: ReadonlyArray<A>) => ReadonlyArray<readonly [A, B]>
-export function zip<A, B>(as: ReadonlyArray<A>, bs: ReadonlyArray<B>): ReadonlyArray<readonly [A, B]>
-export function zip<A, B>(
-  as: ReadonlyArray<A>,
-  bs?: ReadonlyArray<B>
-): ReadonlyArray<readonly [A, B]> | ((bs: ReadonlyArray<B>) => ReadonlyArray<readonly [B, A]>) {
-  if (bs === undefined) {
-    return (bs) => zip(bs, as)
-  }
-  return zipWith(as, bs, (a, b) => [a, b])
-}
+export const zip = <B>(bs: ReadonlyArray<B>): (<A>(as: ReadonlyArray<A>) => ReadonlyArray<readonly [A, B]>) =>
+  zipWith(bs, (a, b) => [a, b])
 
 /**
  * The function is reverse of `zip`. Takes an array of pairs and return two corresponding arrays
@@ -1074,7 +1050,6 @@ export function rotate(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<A>
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test if a value is a member of an array. Takes a `Eq<A>` as a single
  * argument which returns the function to use to search for a value of type `A` in
@@ -1090,28 +1065,16 @@ export function rotate(n: number): <A>(as: ReadonlyArray<A>) => ReadonlyArray<A>
  *
  * @since 2.5.0
  */
-export function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): (as: ReadonlyArray<A>) => boolean
-  (a: A, as: ReadonlyArray<A>): boolean
-}
-export function elem<A>(E: Eq<A>): (a: A, as?: ReadonlyArray<A>) => boolean | ((as: ReadonlyArray<A>) => boolean) {
-  return (a, as?) => {
-    if (as === undefined) {
-      const elemE = elem(E)
-      return (as) => elemE(a, as)
+export const elem = <A>(E: Eq<A>) => (a: A) => (as: ReadonlyArray<A>): boolean => {
+  const predicate = (element: A) => E.equals(element, a)
+  let i = 0
+  const len = as.length
+  for (; i < len; i++) {
+    if (predicate(as[i])) {
+      return true
     }
-    const predicate = (element: A) => E.equals(element, a)
-    let i = 0
-    const len = as.length
-    for (; i < len; i++) {
-      if (predicate(as[i])) {
-        return true
-      }
-    }
-    return false
   }
+  return false
 }
 
 /**
@@ -1130,16 +1093,16 @@ export function uniq<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
   const elemS = elem(E)
   return (as) => {
     // tslint:disable-next-line: readonly-array
-    const r: Array<A> = []
+    const out: Array<A> = []
     const len = as.length
     let i = 0
     for (; i < len; i++) {
       const a = as[i]
-      if (!elemS(a, r)) {
-        r.push(a)
+      if (!elemS(a)(out)) {
+        out.push(a)
       }
     }
-    return len === r.length ? as : r
+    return len === out.length ? as : out
   }
 }
 
@@ -1302,13 +1265,12 @@ export function comprehension<R>(
     if (input.length === 0) {
       return g(...scope) ? [f(...scope)] : empty
     } else {
-      return chain_(input[0], (x) => go(snoc(scope, x), input.slice(1)))
+      return chain_(input[0], (x) => go(snoc(x)(scope), input.slice(1)))
     }
   }
   return go(empty, input)
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Creates an array of unique values, in order, from all given arrays using a `Eq` for equality comparisons
  *
@@ -1322,29 +1284,14 @@ export function comprehension<R>(
  * @category combinators
  * @since 2.5.0
  */
-export function union<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
-export function union<A>(
-  E: Eq<A>
-): (xs: ReadonlyArray<A>, ys?: ReadonlyArray<A>) => ReadonlyArray<A> | ((ys: ReadonlyArray<A>) => ReadonlyArray<A>) {
+export const union = <A>(E: Eq<A>) => (ys: ReadonlyArray<A>) => (xs: ReadonlyArray<A>): ReadonlyArray<A> => {
   const elemE = elem(E)
-  return (xs, ys?) => {
-    if (ys === undefined) {
-      const unionE = union(E)
-      return (ys) => unionE(ys, xs)
-    }
-    return concat(
-      xs,
-      ys.filter((a) => !elemE(a, xs))
-    )
-  }
+  return concat(
+    xs,
+    ys.filter((a) => !elemE(a)(xs))
+  )
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Creates an array of unique values that are included in all given arrays using a `Eq` for equality
  * comparisons. The order and references of result values are determined by the first array.
@@ -1359,26 +1306,11 @@ export function union<A>(
  * @category combinators
  * @since 2.5.0
  */
-export function intersection<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
-export function intersection<A>(
-  E: Eq<A>
-): (xs: ReadonlyArray<A>, ys?: ReadonlyArray<A>) => ReadonlyArray<A> | ((ys: ReadonlyArray<A>) => ReadonlyArray<A>) {
+export const intersection = <A>(E: Eq<A>) => (ys: ReadonlyArray<A>) => (xs: ReadonlyArray<A>): ReadonlyArray<A> => {
   const elemE = elem(E)
-  return (xs, ys?) => {
-    if (ys === undefined) {
-      const intersectionE = intersection(E)
-      return (ys) => intersectionE(ys, xs)
-    }
-    return xs.filter((a) => elemE(a, ys))
-  }
+  return xs.filter((a) => elemE(a)(ys))
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Creates an array of array values not included in the other given array using a `Eq` for equality
  * comparisons. The order and references of result values are determined by the first array.
@@ -1393,23 +1325,9 @@ export function intersection<A>(
  * @category combinators
  * @since 2.5.0
  */
-export function difference<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
-export function difference<A>(
-  E: Eq<A>
-): (xs: ReadonlyArray<A>, ys?: ReadonlyArray<A>) => ReadonlyArray<A> | ((ys: ReadonlyArray<A>) => ReadonlyArray<A>) {
+export const difference = <A>(E: Eq<A>) => (ys: ReadonlyArray<A>) => (xs: ReadonlyArray<A>): ReadonlyArray<A> => {
   const elemE = elem(E)
-  return (xs, ys?) => {
-    if (ys === undefined) {
-      const differenceE = difference(E)
-      return (ys) => differenceE(ys, xs)
-    }
-    return xs.filter((a) => !elemE(a, ys))
-  }
+  return xs.filter((a) => !elemE(a)(ys))
 }
 
 /**
@@ -1558,7 +1476,7 @@ const traverseWithIndex_ = <F>(F: ApplicativeHKT<F>) => <A, B>(
 ): HKT<F, ReadonlyArray<B>> => {
   return reduceWithIndex_(ta, F.of<ReadonlyArray<B>>(zero()), (i, fbs, a) =>
     F.ap(
-      F.map(fbs, (bs) => (b: B) => snoc(bs, b)),
+      F.map(fbs, (bs) => (b: B) => snoc(b)(bs)),
       f(i, a)
     )
   )
@@ -1860,7 +1778,7 @@ export const sequence: Traversable1<URI>['sequence'] = <F>(F: ApplicativeHKT<F>)
 ): HKT<F, ReadonlyArray<A>> => {
   return reduce_(ta, F.of(zero()), (fas, fa) =>
     F.ap(
-      F.map(fas, (as) => (a: A) => snoc(as, a)),
+      F.map(fas, (as) => (a: A) => snoc(a)(as)),
       fa
     )
   )
@@ -2153,7 +2071,7 @@ export const Witherable: Witherable1<URI> = {
   wilt: wilt_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.5.0

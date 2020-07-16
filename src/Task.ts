@@ -318,7 +318,7 @@ export const Monad: Monad1<URI> = {
   chain: chain_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0
@@ -333,7 +333,7 @@ export const task: Monad1<URI> & MonadTask1<URI> = {
   fromTask
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * Like `task` but `ap` is sequential
  *

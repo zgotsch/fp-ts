@@ -414,12 +414,7 @@ Test whether or not a value is a member of a map
 **Signature**
 
 ```ts
-export declare function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): <K>(m: ReadonlyMap<K, A>) => boolean
-  <K>(a: A, m: ReadonlyMap<K, A>): boolean
-}
+export declare const elem: <A>(E: Eq<A>) => (a: A) => <K>(m: ReadonlyMap<K, A>) => boolean
 ```
 
 Added in v2.5.0
@@ -453,13 +448,10 @@ Test whether or not one `Map` contains all of the keys and values contained in a
 **Signature**
 
 ```ts
-export declare function isSubmap<K, A>(
+export declare const isSubmap: <K, A>(
   SK: Eq<K>,
   SA: Eq<A>
-): {
-  (that: ReadonlyMap<K, A>): (me: ReadonlyMap<K, A>) => boolean
-  (me: ReadonlyMap<K, A>, that: ReadonlyMap<K, A>): boolean
-}
+) => (that: ReadonlyMap<K, A>) => (me: ReadonlyMap<K, A>) => boolean
 ```
 
 Added in v2.5.0
@@ -483,12 +475,7 @@ Lookup the value for a key in a `Map`.
 **Signature**
 
 ```ts
-export declare function lookup<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => Option<A>
-  <A>(k: K, m: ReadonlyMap<K, A>): Option<A>
-}
+export declare const lookup: <K>(E: Eq<K>) => (k: K) => <A>(m: ReadonlyMap<K, A>) => O.Option<A>
 ```
 
 Added in v2.5.0
@@ -501,12 +488,7 @@ If the result is a `Some`, the existing key is also returned.
 **Signature**
 
 ```ts
-export declare function lookupWithKey<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => Option<readonly [K, A]>
-  <A>(k: K, m: ReadonlyMap<K, A>): Option<readonly [K, A]>
-}
+export declare const lookupWithKey: <K>(E: Eq<K>) => (k: K) => <A>(m: ReadonlyMap<K, A>) => O.Option<readonly [K, A]>
 ```
 
 Added in v2.5.0
@@ -518,12 +500,7 @@ Test whether or not a key exists in a map
 **Signature**
 
 ```ts
-export declare function member<K>(
-  E: Eq<K>
-): {
-  (k: K): <A>(m: ReadonlyMap<K, A>) => boolean
-  <A>(k: K, m: ReadonlyMap<K, A>): boolean
-}
+export declare const member: <K>(E: Eq<K>) => (k: K) => <A>(m: ReadonlyMap<K, A>) => boolean
 ```
 
 Added in v2.5.0

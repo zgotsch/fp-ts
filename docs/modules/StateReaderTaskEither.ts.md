@@ -84,9 +84,8 @@ Added in v2.0.0
 - [model](#model)
   - [StateReaderTaskEither (interface)](#statereadertaskeither-interface)
 - [utils](#utils)
-  - [evalState](#evalstate)
-  - [execState](#execstate)
-  - [run](#run)
+  - [evaluate](#evaluate)
+  - [execute](#execute)
 
 ---
 
@@ -807,42 +806,30 @@ Added in v2.0.0
 
 # utils
 
-## evalState
+## evaluate
 
 Run a computation in the `StateReaderTaskEither` monad, discarding the final state
 
 **Signature**
 
 ```ts
-export declare const evalState: <S, R, E, A>(
-  ma: StateReaderTaskEither<S, R, E, A>,
+export declare const evaluate: <S>(
   s: S
-) => RTE.ReaderTaskEither<R, E, A>
+) => <R, E, A>(ma: StateReaderTaskEither<S, R, E, A>) => RTE.ReaderTaskEither<R, E, A>
 ```
 
 Added in v2.0.0
 
-## execState
+## execute
 
 Run a computation in the `StateReaderTaskEither` monad discarding the result
 
 **Signature**
 
 ```ts
-export declare const execState: <S, R, E, A>(
-  ma: StateReaderTaskEither<S, R, E, A>,
+export declare const execute: <S>(
   s: S
-) => RTE.ReaderTaskEither<R, E, S>
-```
-
-Added in v2.0.0
-
-## run
-
-**Signature**
-
-```ts
-export declare function run<S, R, E, A>(ma: StateReaderTaskEither<S, R, E, A>, s: S, r: R): Promise<Either<E, [A, S]>>
+) => <R, E, A>(ma: StateReaderTaskEither<S, R, E, A>) => RTE.ReaderTaskEither<R, E, S>
 ```
 
 Added in v2.0.0

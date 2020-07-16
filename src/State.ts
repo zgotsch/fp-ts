@@ -215,7 +215,7 @@ export const Monad: Monad2<URI> = {
   chain: chain_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0
@@ -226,18 +226,16 @@ export const state: Monad2<URI> = Monad
 // utils
 // -------------------------------------------------------------------------------------
 
-// TODO: curry and rename to `evaluate` in v3
 /**
  * Run a computation in the `State` monad, discarding the final state
  *
  * @since 2.0.0
  */
-export const evalState: <S, A>(ma: State<S, A>, s: S) => A = (ma, s) => ma(s)[0]
+export const evaluate = <S>(s: S) => <A>(ma: State<S, A>): A => ma(s)[0]
 
-// TODO: curry and rename to `execute` in v3
 /**
  * Run a computation in the `State` monad discarding the result
  *
  * @since 2.0.0
  */
-export const execState: <S, A>(ma: State<S, A>, s: S) => S = (ma, s) => ma(s)[1]
+export const execute = <S>(s: S) => <A>(ma: State<S, A>): S => ma(s)[1]

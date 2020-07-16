@@ -90,15 +90,6 @@ describe('ReaderTask', () => {
   // combinators
   // -------------------------------------------------------------------------------------
 
-  it('local', async () => {
-    const len = (s: string): number => s.length
-    const e = await pipe(
-      _.asks((n: number) => n + 1),
-      _.local(len)
-    )('aaa')()
-    assert.deepStrictEqual(e, 4)
-  })
-
   it('chainIOK', async () => {
     const f = (s: string) => I.of(s.length)
     const x = await pipe(_.of('a'), _.chainIOK(f))(undefined)()

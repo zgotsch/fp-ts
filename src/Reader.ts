@@ -280,7 +280,7 @@ export const Category: Category2<URI> = {
   id
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0

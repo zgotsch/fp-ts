@@ -115,16 +115,6 @@ export const constVoid = (): void => {
   return
 }
 
-// TODO: remove in v3
-/**
- * Flips the order of the arguments of a function of two arguments.
- *
- * @since 2.0.0
- */
-export function flip<A, B, C>(f: (a: A, b: B) => C): (b: B, a: A) => C {
-  return (b, a) => f(a, b)
-}
-
 /**
  * Performs left-to-right function composition. The first argument may have any arity, the remaining arguments must be unary.
  *

@@ -630,7 +630,7 @@ export const Alt: Alt4<URI> = {
   alt: alt_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0
@@ -649,7 +649,7 @@ export const stateReaderTaskEither: Monad4<URI> & Bifunctor4<URI> & Alt4<URI> & 
   throwError
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * Like `stateReaderTaskEither` but `ap` is sequential
  *
@@ -674,43 +674,24 @@ export const stateReaderTaskEitherSeq: typeof stateReaderTaskEither = {
 // utils
 // -------------------------------------------------------------------------------------
 
-// TODO: remove in v3
-/* tslint:disable:readonly-array */
-/**
- * @since 2.0.0
- */
-/* istanbul ignore next */
-export function run<S, R, E, A>(ma: StateReaderTaskEither<S, R, E, A>, s: S, r: R): Promise<Either<E, [A, S]>> {
-  return ma(s)(r)()
-}
-/* tslint:enable:readonly-array */
-
-// TODO: curry and rename to `evaluate` in v3
 /**
  * Run a computation in the `StateReaderTaskEither` monad, discarding the final state
  *
  * @since 2.0.0
  */
-export const evalState: <S, R, E, A>(ma: StateReaderTaskEither<S, R, E, A>, s: S) => ReaderTaskEither<R, E, A> = (
-  fsa,
-  s
-) =>
+export const evaluate = <S>(s: S) => <R, E, A>(ma: StateReaderTaskEither<S, R, E, A>): ReaderTaskEither<R, E, A> =>
   pipe(
-    fsa(s),
+    ma(s),
     RTE.map(([a]) => a)
   )
 
-// TODO: curry and rename to `execute` in v3
 /**
  * Run a computation in the `StateReaderTaskEither` monad discarding the result
  *
  * @since 2.0.0
  */
-export const execState: <S, R, E, A>(ma: StateReaderTaskEither<S, R, E, A>, s: S) => ReaderTaskEither<R, E, S> = (
-  fsa,
-  s
-) =>
+export const execute = <S>(s: S) => <R, E, A>(ma: StateReaderTaskEither<S, R, E, A>): ReaderTaskEither<R, E, S> =>
   pipe(
-    fsa(s),
+    ma(s),
     RTE.map(([_, s]) => s)
   )

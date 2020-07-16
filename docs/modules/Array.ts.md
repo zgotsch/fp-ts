@@ -627,12 +627,7 @@ comparisons. The order and references of result values are determined by the fir
 **Signature**
 
 ```ts
-export declare function difference<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
+export declare const difference: <A>(E: Eq<A>) => (ys: readonly A[]) => (xs: readonly A[]) => readonly A[]
 ```
 
 **Example**
@@ -715,12 +710,7 @@ comparisons. The order and references of result values are determined by the fir
 **Signature**
 
 ```ts
-export declare function intersection<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
+export declare const intersection: <A>(E: Eq<A>) => (ys: readonly A[]) => (xs: readonly A[]) => readonly A[]
 ```
 
 **Example**
@@ -948,12 +938,7 @@ Creates an array of unique values, in order, from all given arrays using a `Eq` 
 **Signature**
 
 ```ts
-export declare function union<A>(
-  E: Eq<A>
-): {
-  (xs: ReadonlyArray<A>): (ys: ReadonlyArray<A>) => ReadonlyArray<A>
-  (xs: ReadonlyArray<A>, ys: ReadonlyArray<A>): ReadonlyArray<A>
-}
+export declare const union: <A>(E: Eq<A>) => (ys: readonly A[]) => (xs: readonly A[]) => readonly A[]
 ```
 
 **Example**
@@ -997,8 +982,7 @@ longer array are discarded
 **Signature**
 
 ```ts
-export declare function zip<B>(bs: ReadonlyArray<B>): <A>(as: ReadonlyArray<A>) => ReadonlyArray<readonly [A, B]>
-export declare function zip<A, B>(as: ReadonlyArray<A>, bs: ReadonlyArray<B>): ReadonlyArray<readonly [A, B]>
+export declare const zip: <B>(bs: readonly B[]) => <A>(as: readonly A[]) => readonly (readonly [A, B])[]
 ```
 
 **Example**
@@ -1024,20 +1008,20 @@ input array is short, excess elements of the longer array are discarded.
 **Signature**
 
 ```ts
-export declare function zipWith<A, B, C>(
-  fa: ReadonlyArray<A>,
-  fb: ReadonlyArray<B>,
-  f: (a: A, b: B) => C
-): ReadonlyArray<C>
+export declare const zipWith: <A, B, C>(fb: readonly B[], f: (a: A, b: B) => C) => (fa: readonly A[]) => readonly C[]
 ```
 
 **Example**
 
 ```ts
 import { zipWith } from 'fp-ts/lib/Array'
+import { pipe } from 'fp-ts/lib/function'
 
 assert.deepStrictEqual(
-  zipWith([1, 2, 3], ['a', 'b', 'c', 'd'], (n, s) => s + n),
+  pipe(
+    [1, 2, 3],
+    zipWith(['a', 'b', 'c', 'd'], (n, s) => s + n)
+  ),
   ['a1', 'b2', 'c3']
 )
 ```
@@ -1053,8 +1037,7 @@ Attaches an element to the front of an array, creating a new non empty array
 **Signature**
 
 ```ts
-export declare function cons<A>(head: A): (tail: ReadonlyArray<A>) => NonEmptyArray<A>
-export declare function cons<A>(head: A, tail: ReadonlyArray<A>): NonEmptyArray<A>
+export declare const cons: <A>(head: A) => (tail: readonly A[]) => NonEmptyArray<A>
 ```
 
 **Example**
@@ -1146,15 +1129,16 @@ Append an element to the end of an array, creating a new non empty array
 **Signature**
 
 ```ts
-export declare function snoc<A>(init: ReadonlyArray<A>, end: A): NonEmptyArray<A>
+export declare const snoc: <A>(end: A) => (init: readonly A[]) => NonEmptyArray<A>
 ```
 
 **Example**
 
 ```ts
 import { snoc } from 'fp-ts/lib/Array'
+import { pipe } from 'fp-ts/lib/function'
 
-assert.deepStrictEqual(snoc([1, 2, 3], 4), [1, 2, 3, 4])
+assert.deepStrictEqual(pipe([1, 2, 3], snoc(4)), [1, 2, 3, 4])
 ```
 
 Added in v2.5.0
@@ -1690,12 +1674,7 @@ an array of type `ReadonlyArray<A>`.
 **Signature**
 
 ```ts
-export declare function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): (as: ReadonlyArray<A>) => boolean
-  (a: A, as: ReadonlyArray<A>): boolean
-}
+export declare const elem: <A>(E: Eq<A>) => (a: A) => (as: readonly A[]) => boolean
 ```
 
 **Example**
@@ -1993,7 +1972,7 @@ Get the last element in an array, or `None` if the array is empty
 **Signature**
 
 ```ts
-export declare function last<A>(as: ReadonlyArray<A>): Option<A>
+export declare const last: <A>(as: readonly A[]) => Option<A>
 ```
 
 **Example**
@@ -2036,8 +2015,7 @@ This function provides a safe way to read a value at a particular index from an 
 **Signature**
 
 ```ts
-export declare function lookup(i: number): <A>(as: ReadonlyArray<A>) => Option<A>
-export declare function lookup<A>(i: number, as: ReadonlyArray<A>): Option<A>
+export declare const lookup: (i: number) => <A>(as: readonly A[]) => Option<A>
 ```
 
 **Example**

@@ -17,15 +17,12 @@ export interface Traced<P, A> {
   (p: P): A
 }
 
-// TODO: curry in v3
 /**
  * Extracts a value at a relative position which depends on the current value.
  *
  * @since 2.0.0
  */
-export function tracks<P, A>(M: Monoid<P>, f: (a: A) => P): (wa: Traced<P, A>) => A {
-  return (wa) => wa(f(wa(M.empty)))
-}
+export const tracks = <P>(M: Monoid<P>) => <A>(f: (a: A) => P) => (pa: Traced<P, A>): A => pa(f(pa(M.empty)))
 
 // tslint:disable:readonly-array
 /**
@@ -33,8 +30,8 @@ export function tracks<P, A>(M: Monoid<P>, f: (a: A) => P): (wa: Traced<P, A>) =
  *
  * @since 2.0.0
  */
-export function listen<P, A>(wa: Traced<P, A>): Traced<P, [A, P]> {
-  return (e) => [wa(e), e]
+export function listen<P, A>(pa: Traced<P, A>): Traced<P, [A, P]> {
+  return (e) => [pa(e), e]
 }
 // tslint:enable:readonly-array
 
@@ -44,7 +41,7 @@ export function listen<P, A>(wa: Traced<P, A>): Traced<P, [A, P]> {
  *
  * @since 2.0.0
  */
-export function listens<P, B>(f: (p: P) => B): <A>(wa: Traced<P, A>) => Traced<P, [A, B]> {
+export function listens<P, B>(f: (p: P) => B): <A>(pa: Traced<P, A>) => Traced<P, [A, B]> {
   return (wa) => (e) => [wa(e), f(e)]
 }
 // tslint:enable:readonly-array
@@ -54,7 +51,7 @@ export function listens<P, B>(f: (p: P) => B): <A>(wa: Traced<P, A>) => Traced<P
  *
  * @since 2.0.0
  */
-export function censor<P>(f: (p: P) => P): <A>(wa: Traced<P, A>) => Traced<P, A> {
+export function censor<P>(f: (p: P) => P): <A>(pa: Traced<P, A>) => Traced<P, A> {
   return (wa) => (e) => wa(f(e))
 }
 
@@ -63,7 +60,7 @@ export function censor<P>(f: (p: P) => P): <A>(wa: Traced<P, A>) => Traced<P, A>
  * @since 2.0.0
  */
 export function getComonad<P>(monoid: Monoid<P>): Comonad2C<URI, P> {
-  function extend<A, B>(wa: Traced<P, A>, f: (wa: Traced<P, A>) => B): Traced<P, B> {
+  function extend<A, B>(wa: Traced<P, A>, f: (pa: Traced<P, A>) => B): Traced<P, B> {
     return (p1) => f((p2) => wa(monoid.concat(p1, p2)))
   }
 
@@ -97,7 +94,7 @@ const map_: Functor2<URI>['map'] = (wa, f) => (p) => f(wa(p))
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: Traced<E, A>) => Traced<E, B> = (f) => (fa) => map_(fa, f)
+export const map: <A, B>(f: (a: A) => B) => <P>(fa: Traced<P, A>) => Traced<P, B> = (f) => (fa) => map_(fa, f)
 
 // -------------------------------------------------------------------------------------
 // instances
@@ -130,7 +127,7 @@ export const Functor: Functor2<URI> = {
   map: map_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.0.0

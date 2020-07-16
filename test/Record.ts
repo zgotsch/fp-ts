@@ -245,10 +245,6 @@ describe('Record', () => {
   })
 
   it('lookup', () => {
-    assert.deepStrictEqual(_.lookup('a', { a: 1 }), O.some(1))
-    assert.deepStrictEqual(_.lookup('b', { a: 1 }), O.none)
-    assert.deepStrictEqual(_.lookup('b', noPrototype), O.none)
-
     assert.deepStrictEqual(_.lookup('a')({ a: 1 }), O.some(1))
     assert.deepStrictEqual(_.lookup('b')({ a: 1 }), O.none)
     assert.deepStrictEqual(_.lookup('b')(noPrototype), O.none)
@@ -359,16 +355,13 @@ describe('Record', () => {
   })
 
   it('elem', () => {
-    assert.deepStrictEqual(_.elem(eqNumber)(1, { a: 1, b: 2 }), true)
-    assert.deepStrictEqual(_.elem(eqNumber)(3, { a: 1, b: 2 }), false)
-
     assert.deepStrictEqual(_.elem(eqNumber)(1)({ a: 1, b: 2 }), true)
     assert.deepStrictEqual(_.elem(eqNumber)(3)({ a: 1, b: 2 }), false)
   })
 
   it('fromFoldableMap', () => {
     const zipObject = <K extends string, A>(keys: ReadonlyArray<K>, values: ReadonlyArray<A>): _.ReadonlyRecord<K, A> =>
-      _.fromFoldableMap(getLastSemigroup<A>(), A.Foldable)(A.zip(keys, values), identity)
+      _.fromFoldableMap(getLastSemigroup<A>(), A.Foldable)(A.zip(values)(keys), identity)
 
     assert.deepStrictEqual(zipObject(['a', 'b'], [1, 2, 3]), { a: 1, b: 2 })
 
@@ -405,11 +398,11 @@ describe('Record', () => {
 
   it('hasOwnProperty', () => {
     const x: _.ReadonlyRecord<string, number> = { a: 1 }
-    assert.deepStrictEqual(_.hasOwnProperty('a', x), true)
-    assert.deepStrictEqual(_.hasOwnProperty('b', x), false)
+    assert.deepStrictEqual(_.has('a', x), true)
+    assert.deepStrictEqual(_.has('b', x), false)
     // TODO: remove in v3
     // #1249
-    const hasOwnProperty: any = _.hasOwnProperty
+    const hasOwnProperty: any = _.has
     assert.deepStrictEqual(hasOwnProperty.call(x, 'a'), true)
     assert.deepStrictEqual(hasOwnProperty.call(x, 'b'), false)
   })

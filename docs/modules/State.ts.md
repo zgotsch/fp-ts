@@ -39,8 +39,8 @@ Added in v2.0.0
 - [model](#model)
   - [State (interface)](#state-interface)
 - [utils](#utils)
-  - [evalState](#evalstate)
-  - [execState](#execstate)
+  - [evaluate](#evaluate)
+  - [execute](#execute)
 
 ---
 
@@ -274,26 +274,26 @@ Added in v2.0.0
 
 # utils
 
-## evalState
+## evaluate
 
 Run a computation in the `State` monad, discarding the final state
 
 **Signature**
 
 ```ts
-export declare const evalState: <S, A>(ma: State<S, A>, s: S) => A
+export declare const evaluate: <S>(s: S) => <A>(ma: State<S, A>) => A
 ```
 
 Added in v2.0.0
 
-## execState
+## execute
 
 Run a computation in the `State` monad discarding the result
 
 **Signature**
 
 ```ts
-export declare const execState: <S, A>(ma: State<S, A>, s: S) => S
+export declare const execute: <S>(s: S) => <A>(ma: State<S, A>) => S
 ```
 
 Added in v2.0.0

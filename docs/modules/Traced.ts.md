@@ -40,7 +40,7 @@ use the type constructor `F` to represent some computational context.
 **Signature**
 
 ```ts
-export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: Traced<E, A>) => Traced<E, B>
+export declare const map: <A, B>(f: (a: A) => B) => <P>(fa: Traced<P, A>) => Traced<P, B>
 ```
 
 Added in v2.0.0
@@ -120,7 +120,7 @@ Apply a function to the current position
 **Signature**
 
 ```ts
-export declare function censor<P>(f: (p: P) => P): <A>(wa: Traced<P, A>) => Traced<P, A>
+export declare function censor<P>(f: (p: P) => P): <A>(pa: Traced<P, A>) => Traced<P, A>
 ```
 
 Added in v2.0.0
@@ -132,7 +132,7 @@ Get the current position
 **Signature**
 
 ```ts
-export declare function listen<P, A>(wa: Traced<P, A>): Traced<P, [A, P]>
+export declare function listen<P, A>(pa: Traced<P, A>): Traced<P, [A, P]>
 ```
 
 Added in v2.0.0
@@ -144,7 +144,7 @@ Get a value which depends on the current position
 **Signature**
 
 ```ts
-export declare function listens<P, B>(f: (p: P) => B): <A>(wa: Traced<P, A>) => Traced<P, [A, B]>
+export declare function listens<P, B>(f: (p: P) => B): <A>(pa: Traced<P, A>) => Traced<P, [A, B]>
 ```
 
 Added in v2.0.0
@@ -156,7 +156,7 @@ Extracts a value at a relative position which depends on the current value.
 **Signature**
 
 ```ts
-export declare function tracks<P, A>(M: Monoid<P>, f: (a: A) => P): (wa: Traced<P, A>) => A
+export declare const tracks: <P>(M: Monoid<P>) => <A>(f: (a: A) => P) => (pa: Traced<P, A>) => A
 ```
 
 Added in v2.0.0

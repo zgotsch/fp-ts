@@ -226,8 +226,8 @@ describe('NonEmptyArray', () => {
 
   it('modifyAt', () => {
     const double = (n: number): number => n * 2
-    assert.deepStrictEqual(_.modifyAt(1, double)(_.cons(1, [])), O.none)
-    assert.deepStrictEqual(_.modifyAt(1, double)(_.cons(1, [2])), O.some(_.cons(1, [4])))
+    assert.deepStrictEqual(_.modifyAt(1, double)(_.cons(1)([])), O.none)
+    assert.deepStrictEqual(_.modifyAt(1, double)(_.cons(1)([2])), O.some(_.cons(1)([4])))
   })
 
   it('filter', () => {
@@ -288,11 +288,11 @@ describe('NonEmptyArray', () => {
   })
 
   it('cons', () => {
-    assert.deepStrictEqual(_.cons(1, [2, 3, 4]), [1, 2, 3, 4])
+    assert.deepStrictEqual(_.cons(1)([2, 3, 4]), [1, 2, 3, 4])
   })
 
   it('snoc', () => {
-    assert.deepStrictEqual(_.snoc([1, 2, 3], 4), [1, 2, 3, 4])
+    assert.deepStrictEqual(_.snoc(4)([1, 2, 3]), [1, 2, 3, 4])
   })
 
   it('getShow', () => {

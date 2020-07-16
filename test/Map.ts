@@ -175,16 +175,10 @@ describe('Map', () => {
       [{ id: 'b' }, 2]
     ])
     const memberS = _.member(eqUser)
-    assert.deepStrictEqual(memberS({ id: 'a' }, x), true)
-    assert.deepStrictEqual(memberS({ id: 'c' }, x), false)
     assert.deepStrictEqual(memberS({ id: 'a' })(x), true)
     assert.deepStrictEqual(memberS({ id: 'c' })(x), false)
 
     const member = _.member(eqKey)
-    assert.deepStrictEqual(member({ id: 1 }, repo), true)
-    assert.deepStrictEqual(member({ id: 2 }, repo), true)
-    assert.deepStrictEqual(member({ id: 4 }, repo), true)
-    assert.deepStrictEqual(member({ id: 3 }, repo), false)
     assert.deepStrictEqual(member({ id: 1 })(repo), true)
     assert.deepStrictEqual(member({ id: 2 })(repo), true)
     assert.deepStrictEqual(member({ id: 4 })(repo), true)
@@ -197,8 +191,6 @@ describe('Map', () => {
       ['b', 2]
     ])
     const elemS = _.elem(eqNumber)
-    assert.deepStrictEqual(elemS(2, x), true)
-    assert.deepStrictEqual(elemS(3, x), false)
     assert.deepStrictEqual(elemS(2)(x), true)
     assert.deepStrictEqual(elemS(3)(x), false)
 
@@ -565,15 +557,10 @@ describe('Map', () => {
   it('lookupWithKey', () => {
     const x = new Map<User, number>([[{ id: 'a' }, 1]])
     const lookupWithKeyS = _.lookupWithKey(eqUser)
-    assert.deepStrictEqual(lookupWithKeyS({ id: 'a' }, x), O.some([{ id: 'a' }, 1]))
-    assert.deepStrictEqual(lookupWithKeyS({ id: 'b' }, x), O.none)
     assert.deepStrictEqual(lookupWithKeyS({ id: 'a' })(x), O.some([{ id: 'a' }, 1]))
     assert.deepStrictEqual(lookupWithKeyS({ id: 'b' })(x), O.none)
 
     const lookupWithKey = _.lookupWithKey(eqKey)
-    assert.deepStrictEqual(lookupWithKey({ id: 1 }, repo), O.some([{ id: 1 }, { value: 1 }]))
-    assert.deepStrictEqual(lookupWithKey({ id: 4 }, repo), O.some([{ id: 1 }, { value: 1 }]))
-    assert.deepStrictEqual(lookupWithKey({ id: 3 }, repo), O.none)
     assert.deepStrictEqual(lookupWithKey({ id: 1 })(repo), O.some([{ id: 1 }, { value: 1 }]))
     assert.deepStrictEqual(lookupWithKey({ id: 4 })(repo), O.some([{ id: 1 }, { value: 1 }]))
     assert.deepStrictEqual(lookupWithKey({ id: 3 })(repo), O.none)
@@ -582,15 +569,10 @@ describe('Map', () => {
   it('lookup', () => {
     const x = new Map<User, number>([[{ id: 'a' }, 1]])
     const lookupS = _.lookup(eqUser)
-    assert.deepStrictEqual(lookupS({ id: 'a' }, x), O.some(1))
-    assert.deepStrictEqual(lookupS({ id: 'b' }, x), O.none)
     assert.deepStrictEqual(lookupS({ id: 'a' })(x), O.some(1))
     assert.deepStrictEqual(lookupS({ id: 'b' })(x), O.none)
 
     const lookup = _.lookup(eqKey)
-    assert.deepStrictEqual(lookup({ id: 1 }, repo), O.some({ value: 1 }))
-    assert.deepStrictEqual(lookup({ id: 4 }, repo), O.some({ value: 1 }))
-    assert.deepStrictEqual(lookup({ id: 3 }, repo), O.none)
     assert.deepStrictEqual(lookup({ id: 1 })(repo), O.some({ value: 1 }))
     assert.deepStrictEqual(lookup({ id: 4 })(repo), O.some({ value: 1 }))
     assert.deepStrictEqual(lookup({ id: 3 })(repo), O.none)
@@ -603,15 +585,9 @@ describe('Map', () => {
       [{ id: 'b' }, 2]
     ])
     const isSubmapS = _.isSubmap(eqUser, eqNumber)
-    assert.deepStrictEqual(isSubmapS(me, that), true)
     assert.deepStrictEqual(isSubmapS(that)(me), true)
 
     const isSubmap = _.isSubmap(eqKey, eqValue)
-    assert.deepStrictEqual(isSubmap(new Map([[{ id: 1 }, { value: 1 }]]), repo), true)
-    assert.deepStrictEqual(isSubmap(new Map([[{ id: 1 }, { value: 2 }]]), repo), false)
-    assert.deepStrictEqual(isSubmap(new Map([[{ id: 1 }, { value: 4 }]]), repo), true)
-    assert.deepStrictEqual(isSubmap(new Map([[{ id: 4 }, { value: 1 }]]), repo), true)
-    assert.deepStrictEqual(isSubmap(new Map([[{ id: 3 }, { value: 3 }]]), repo), false)
 
     assert.deepStrictEqual(pipe(new Map([[{ id: 1 }, { value: 1 }]]), isSubmap(repo)), true)
     assert.deepStrictEqual(pipe(new Map([[{ id: 1 }, { value: 2 }]]), isSubmap(repo)), false)

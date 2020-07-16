@@ -16,7 +16,6 @@ import { ReadonlyRecord } from './Record'
  */
 export interface Semigroup<A> extends Magma<A> {}
 
-// TODO: remove non-curried overloading in v3
 /**
  * @example
  * import * as S from 'fp-ts/lib/Semigroup'
@@ -27,21 +26,7 @@ export interface Semigroup<A> extends Magma<A> {}
  *
  * @since 2.0.0
  */
-export function fold<A>(
-  S: Semigroup<A>
-): {
-  (a: A): (as: ReadonlyArray<A>) => A
-  (a: A, as: ReadonlyArray<A>): A
-}
-export function fold<A>(S: Semigroup<A>): (a: A, as?: ReadonlyArray<A>) => A | ((as: ReadonlyArray<A>) => A) {
-  return (a, as?) => {
-    if (as === undefined) {
-      const foldS = fold(S)
-      return (as) => foldS(a, as)
-    }
-    return as.reduce(S.concat, a)
-  }
-}
+export const fold = <A>(S: Semigroup<A>) => (a: A) => (as: ReadonlyArray<A>): A => as.reduce(S.concat, a)
 
 /**
  * @category instances
@@ -132,8 +117,9 @@ export function getStructSemigroup<O extends ReadonlyRecord<string, any>>(
  * @since 2.0.0
  */
 export function getMeetSemigroup<A>(O: Ord<A>): Semigroup<A> {
+  const minO = min(O)
   return {
-    concat: min(O)
+    concat: (x, y) => minO(y)(x)
   }
 }
 
@@ -142,8 +128,9 @@ export function getMeetSemigroup<A>(O: Ord<A>): Semigroup<A> {
  * @since 2.0.0
  */
 export function getJoinSemigroup<A>(O: Ord<A>): Semigroup<A> {
+  const maxO = max(O)
   return {
-    concat: max(O)
+    concat: (x, y) => maxO(y)(x)
   }
 }
 

@@ -178,9 +178,9 @@ describe('Tree', () => {
       Eq.contramap((user: User) => user.id)
     )
     const users = _.make({ id: 1 }, [_.make({ id: 1 }, [_.make({ id: 3 }), _.make({ id: 4 })]), _.make({ id: 2 })])
-    assert.deepStrictEqual(_.elem(S)({ id: 1 }, users), true)
-    assert.deepStrictEqual(_.elem(S)({ id: 4 }, users), true)
-    assert.deepStrictEqual(_.elem(S)({ id: 5 }, users), false)
+    assert.deepStrictEqual(_.elem(S)({ id: 1 })(users), true)
+    assert.deepStrictEqual(_.elem(S)({ id: 4 })(users), true)
+    assert.deepStrictEqual(_.elem(S)({ id: 5 })(users), false)
   })
 
   it('getShow', () => {

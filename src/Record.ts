@@ -15,13 +15,15 @@ import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
 import { Magma } from './Magma'
 import { Monoid } from './Monoid'
-import { isNone, isSome, none, Option, some as optionSome } from './Option'
+import * as O from './Option'
 import { Semigroup } from './Semigroup'
 import { Show } from './Show'
 import { Traversable1 } from './Traversable'
 import { TraversableWithIndex1 } from './TraversableWithIndex'
 import { Unfoldable, Unfoldable1 } from './Unfoldable'
 import { PipeableWilt1, PipeableWither1, Witherable1 } from './Witherable'
+
+import Option = O.Option
 
 /**
  * @category model
@@ -132,7 +134,7 @@ export function toUnfoldable<F>(U: Unfoldable<F>): <A>(r: ReadonlyRecord<string,
   return (r) => {
     const arr = toArray(r)
     const len = arr.length
-    return U.unfold(0, (b) => (b < len ? optionSome([arr[b], b + 1]) : none))
+    return U.unfold(0, (b) => (b < len ? O.some([arr[b], b + 1]) : O.none))
   }
 }
 
@@ -159,12 +161,11 @@ export function insertAt<A>(k: string, a: A): (r: ReadonlyRecord<string, A>) => 
 
 const _hasOwnProperty = Object.prototype.hasOwnProperty
 
-// TODO: rename in v3 to avoid #1249
 /**
  * @since 2.5.0
  */
-export function hasOwnProperty<K extends string>(k: string, r: ReadonlyRecord<K, unknown>): k is K
-export function hasOwnProperty<K extends string>(this: any, k: string, r?: ReadonlyRecord<K, unknown>): k is K {
+export function has<K extends string>(k: string, r: ReadonlyRecord<K, unknown>): k is K
+export function has<K extends string>(this: any, k: string, r?: ReadonlyRecord<K, unknown>): k is K {
   return _hasOwnProperty.call(r === undefined ? this : r, k)
 }
 
@@ -196,15 +197,15 @@ export function updateAt<A>(
   a: A
 ): <K extends string>(r: ReadonlyRecord<K, A>) => Option<ReadonlyRecord<K, A>> {
   return <K extends string>(r: ReadonlyRecord<K, A>) => {
-    if (!hasOwnProperty(k, r)) {
-      return none
+    if (!has(k, r)) {
+      return O.none
     }
     if (r[k] === a) {
-      return optionSome(r)
+      return O.some(r)
     }
     const out: Record<K, A> = Object.assign({}, r)
     out[k] = a
-    return optionSome(out)
+    return O.some(out)
   }
 }
 
@@ -216,12 +217,12 @@ export function modifyAt<A>(
   f: (a: A) => A
 ): <K extends string>(r: ReadonlyRecord<K, A>) => Option<ReadonlyRecord<K, A>> {
   return <K extends string>(r: ReadonlyRecord<K, A>) => {
-    if (!hasOwnProperty(k, r)) {
-      return none
+    if (!has(k, r)) {
+      return O.none
     }
     const out: Record<K, A> = Object.assign({}, r)
     out[k] = f(r[k])
-    return optionSome(out)
+    return O.some(out)
   }
 }
 
@@ -238,41 +239,25 @@ export function pop<K extends string>(
 export function pop(k: string): <A>(r: ReadonlyRecord<string, A>) => Option<readonly [A, ReadonlyRecord<string, A>]> {
   const deleteAtk = deleteAt(k)
   return (r) => {
-    const oa = lookup(k, r)
-    return isNone(oa) ? none : optionSome([oa.value, deleteAtk(r)])
+    const oa = lookup(k)(r)
+    return O.isNone(oa) ? O.none : O.some([oa.value, deleteAtk(r)])
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Test whether one record contains all of the keys and values contained in another record
  *
  * @since 2.5.0
  */
-export function isSubrecord<A>(
-  E: Eq<A>
-): {
-  (that: ReadonlyRecord<string, A>): (me: ReadonlyRecord<string, A>) => boolean
-  (me: ReadonlyRecord<string, A>, that: ReadonlyRecord<string, A>): boolean
-}
-export function isSubrecord<A>(
-  E: Eq<A>
-): (
-  me: ReadonlyRecord<string, A>,
-  that?: ReadonlyRecord<string, A>
-) => boolean | ((me: ReadonlyRecord<string, A>) => boolean) {
-  return (me, that?) => {
-    if (that === undefined) {
-      const isSubrecordE = isSubrecord(E)
-      return (that) => isSubrecordE(that, me)
+export const isSubrecord = <A>(E: Eq<A>) => (that: ReadonlyRecord<string, A>) => (
+  me: ReadonlyRecord<string, A>
+): boolean => {
+  for (const k in me) {
+    if (!_hasOwnProperty.call(that, k) || !E.equals(me[k], that[k])) {
+      return false
     }
-    for (const k in me) {
-      if (!_hasOwnProperty.call(that, k) || !E.equals(me[k], that[k])) {
-        return false
-      }
-    }
-    return true
   }
+  return true
 }
 
 /**
@@ -324,23 +309,13 @@ export function getMonoid<A>(S: Semigroup<A>): Monoid<ReadonlyRecord<string, A>>
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * Lookup the value for a key in a record
  *
  * @since 2.5.0
  */
-export function lookup(k: string): <A>(r: ReadonlyRecord<string, A>) => Option<A>
-export function lookup<A>(k: string, r: ReadonlyRecord<string, A>): Option<A>
-export function lookup<A>(
-  k: string,
-  r?: ReadonlyRecord<string, A>
-): Option<A> | ((r: ReadonlyRecord<string, A>) => Option<A>) {
-  if (r === undefined) {
-    return (r) => lookup(k, r)
-  }
-  return _hasOwnProperty.call(r, k) ? optionSome(r[k]) : none
-}
+export const lookup = (k: string) => <A>(r: ReadonlyRecord<string, A>): Option<A> =>
+  _hasOwnProperty.call(r, k) ? O.some(r[k]) : O.none
 
 /**
  * @since 2.5.0
@@ -639,13 +614,13 @@ export function fromFoldable<F, A>(
  *
  * @example
  * import { getLastSemigroup } from 'fp-ts/lib/Semigroup'
- * import { readonlyArray, zip } from 'fp-ts/lib/Array'
+ * import { Foldable, zip } from 'fp-ts/lib/Array'
  * import { identity } from 'fp-ts/lib/function'
  * import { ReadonlyRecord, fromFoldableMap } from 'fp-ts/lib/Record'
  *
  * // like lodash `zipObject` or ramda `zipObj`
  * export const zipObject = <K extends string, A>(keys: ReadonlyArray<K>, values: ReadonlyArray<A>): ReadonlyRecord<K, A> =>
- *   fromFoldableMap(getLastSemigroup<A>(), readonlyArray)(zip(keys, values), identity)
+ *   fromFoldableMap(getLastSemigroup<A>(), Foldable)(zip(values)(keys), identity)
  *
  * assert.deepStrictEqual(zipObject(['a', 'b'], [1, 2, 3]), { a: 1, b: 2 })
  *
@@ -661,7 +636,7 @@ export function fromFoldable<F, A>(
  *   { id: 'id1', name: 'name3' }
  * ]
  *
- * assert.deepStrictEqual(fromFoldableMap(getLastSemigroup<User>(), readonlyArray)(users, user => [user.id, user]), {
+ * assert.deepStrictEqual(fromFoldableMap(getLastSemigroup<User>(), Foldable)(users, user => [user.id, user]), {
  *   id1: { id: 'id1', name: 'name3' },
  *   id2: { id: 'id2', name: 'name2' }
  * })
@@ -725,31 +700,16 @@ export function some<A>(predicate: (a: A) => boolean): (r: ReadonlyRecord<string
   }
 }
 
-// TODO: remove non-curried overloading in v3
 /**
  * @since 2.5.0
  */
-export function elem<A>(
-  E: Eq<A>
-): {
-  (a: A): (fa: ReadonlyRecord<string, A>) => boolean
-  (a: A, fa: ReadonlyRecord<string, A>): boolean
-}
-export function elem<A>(
-  E: Eq<A>
-): (a: A, fa?: ReadonlyRecord<string, A>) => boolean | ((fa: ReadonlyRecord<string, A>) => boolean) {
-  return (a, fa?) => {
-    if (fa === undefined) {
-      const elemE = elem(E)
-      return (fa) => elemE(a, fa)
+export const elem = <A>(E: Eq<A>) => (a: A) => (fa: ReadonlyRecord<string, A>): boolean => {
+  for (const k in fa) {
+    if (E.equals(fa[k], a)) {
+      return true
     }
-    for (const k in fa) {
-      if (E.equals(fa[k], a)) {
-        return true
-      }
-    }
-    return false
   }
+  return false
 }
 
 // -------------------------------------------------------------------------------------
@@ -863,7 +823,7 @@ const filterMapWithIndex_ = <A, B>(fa: ReadonlyRecord<string, A>, f: (key: strin
   const keys = Object.keys(fa)
   for (const key of keys) {
     const optionB = f(key, fa[key])
-    if (isSome(optionB)) {
+    if (O.isSome(optionB)) {
       r[key] = optionB.value
     }
   }
@@ -997,7 +957,7 @@ export const compact = <A>(fa: Readonly<Record<string, Option<A>>>): Readonly<Re
   const keys = Object.keys(fa)
   for (const key of keys) {
     const optionA = fa[key]
-    if (isSome(optionA)) {
+    if (O.isSome(optionA)) {
       r[key] = optionA.value
     }
   }
@@ -1197,7 +1157,7 @@ export const Witherable: Witherable1<URI> = {
   wilt: wilt_
 }
 
-// TODO: remove in v3
+// TODO: remove instance in v3
 /**
  * @category instances
  * @since 2.5.0

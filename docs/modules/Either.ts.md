@@ -96,7 +96,6 @@ Added in v2.0.0
   - [getSemigroup](#getsemigroup)
   - [getShow](#getshow)
   - [getValidation](#getvalidation)
-  - [getValidationMonoid](#getvalidationmonoid)
   - [getValidationSemigroup](#getvalidationsemigroup)
   - [getWitherable](#getwitherable)
 - [model](#model)
@@ -401,7 +400,7 @@ the provided default as a `Left`
 **Signature**
 
 ```ts
-export declare function fromNullable<E>(e: E): <A>(a: A) => Either<E, NonNullable<A>>
+export declare const fromNullable: <E>(e: Lazy<E>) => <A>(a: A) => Either<E, NonNullable<A>>
 ```
 
 **Example**
@@ -409,7 +408,7 @@ export declare function fromNullable<E>(e: E): <A>(a: A) => Either<E, NonNullabl
 ```ts
 import { fromNullable, left, right } from 'fp-ts/lib/Either'
 
-const parse = fromNullable('nully')
+const parse = fromNullable(() => 'nully')
 
 assert.deepStrictEqual(parse(1), right(1))
 assert.deepStrictEqual(parse(null), left('nully'))
@@ -460,16 +459,20 @@ Converts a JavaScript Object Notation (JSON) string into an object.
 **Signature**
 
 ```ts
-export declare function parseJSON<E>(s: string, onError: (reason: unknown) => E): Either<E, Json>
+export declare const parseJSON: <E>(onError: (reason: unknown) => E) => (s: string) => Either<E, Json>
 ```
 
 **Example**
 
 ```ts
 import { parseJSON, toError, right, left } from 'fp-ts/lib/Either'
+import { pipe } from 'fp-ts/lib/function'
 
-assert.deepStrictEqual(parseJSON('{"a":1}', toError), right({ a: 1 }))
-assert.deepStrictEqual(parseJSON('{"a":}', toError), left(new SyntaxError('Unexpected token } in JSON at position 5')))
+assert.deepStrictEqual(pipe('{"a":1}', parseJSON(toError)), right({ a: 1 }))
+assert.deepStrictEqual(
+  pipe('{"a":}', parseJSON(toError)),
+  left(new SyntaxError('Unexpected token } in JSON at position 5'))
+)
 ```
 
 Added in v2.0.0
@@ -494,7 +497,7 @@ Converts a JavaScript value to a JavaScript Object Notation (JSON) string.
 **Signature**
 
 ```ts
-export declare function stringifyJSON<E>(u: unknown, onError: (reason: unknown) => E): Either<E, string>
+export declare const stringifyJSON: <E>(onError: (reason: unknown) => E) => (u: unknown) => Either<E, string>
 ```
 
 **Example**
@@ -503,12 +506,13 @@ export declare function stringifyJSON<E>(u: unknown, onError: (reason: unknown) 
 import * as E from 'fp-ts/lib/Either'
 import { pipe } from 'fp-ts/lib/function'
 
-assert.deepStrictEqual(E.stringifyJSON({ a: 1 }, E.toError), E.right('{"a":1}'))
+assert.deepStrictEqual(pipe({ a: 1 }, E.stringifyJSON(E.toError)), E.right('{"a":1}'))
 const circular: any = { ref: null }
 circular.ref = circular
 assert.deepStrictEqual(
   pipe(
-    E.stringifyJSON(circular, E.toError),
+    circular,
+    E.stringifyJSON(E.toError),
     E.mapLeft((e) => e.message.includes('Converting circular structure to JSON'))
   ),
   E.left(true)
@@ -890,16 +894,6 @@ export declare function getValidation<E>(
   Alt2C<URI, E> &
   Extend2<URI> &
   MonadThrow2C<URI, E>
-```
-
-Added in v2.0.0
-
-## getValidationMonoid
-
-**Signature**
-
-```ts
-export declare function getValidationMonoid<E, A>(SE: Semigroup<E>, SA: Monoid<A>): Monoid<Either<E, A>>
 ```
 
 Added in v2.0.0
