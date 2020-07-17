@@ -33,7 +33,7 @@ import { isNone, none, Option, some } from './Option'
 import { Semigroup } from './Semigroup'
 import { Show } from './Show'
 import { PipeableTraverse2, Traversable2 } from './Traversable'
-import { Lazy } from './function'
+import { Lazy, pipe } from './function'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -169,7 +169,7 @@ export function getApplicative<E>(SE: Semigroup<E>): Applicative2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     of: right,
     ap: (fab, fa) =>
       isLeft(fab)
@@ -216,7 +216,7 @@ export function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E> & MonadThrow2C<UR
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     of: right,
     ap: applicative.ap,
     chain,
@@ -405,8 +405,6 @@ export function fromOptions<E, A>(fe: Option<E>, fa: Option<A>): Option<These<E,
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Functor2<URI>['map'] = (fa, f) =>
-  isLeft(fa) ? fa : isRight(fa) ? right(f(fa.right)) : both(fa.left, f(fa.right))
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) =>
   isLeft(fea) ? left(f(fea.left)) : isRight(fea) ? right(g(fea.right)) : both(f(fea.left), g(fea.right))
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) =>
@@ -417,7 +415,14 @@ const foldMap_: Foldable2<URI>['foldMap'] = (M) => (fa, f) =>
 const reduceRight_: Foldable2<URI>['reduceRight'] = (fa, b, f) =>
   isLeft(fa) ? b : isRight(fa) ? f(fa.right, b) : f(fa.right, b)
 const traverse_ = <F>(F: Applicative<F>) => <E, A, B>(ta: These<E, A>, f: (a: A) => HKT<F, B>): HKT<F, These<E, B>> => {
-  return isLeft(ta) ? F.of(ta) : isRight(ta) ? F.map(f(ta.right), right) : F.map(f(ta.right), (b) => both(ta.left, b))
+  return isLeft(ta)
+    ? F.of(ta)
+    : isRight(ta)
+    ? pipe(f(ta.right), F.map(right))
+    : pipe(
+        f(ta.right),
+        F.map((b) => both(ta.left, b))
+      )
 }
 
 // -------------------------------------------------------------------------------------
@@ -457,7 +462,8 @@ export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => <E>(fa: These<
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: These<E, A>) => These<E, B> = (f) => (fa) => map_(fa, f)
+export const map: Functor2<URI>['map'] = (f) => (fa) =>
+  isLeft(fa) ? fa : isRight(fa) ? right(f(fa.right)) : both(fa.left, f(fa.right))
 
 /**
  * @category Foldable
@@ -489,7 +495,14 @@ export const traverse: PipeableTraverse2<URI> = <F>(
 export const sequence: Traversable2<URI>['sequence'] = <F>(F: Applicative<F>) => <E, A>(
   ta: These<E, HKT<F, A>>
 ): HKT<F, These<E, A>> => {
-  return isLeft(ta) ? F.of(ta) : isRight(ta) ? F.map(ta.right, right) : F.map(ta.right, (b) => both(ta.left, b))
+  return isLeft(ta)
+    ? F.of(ta)
+    : isRight(ta)
+    ? pipe(ta.right, F.map(right))
+    : pipe(
+        ta.right,
+        F.map((b) => both(ta.left, b))
+      )
 }
 
 // -------------------------------------------------------------------------------------
@@ -520,7 +533,7 @@ declare module './HKT' {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -550,7 +563,7 @@ export const Foldable: Foldable2<URI> = {
  */
 export const Traversable: Traversable2<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -565,7 +578,7 @@ export const Traversable: Traversable2<URI> = {
  */
 export const these: Functor2<URI> & Bifunctor2<URI> & Foldable2<URI> & Traversable2<URI> = {
   URI,
-  map: map_,
+  map,
   bimap: bimap_,
   mapLeft: mapLeft_,
   reduce: reduce_,

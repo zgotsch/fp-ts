@@ -193,8 +193,6 @@ export const filterOrElse: {
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const map_: Monad3<URI>['map'] = (fa, f) => pipe(fa, map(f))
-/* istanbul ignore next */
 const bimap_: Bifunctor3<URI>['bimap'] = (fa, f, g) => pipe(fa, bimap(f, g))
 /* istanbul ignore next */
 const mapLeft_: Bifunctor3<URI>['mapLeft'] = (fa, f) => pipe(fa, mapLeft(f))
@@ -214,8 +212,7 @@ const alt_: Alt3<URI>['alt'] = (fa, that) => pipe(fa, alt(that))
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <R, E>(fa: ReaderEither<R, E, A>) => ReaderEither<R, E, B> = (f) =>
-  R.map(E.map(f))
+export const map: Functor3<URI>['map'] = (f) => (fa) => pipe(fa, R.map(E.map(f)))
 
 /**
  * Map a pair of functions over the two last type arguments of the bifunctor.
@@ -413,7 +410,7 @@ export function getApplicativeReaderValidation<E>(SE: Semigroup<E>): Applicative
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -428,7 +425,7 @@ export function getAltReaderValidation<E>(SE: Semigroup<E>): Alt3C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     alt: (me, that) => (r) => A.alt(me(r), () => that()(r))
   }
 }
@@ -439,7 +436,7 @@ export function getAltReaderValidation<E>(SE: Semigroup<E>): Alt3C<URI, E> {
  */
 export const Functor: Functor3<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -448,7 +445,7 @@ export const Functor: Functor3<URI> = {
  */
 export const Applicative: Applicative3<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -459,7 +456,7 @@ export const Applicative: Applicative3<URI> = {
  */
 export const Monad: Monad3<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -481,7 +478,7 @@ export const Bifunctor: Bifunctor3<URI> = {
  */
 export const Alt: Alt3<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -491,7 +488,7 @@ export const Alt: Alt3<URI> = {
  */
 export const MonadThrow: MonadThrow3<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -507,7 +504,7 @@ export const readerEither: Monad3<URI> & Bifunctor3<URI> & Alt3<URI> & MonadThro
   URI,
   bimap: bimap_,
   mapLeft: mapLeft_,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

@@ -61,8 +61,6 @@ export const gets: <S, A>(f: (s: S) => A) => State<S, A> = (f) => (s) => [f(s), 
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const map_: Monad2<URI>['map'] = (fa, f) => pipe(fa, map(f))
-/* istanbul ignore next */
 const ap_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
 /* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
@@ -78,7 +76,7 @@ const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: State<E, A>) => State<E, B> = (f) => (fa) => (s1) => {
+export const map: Functor2<URI>['map'] = (f) => (fa) => (s1) => {
   const [a, s2] = fa(s1)
   return [f(a), s2]
 }
@@ -189,7 +187,7 @@ declare module './HKT' {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -198,7 +196,7 @@ export const Functor: Functor2<URI> = {
  */
 export const Applicative: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -209,7 +207,7 @@ export const Applicative: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_

@@ -134,7 +134,6 @@ export const swap: <E, A>(fa: TaskThese<E, A>) => TaskThese<A, E> =
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Functor2<URI>['map'] = (fa, f) => pipe(fa, map(f))
 /* istanbul ignore next */
 const bimap_: Bifunctor2<URI>['bimap'] = (fa, f, g) => pipe(fa, bimap(f, g))
 /* istanbul ignore next */
@@ -151,7 +150,7 @@ const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fa, f) => pipe(fa, mapLeft(f))
  * @category Functor
  * @since 2.4.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: TaskThese<E, A>) => TaskThese<E, B> = (f) => T.map(TH.map(f))
+export const map: Functor2<URI>['map'] = (f) => T.map(TH.map(f))
 
 /**
  * Map a pair of functions over the two type arguments of the bifunctor.
@@ -227,14 +226,17 @@ export function getApplicative<E>(A: Apply1<T.URI>, SE: Semigroup<E>): Applicati
   const AV = TH.getApplicative(SE)
   const ap = <A>(fa: TaskThese<E, A>) => <B>(fab: TaskThese<E, (a: A) => B>): TaskThese<E, B> =>
     A.ap(
-      A.map(fab, (gab) => (ga: TH.These<E, A>) => AV.ap(gab, ga)),
+      pipe(
+        fab,
+        A.map((gab) => (ga: TH.These<E, A>) => AV.ap(gab, ga))
+      ),
       fa
     )
 
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -250,7 +252,7 @@ export function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E> & MonadTask2C<URI
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: A.ap,
     of,
     chain: (ma, f) =>
@@ -282,7 +284,7 @@ export function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E> & MonadTask2C<URI
  */
 export const functorTaskThese: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -302,7 +304,7 @@ export const bifunctorTaskThese: Bifunctor2<URI> = {
  */
 export const taskThese: Functor2<URI> & Bifunctor2<URI> = {
   URI,
-  map: map_,
+  map,
   bimap: bimap_,
   mapLeft: mapLeft_
 }

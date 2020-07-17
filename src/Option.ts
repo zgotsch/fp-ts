@@ -21,7 +21,7 @@ import { Eq } from './Eq'
 import { Extend1 } from './Extend'
 import { Filterable1 } from './Filterable'
 import { Foldable1 } from './Foldable'
-import { identity, Lazy, Predicate, Refinement } from './function'
+import { identity, Lazy, Predicate, Refinement, pipe } from './function'
 import { Functor1 } from './Functor'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
@@ -382,15 +382,13 @@ export function mapNullable<A, B>(f: (a: A) => B | null | undefined): (ma: Optio
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad1<URI>['map'] = (fa, f) => (isNone(fa) ? none : some(f(fa.value)))
 const ap_: Monad1<URI>['ap'] = (fab, fa) => (isNone(fab) ? none : isNone(fa) ? none : some(fab.value(fa.value)))
 const chain_: Monad1<URI>['chain'] = (ma, f) => (isNone(ma) ? none : f(ma.value))
 const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => (isNone(fa) ? b : f(b, fa.value))
 const foldMap_: Foldable1<URI>['foldMap'] = (M) => (fa, f) => (isNone(fa) ? M.empty : f(fa.value))
 const reduceRight_: Foldable1<URI>['reduceRight'] = (fa, b, f) => (isNone(fa) ? b : f(fa.value, b))
-const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Option<A>, f: (a: A) => HKT<F, B>): HKT<F, Option<B>> => {
-  return isNone(ta) ? F.of(none) : F.map(f(ta.value), some)
-}
+const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Option<A>, f: (a: A) => HKT<F, B>): HKT<F, Option<B>> =>
+  isNone(ta) ? F.of(none) : pipe(f(ta.value), F.map(some))
 const alt_: Alt1<URI>['alt'] = (fa, that) => (isNone(fa) ? that() : fa)
 const filter_ = <A>(fa: Option<A>, predicate: Predicate<A>): Option<A> =>
   isNone(fa) ? none : predicate(fa.value) ? fa : none
@@ -402,18 +400,24 @@ const partition_ = <A>(fa: Option<A>, predicate: Predicate<A>): Separated<Option
     right: filter_(fa, predicate)
   }
 }
-const partitionMap_: Filterable1<URI>['partitionMap'] = (fa, f) => separate(map_(fa, f))
+const partitionMap_: Filterable1<URI>['partitionMap'] = (fa, f) => separate(pipe(fa, map(f)))
 const wither_ = <F>(F: ApplicativeHKT<F>) => <A, B>(fa: Option<A>, f: (a: A) => HKT<F, Option<B>>): HKT<F, Option<B>> =>
   isNone(fa) ? F.of(none) : f(fa.value)
 const wilt_ = <F>(F: ApplicativeHKT<F>) => <A, B, C>(
   fa: Option<A>,
   f: (a: A) => HKT<F, Either<B, C>>
 ): HKT<F, Separated<Option<B>, Option<C>>> => {
-  const o = map_(fa, (a) =>
-    F.map(f(a), (e) => ({
-      left: getLeft(e),
-      right: getRight(e)
-    }))
+  const o = pipe(
+    fa,
+    map((a) =>
+      pipe(
+        f(a),
+        F.map((e) => ({
+          left: getLeft(e),
+          right: getRight(e)
+        }))
+      )
+    )
   )
   return isNone(o)
     ? F.of({
@@ -430,7 +434,7 @@ const wilt_ = <F>(F: ApplicativeHKT<F>) => <A, B, C>(
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: Option<A>) => Option<B> = (f) => (fa) => map_(fa, f)
+export const map: Functor1<URI>['map'] = (f) => (fa) => (isNone(fa) ? none : some(f(fa.value)))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -448,7 +452,10 @@ export const ap: <A>(fa: Option<A>) => <B>(fab: Option<(a: A) => B>) => Option<B
  */
 export const apFirst: <B>(fb: Option<B>) => <A>(fa: Option<A>) => Option<A> = (fb) => (fa) =>
   ap_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -460,7 +467,10 @@ export const apFirst: <B>(fb: Option<B>) => <A>(fa: Option<A>) => Option<A> = (f
  */
 export const apSecond = <B>(fb: Option<B>) => <A>(fa: Option<A>): Option<B> =>
   ap_(
-    map_(fa, () => (b: B) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -486,7 +496,12 @@ export const chain: <A, B>(f: (a: A) => Option<B>) => (ma: Option<A>) => Option<
  * @since 2.0.0
  */
 export const chainFirst: <A, B>(f: (a: A) => Option<B>) => (ma: Option<A>) => Option<A> = (f) => (ma) =>
-  chain_(ma, (a) => map_(f(a), () => a))
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Monad
@@ -583,10 +598,13 @@ const defaultSeparate = { left: none, right: none }
  * @since 2.0.0
  */
 export const separate: <A, B>(ma: Option<Either<A, B>>) => Separated<Option<A>, Option<B>> = (ma) => {
-  const o = map_(ma, (e) => ({
-    left: getLeft(e),
-    right: getRight(e)
-  }))
+  const o = pipe(
+    ma,
+    map((e) => ({
+      left: getLeft(e),
+      right: getRight(e)
+    }))
+  )
   return isNone(o) ? defaultSeparate : o.value
 }
 
@@ -640,9 +658,7 @@ export const traverse: PipeableTraverse1<URI> = <F>(
  */
 export const sequence: Traversable1<URI>['sequence'] = <F>(F: ApplicativeHKT<F>) => <A>(
   ta: Option<HKT<F, A>>
-): HKT<F, Option<A>> => {
-  return isNone(ta) ? F.of(none) : F.map(ta.value, some)
-}
+): HKT<F, Option<A>> => (isNone(ta) ? F.of(none) : pipe(ta.value, F.map(some)))
 
 /**
  * @category Whitherable
@@ -882,7 +898,7 @@ export function getMonoid<A>(S: Semigroup<A>): Monoid<Option<A>> {
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -891,7 +907,7 @@ export const Functor: Functor1<URI> = {
  */
 export const Applicative: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -902,7 +918,7 @@ export const Applicative: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -925,7 +941,7 @@ export const Foldable: Foldable1<URI> = {
  */
 export const Alt: Alt1<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -935,7 +951,7 @@ export const Alt: Alt1<URI> = {
  */
 export const Alternative: Alternative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   alt: alt_,
@@ -948,7 +964,7 @@ export const Alternative: Alternative1<URI> = {
  */
 export const Extend: Extend1<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_
 }
 
@@ -968,7 +984,7 @@ export const Compactable: Compactable1<URI> = {
  */
 export const Filterable: Filterable1<URI> = {
   URI,
-  map: map_,
+  map,
   compact,
   separate,
   filter: filter_,
@@ -983,7 +999,7 @@ export const Filterable: Filterable1<URI> = {
  */
 export const Traversable: Traversable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -997,7 +1013,7 @@ export const Traversable: Traversable1<URI> = {
  */
 export const Witherable: Witherable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -1019,7 +1035,7 @@ export const Witherable: Witherable1<URI> = {
  */
 export const MonadThrow: MonadThrow1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -1038,7 +1054,7 @@ export const option: Monad1<URI> &
   Witherable1<URI> &
   MonadThrow1<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

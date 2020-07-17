@@ -358,8 +358,6 @@ export const filterOrElse: {
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const map_: Monad4<URI>['map'] = (fa, f) => pipe(fa, map(f))
-/* istanbul ignore next */
 const ap_: Monad4<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
 /* istanbul ignore next */
 const chain_: Monad4<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
@@ -396,9 +394,7 @@ const mapLeft_: <S, R, E, A, G>(
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(
-  f: (a: A) => B
-) => <S, R, E>(fa: StateReaderTaskEither<S, R, E, A>) => StateReaderTaskEither<S, R, E, B> = (f) => (fa) => (s1) =>
+export const map: Functor4<URI>['map'] = (f) => (fa) => (s1) =>
   pipe(
     fa(s1),
     RTE.map(([a, s2]) => [f(a), s2])
@@ -596,7 +592,7 @@ declare module './HKT' {
  */
 export const Functor: Functor4<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -605,7 +601,7 @@ export const Functor: Functor4<URI> = {
  */
 export const Applicative: Applicative4<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -626,7 +622,7 @@ export const Bifunctor: Bifunctor4<URI> = {
  */
 export const Alt: Alt4<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -637,7 +633,7 @@ export const Alt: Alt4<URI> = {
  */
 export const stateReaderTaskEither: Monad4<URI> & Bifunctor4<URI> & Alt4<URI> & MonadTask4<URI> & MonadThrow4<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,
@@ -658,7 +654,7 @@ export const stateReaderTaskEither: Monad4<URI> & Bifunctor4<URI> & Alt4<URI> & 
  */
 export const stateReaderTaskEitherSeq: typeof stateReaderTaskEither = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

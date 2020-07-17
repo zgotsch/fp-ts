@@ -193,7 +193,6 @@ export const fromEither: <E, A>(ma: E.Either<E, A>) => IOEither<E, A> = (ma) =>
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const map_: Monad2<URI>['map'] = (fa, f) => pipe(fa, map(f))
 /* istanbul ignore next */
 const ap_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
 const of = right
@@ -217,7 +216,7 @@ const alt_: Alt2<URI>['alt'] = (fa, that) => pipe(fa, alt(that))
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: IOEither<E, A>) => IOEither<E, B> = (f) => I.map(E.map(f))
+export const map: Functor2<URI>['map'] = (f) => I.map(E.map(f))
 
 /**
  * Map a pair of functions over the two type arguments of the bifunctor.
@@ -406,7 +405,7 @@ export function getApplicativeIOValidation<E>(SE: Semigroup<E>): Applicative2C<U
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -421,7 +420,7 @@ export function getAltIOValidation<E>(SE: Semigroup<E>): Alt2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     alt: (me, that) => () => A.alt(me(), () => that()())
   }
 }
@@ -434,8 +433,8 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
   const F = E.getFilterable(M)
   const compact: Filterable2C<URI, E>['compact'] = I.map(F.compact)
   const separate: Filterable2C<URI, E>['separate'] = (fge) => ({
-    left: compact(map_(fge, getLeft)),
-    right: compact(map_(fge, getRight))
+    left: compact(pipe(fge, map(getLeft))),
+    right: compact(pipe(fge, map(getRight)))
   })
   const filter: Filterable2C<URI, E>['filter'] = <A>(fga: IOEither<E, A>, predicate: Predicate<A>) =>
     pipe(
@@ -451,7 +450,7 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     compact,
     separate,
     filter,
@@ -473,7 +472,7 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -492,7 +491,7 @@ export const Bifunctor: Bifunctor2<URI> = {
  */
 export const Applicative: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -503,7 +502,7 @@ export const Applicative: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -515,7 +514,7 @@ export const Monad: Monad2<URI> = {
  */
 export const Alt: Alt2<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -525,7 +524,7 @@ export const Alt: Alt2<URI> = {
  */
 export const MonadIO: MonadIO2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -538,7 +537,7 @@ export const MonadIO: MonadIO2<URI> = {
  */
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -554,7 +553,7 @@ export const ioEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadIO2<URI>
   URI,
   bimap: bimap_,
   mapLeft: mapLeft_,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

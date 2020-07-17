@@ -9,7 +9,7 @@ import { Filterable1 } from './Filterable'
 import { FilterableWithIndex1, PredicateWithIndex, RefinementWithIndex } from './FilterableWithIndex'
 import { Foldable as FoldableHKT, Foldable1, Foldable2, Foldable3 } from './Foldable'
 import { FoldableWithIndex1 } from './FoldableWithIndex'
-import { identity, Predicate, Refinement } from './function'
+import { identity, Predicate, Refinement, pipe } from './function'
 import { Functor1 } from './Functor'
 import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
@@ -716,7 +716,6 @@ export const elem = <A>(E: Eq<A>) => (a: A) => (fa: ReadonlyRecord<string, A>): 
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Functor1<URI>['map'] = (fa, f) => mapWithIndex_(fa, (_, a) => f(a))
 const mapWithIndex_ = <A, B>(fa: ReadonlyRecord<string, A>, f: (k: string, a: A) => B) => {
   const out: Record<string, B> = {}
   const keys = Object.keys(fa)
@@ -855,10 +854,13 @@ const traverseWithIndex_ = <F>(F: Applicative<F>) => <A, B>(
   let fr: HKT<F, Record<string, B>> = F.of({})
   for (const key of ks) {
     fr = F.ap(
-      F.map(fr, (r) => (b: B) => {
-        r[key] = b
-        return r
-      }),
+      pipe(
+        fr,
+        F.map((r) => (b: B) => {
+          r[key] = b
+          return r
+        })
+      ),
       f(key, ta[key])
     )
   }
@@ -868,7 +870,7 @@ const wither_ = <F>(
   F: Applicative<F>
 ): (<A, B>(wa: ReadonlyRecord<string, A>, f: (a: A) => HKT<F, Option<B>>) => HKT<F, ReadonlyRecord<string, B>>) => {
   const traverseF = traverse_(F)
-  return (wa, f) => F.map(traverseF(wa, f), compact)
+  return (wa, f) => pipe(traverseF(wa, f), F.map(compact))
 }
 const wilt_ = <F>(
   F: Applicative<F>
@@ -877,7 +879,7 @@ const wilt_ = <F>(
   f: (a: A) => HKT<F, Either<B, C>>
 ) => HKT<F, Separated<ReadonlyRecord<string, B>, ReadonlyRecord<string, C>>>) => {
   const traverseF = traverse_(F)
-  return (wa, f) => F.map(traverseF(wa, f), separate)
+  return (wa, f) => pipe(traverseF(wa, f), F.map(separate))
 }
 
 // -------------------------------------------------------------------------------------
@@ -1019,7 +1021,7 @@ declare module './HKT' {
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -1028,7 +1030,7 @@ export const Functor: Functor1<URI> = {
  */
 export const FunctorWithIndex: FunctorWithIndex1<URI, string> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_
 }
 
@@ -1073,7 +1075,7 @@ export const Compactable: Compactable1<URI> = {
  */
 export const Filterable: Filterable1<URI> = {
   URI,
-  map: map_,
+  map,
   compact,
   separate,
   filter: filter_,
@@ -1088,7 +1090,7 @@ export const Filterable: Filterable1<URI> = {
  */
 export const FilterableWithIndex: FilterableWithIndex1<URI, string> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   compact,
   separate,
@@ -1108,7 +1110,7 @@ export const FilterableWithIndex: FilterableWithIndex1<URI, string> = {
  */
 export const Traversable: Traversable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -1122,7 +1124,7 @@ export const Traversable: Traversable1<URI> = {
  */
 export const TraversableWithIndex: TraversableWithIndex1<URI, string> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   reduce: reduce_,
   foldMap: foldMap_,
@@ -1141,7 +1143,7 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, string> = {
  */
 export const Witherable: Witherable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -1168,7 +1170,7 @@ export const readonlyRecord: FunctorWithIndex1<URI, string> &
   TraversableWithIndex1<URI, string> &
   Witherable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,

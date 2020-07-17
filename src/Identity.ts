@@ -7,7 +7,7 @@ import { Comonad1 } from './Comonad'
 import { Eq } from './Eq'
 import { Extend1 } from './Extend'
 import { Foldable1 } from './Foldable'
-import { identity as id } from './function'
+import { identity as id, pipe } from './function'
 import { Functor1 } from './Functor'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
@@ -29,7 +29,6 @@ export type Identity<A> = A
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad1<URI>['map'] = (ma, f) => f(ma)
 const ap_: Monad1<URI>['ap'] = (mab, ma) => mab(ma)
 const chain_: Monad1<URI>['chain'] = (ma, f) => f(ma)
 const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => f(b, fa)
@@ -38,7 +37,7 @@ const reduceRight_: Foldable1<URI>['reduceRight'] = (fa, b, f) => f(fa, b)
 const alt_: Alt1<URI>['alt'] = id
 const extend_: Extend1<URI>['extend'] = (wa, f) => f(wa)
 const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Identity<A>, f: (a: A) => HKT<F, B>): HKT<F, Identity<B>> =>
-  F.map(f(ta), id)
+  pipe(f(ta), F.map(id))
 
 // -------------------------------------------------------------------------------------
 // pipeables
@@ -59,9 +58,7 @@ export const traverse: PipeableTraverse1<URI> = <F>(
  */
 export const sequence: Traversable1<URI>['sequence'] = <F>(F: ApplicativeHKT<F>) => <A>(
   ta: Identity<HKT<F, A>>
-): HKT<F, Identity<A>> => {
-  return F.map(ta, id)
-}
+): HKT<F, Identity<A>> => pipe(ta, F.map(id))
 
 /**
  * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
@@ -88,7 +85,10 @@ export const ap: <A>(fa: Identity<A>) => <B>(fab: Identity<(a: A) => B>) => Iden
  */
 export const apFirst: <B>(fb: Identity<B>) => <A>(fa: Identity<A>) => Identity<A> = (fb) => (fa) =>
   ap_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -100,7 +100,10 @@ export const apFirst: <B>(fb: Identity<B>) => <A>(fa: Identity<A>) => Identity<A
  */
 export const apSecond = <B>(fb: Identity<B>) => <A>(fa: Identity<A>): Identity<B> =>
   ap_(
-    map_(fa, () => (b: B) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -126,7 +129,12 @@ export const chain: <A, B>(f: (a: A) => Identity<B>) => (ma: Identity<A>) => Ide
  * @since 2.0.0
  */
 export const chainFirst: <A, B>(f: (a: A) => Identity<B>) => (ma: Identity<A>) => Identity<A> = (f) => (ma) =>
-  chain_(ma, (a) => map_(f(a), () => a))
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Extend
@@ -182,7 +190,7 @@ export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: Identity<A>
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: Identity<A>) => Identity<B> = (f) => (fa) => map_(fa, f)
+export const map: Functor1<URI>['map'] = (f) => (fa) => f(fa)
 
 // -------------------------------------------------------------------------------------
 // instances
@@ -224,7 +232,7 @@ export const getEq: <A>(E: Eq<A>) => Eq<Identity<A>> = id
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -233,7 +241,7 @@ export const Functor: Functor1<URI> = {
  */
 export const Applicative: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -244,7 +252,7 @@ export const Applicative: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -267,7 +275,7 @@ export const Foldable: Foldable1<URI> = {
  */
 export const Traversable: Traversable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -281,7 +289,7 @@ export const Traversable: Traversable1<URI> = {
  */
 export const Alt: Alt1<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -291,7 +299,7 @@ export const Alt: Alt1<URI> = {
  */
 export const Comonad: Comonad1<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_,
   extract
 }
@@ -303,7 +311,7 @@ export const Comonad: Comonad1<URI> = {
  */
 export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<URI> & Comonad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,

@@ -17,7 +17,7 @@ import {
 } from './FilterableWithIndex'
 import { Foldable1 } from './Foldable'
 import { FoldableWithIndex1 } from './FoldableWithIndex'
-import { identity, Lazy, Predicate, Refinement } from './function'
+import { identity, Lazy, Predicate, Refinement, pipe } from './function'
 import { Functor1 } from './Functor'
 import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { HKT } from './HKT'
@@ -1346,9 +1346,14 @@ export const zero: Alternative1<URI>['zero'] = () => empty
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad1<URI>['map'] = (fa, f) => fa.map((a) => f(a))
 const mapWithIndex_: FunctorWithIndex1<URI, number>['mapWithIndex'] = (fa, f) => fa.map((a, i) => f(i, a))
-const ap_: Monad1<URI>['ap'] = (fab, fa) => flatten(map_(fab, (f) => map_(fa, f)))
+const ap_: Monad1<URI>['ap'] = (fab, fa) =>
+  flatten(
+    pipe(
+      fab,
+      map((f) => pipe(fa, map(f)))
+    )
+  )
 const chainWithIndex_: <A, B>(fa: ReadonlyArray<A>, f: (i: number, a: A) => ReadonlyArray<B>) => ReadonlyArray<B> = (
   fa,
   f
@@ -1476,7 +1481,10 @@ const traverseWithIndex_ = <F>(F: ApplicativeHKT<F>) => <A, B>(
 ): HKT<F, ReadonlyArray<B>> => {
   return reduceWithIndex_(ta, F.of<ReadonlyArray<B>>(zero()), (i, fbs, a) =>
     F.ap(
-      F.map(fbs, (bs) => (b: B) => snoc(b)(bs)),
+      pipe(
+        fbs,
+        F.map((bs) => (b: B) => snoc(b)(bs))
+      ),
       f(i, a)
     )
   )
@@ -1485,7 +1493,7 @@ const wither_ = <F>(
   F: ApplicativeHKT<F>
 ): (<A, B>(ta: ReadonlyArray<A>, f: (a: A) => HKT<F, Option<B>>) => HKT<F, ReadonlyArray<B>>) => {
   const traverseF = traverse_(F)
-  return (wa, f) => F.map(traverseF(wa, f), compact)
+  return (wa, f) => pipe(traverseF(wa, f), F.map(compact))
 }
 const wilt_ = <F>(
   F: ApplicativeHKT<F>
@@ -1494,7 +1502,7 @@ const wilt_ = <F>(
   f: (a: A) => HKT<F, Either<B, C>>
 ) => HKT<F, Separated<ReadonlyArray<B>, ReadonlyArray<C>>>) => {
   const traverseF = traverse_(F)
-  return (wa, f) => F.map(traverseF(wa, f), separate)
+  return (wa, f) => pipe(traverseF(wa, f), F.map(separate))
 }
 
 // -------------------------------------------------------------------------------------
@@ -1529,7 +1537,10 @@ export const ap: <A>(fa: ReadonlyArray<A>) => <B>(fab: ReadonlyArray<(a: A) => B
  */
 export const apFirst: <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>) => ReadonlyArray<A> = (fb) => (fa) =>
   ap_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -1541,7 +1552,10 @@ export const apFirst: <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>) => 
  */
 export const apSecond = <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>): ReadonlyArray<B> =>
   ap_(
-    map_(fa, () => (b: B) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -1570,7 +1584,13 @@ export const chainWithIndex: <A, B>(
  */
 export const chainFirst: <A, B>(f: (a: A) => ReadonlyArray<B>) => (ma: ReadonlyArray<A>) => ReadonlyArray<A> = (f) => (
   ma
-) => chain_(ma, (a) => map_(f(a), () => a))
+) =>
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Extend
@@ -1585,7 +1605,7 @@ export const duplicate: <A>(wa: ReadonlyArray<A>) => ReadonlyArray<ReadonlyArray
  * @category Functor
  * @since 2.5.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: ReadonlyArray<A>) => ReadonlyArray<B> = (f) => (fa) => map_(fa, f)
+export const map: Functor1<URI>['map'] = (f) => (fa) => fa.map((a) => f(a))
 
 /**
  * @category FunctorWithIndex
@@ -1778,7 +1798,10 @@ export const sequence: Traversable1<URI>['sequence'] = <F>(F: ApplicativeHKT<F>)
 ): HKT<F, ReadonlyArray<A>> => {
   return reduce_(ta, F.of(zero()), (fas, fa) =>
     F.ap(
-      F.map(fas, (as) => (a: A) => snoc(a)(as)),
+      pipe(
+        fas,
+        F.map((as) => (a: A) => snoc(a)(as))
+      ),
       fa
     )
   )
@@ -1866,18 +1889,18 @@ declare module './HKT' {
  * @category instances
  * @since 2.7.0
  */
-export const functorArray: Functor1<URI> = {
+export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
  * @category instances
  * @since 2.7.0
  */
-export const Functor: FunctorWithIndex1<URI, number> = {
+export const FunctorWithIndex: FunctorWithIndex1<URI, number> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_
 }
 
@@ -1887,7 +1910,7 @@ export const Functor: FunctorWithIndex1<URI, number> = {
  */
 export const Applicative: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -1898,7 +1921,7 @@ export const Applicative: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -1919,7 +1942,7 @@ export const Unfoldable: Unfoldable1<URI> = {
  */
 export const Alt: Alt1<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -1929,7 +1952,7 @@ export const Alt: Alt1<URI> = {
  */
 export const Alternative: Alternative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   alt: alt_,
@@ -1942,7 +1965,7 @@ export const Alternative: Alternative1<URI> = {
  */
 export const Extend: Extend1<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_
 }
 
@@ -1962,7 +1985,7 @@ export const Compactable: Compactable1<URI> = {
  */
 export const Filterable: Filterable1<URI> = {
   URI,
-  map: map_,
+  map,
   compact,
   separate,
   filter: filter_,
@@ -1977,7 +2000,7 @@ export const Filterable: Filterable1<URI> = {
  */
 export const FilterableWithIndex: FilterableWithIndex1<URI, number> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   compact,
   separate,
@@ -2022,7 +2045,7 @@ export const FoldableWithIndex: FoldableWithIndex1<URI, number> = {
  */
 export const Traversable: Traversable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -2036,7 +2059,7 @@ export const Traversable: Traversable1<URI> = {
  */
 export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   reduce: reduce_,
   foldMap: foldMap_,
@@ -2055,7 +2078,7 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
  */
 export const Witherable: Witherable1<URI> = {
   URI,
-  map: map_,
+  map,
   compact,
   separate,
   filter: filter_,
@@ -2088,7 +2111,7 @@ export const readonlyArray: FunctorWithIndex1<URI, number> &
   URI,
   compact,
   separate,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,

@@ -20,7 +20,7 @@ import { Separated } from './Compactable'
 import { Eq } from './Eq'
 import { Extend2 } from './Extend'
 import { Foldable2 } from './Foldable'
-import { identity, Lazy, Predicate, Refinement } from './function'
+import { identity, Lazy, Predicate, Refinement, pipe } from './function'
 import { Functor2 } from './Functor'
 import { HKT } from './HKT'
 import { Monad2, Monad2C } from './Monad'
@@ -320,7 +320,6 @@ export const filterOrElse: {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad2<URI>['map'] = (ma, f) => (isLeft(ma) ? ma : right(f(ma.right)))
 const ap_: Monad2<URI>['ap'] = (mab, ma) => (isLeft(mab) ? mab : isLeft(ma) ? ma : right(mab.right(ma.right)))
 const chain_: <D, A, E, B>(fa: Either<D, A>, f: (a: A) => Either<E, B>) => Either<D | E, B> = (ma, f) =>
   isLeft(ma) ? ma : f(ma.right)
@@ -330,9 +329,7 @@ const reduceRight_: Foldable2<URI>['reduceRight'] = (fa, b, f) => (isLeft(fa) ? 
 const traverse_ = <F>(F: ApplicativeHKT<F>) => <E, A, B>(
   ma: Either<E, A>,
   f: (a: A) => HKT<F, B>
-): HKT<F, Either<E, B>> => {
-  return isLeft(ma) ? F.of(left(ma.left)) : F.map<B, Either<E, B>>(f(ma.right), right)
-}
+): HKT<F, Either<E, B>> => (isLeft(ma) ? F.of(left(ma.left)) : pipe(f(ma.right), F.map(right)))
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => (isLeft(fea) ? left(f(fea.left)) : right(g(fea.right)))
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => (isLeft(fea) ? left(f(fea.left)) : fea)
 const alt_: Alt2<URI>['alt'] = (fa, that) => (isLeft(fa) ? that() : fa)
@@ -349,7 +346,7 @@ const extend_: Extend2<URI>['extend'] = (wa, f) => (isLeft(wa) ? wa : right(f(wa
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: Either<E, A>) => Either<E, B> = (f) => (fa) => map_(fa, f)
+export const map: Functor2<URI>['map'] = (f) => (fa) => (isLeft(fa) ? fa : right(f(fa.right)))
 
 /**
  * Map a pair of functions over the two type arguments of the bifunctor.
@@ -386,7 +383,10 @@ export const ap: <E, A>(fa: Either<E, A>) => <B>(fab: Either<E, (a: A) => B>) =>
  */
 export const apFirst: <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>) => Either<E, A> = (fb) => (fa) =>
   ap_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -398,7 +398,10 @@ export const apFirst: <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>) => Eithe
  */
 export const apSecond = <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>): Either<E, B> =>
   ap_(
-    map_(fa, () => (b: B) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -432,7 +435,12 @@ export const chain: <E, A, B>(f: (a: A) => Either<E, B>) => (ma: Either<E, A>) =
  * @since 2.0.0
  */
 export const chainFirst: <E, A, B>(f: (a: A) => Either<E, B>) => (ma: Either<E, A>) => Either<E, A> = (f) => (ma) =>
-  chain_(ma, (a) => map_(f(a), () => a))
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Monad
@@ -503,9 +511,7 @@ export const traverse: PipeableTraverse2<URI> = <F>(
  */
 export const sequence: Traversable2<URI>['sequence'] = <F>(F: ApplicativeHKT<F>) => <E, A>(
   ma: Either<E, HKT<F, A>>
-): HKT<F, Either<E, A>> => {
-  return isLeft(ma) ? F.of(left(ma.left)) : F.map<A, Either<E, A>>(ma.right, right)
-}
+): HKT<F, Either<E, A>> => (isLeft(ma) ? F.of(left(ma.left)) : pipe(ma.right, F.map(right)))
 
 /**
  * @category MonadThrow
@@ -667,7 +673,7 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     compact,
     separate,
     filter,
@@ -690,7 +696,7 @@ export function getWitherable<E>(M: Monoid<E>): Witherable2C<URI, E> {
     F: ApplicativeHKT<F>
   ): (<A, B>(ma: Either<E, A>, f: (a: A) => HKT<F, Option<B>>) => HKT<F, Either<E, B>>) => {
     const traverseF = traverse_(F)
-    return (ma, f) => F.map(traverseF(ma, f), F_.compact)
+    return (ma, f) => pipe(traverseF(ma, f), F.map(F_.compact))
   }
 
   const wilt = <F>(
@@ -700,13 +706,13 @@ export function getWitherable<E>(M: Monoid<E>): Witherable2C<URI, E> {
     f: (a: A) => HKT<F, Either<B, C>>
   ) => HKT<F, Separated<Either<E, B>, Either<E, C>>>) => {
     const traverseF = traverse_(F)
-    return (ma, f) => F.map(traverseF(ma, f), F_.separate)
+    return (ma, f) => pipe(traverseF(ma, f), F.map(F_.separate))
   }
 
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     compact: F_.compact,
     separate: F_.separate,
     filter: F_.filter,
@@ -731,7 +737,7 @@ export function getApplicativeValidation<E>(SE: Semigroup<E>): Applicative2C<URI
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) =>
       isLeft(fab)
         ? isLeft(fa)
@@ -752,7 +758,7 @@ export function getAltValidation<E>(SE: Semigroup<E>): Alt2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     alt: (me, that) => {
       if (isRight(me)) {
         return me
@@ -782,7 +788,7 @@ export function getValidation<E>(
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     of,
     chain: chain_,
     bimap: bimap_,
@@ -816,7 +822,7 @@ export function getValidationSemigroup<E, A>(SE: Semigroup<E>, SA: Semigroup<A>)
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -825,7 +831,7 @@ export const Functor: Functor2<URI> = {
  */
 export const Applicative: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -836,7 +842,7 @@ export const Applicative: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -859,7 +865,7 @@ export const Foldable: Foldable2<URI> = {
  */
 export const Traversable: Traversable2<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -883,7 +889,7 @@ export const Bifunctor: Bifunctor2<URI> = {
  */
 export const Alt: Alt2<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -893,7 +899,7 @@ export const Alt: Alt2<URI> = {
  */
 export const Extend: Extend2<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_
 }
 
@@ -903,7 +909,7 @@ export const Extend: Extend2<URI> = {
  */
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -922,7 +928,7 @@ export const either: Monad2<URI> &
   Extend2<URI> &
   MonadThrow2<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

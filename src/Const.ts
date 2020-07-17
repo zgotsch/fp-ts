@@ -112,7 +112,7 @@ export function getApply<E>(S: Semigroup<E>): Apply2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => make(S.concat(fab, fa))
   }
 }
@@ -137,7 +137,6 @@ export function getApplicative<E>(M: Monoid<E>): Applicative2C<URI, E> {
 // -------------------------------------------------------------------------------------
 
 const contramap_: Contravariant2<URI>['contramap'] = unsafeCoerce
-const map_: Functor2<URI>['map'] = unsafeCoerce
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f) => make(f(fea))
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => make(f(fea))
 
@@ -158,7 +157,7 @@ export const contramap: <A, B>(f: (b: B) => A) => <E>(fa: Const<E, A>) => Const<
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: Const<E, A>) => Const<E, B> = (f) => (fa) => map_(fa, f)
+export const map: Functor2<URI>['map'] = () => unsafeCoerce
 
 /**
  * Map a pair of functions over the two type arguments of the bifunctor.
@@ -205,7 +204,7 @@ declare module './HKT' {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -234,7 +233,7 @@ export const Bifunctor: Bifunctor2<URI> = {
  */
 export const const_: Functor2<URI> & Contravariant2<URI> & Bifunctor2<URI> = {
   URI,
-  map: map_,
+  map,
   contramap: contramap_,
   bimap: bimap_,
   mapLeft: mapLeft_

@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 import { Applicative1 } from './Applicative'
-import { identity } from './function'
+import { identity, pipe } from './function'
 import { IO } from './IO'
 import { Monad1 } from './Monad'
 import { MonadTask1 } from './MonadTask'
@@ -101,9 +101,8 @@ export function chainIOK<A, B>(f: (a: A) => IO<B>): (ma: Task<A>) => Task<B> {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad1<URI>['map'] = (ma, f) => () => ma().then(f)
 const apPar_: Monad1<URI>['ap'] = (mab, ma) => () => Promise.all([mab(), ma()]).then(([f, a]) => f(a))
-const apSeq_: Monad1<URI>['ap'] = (fab, fa) => chain_(fab, (f) => map_(fa, f))
+const apSeq_: Monad1<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad1<URI>['chain'] = (ma, f) => () => ma().then((a) => f(a)())
 
 // -------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ const chain_: Monad1<URI>['chain'] = (ma, f) => () => ma().then((a) => f(a)())
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: Task<A>) => Task<B> = (f) => (fa) => map_(fa, f)
+export const map: Functor1<URI>['map'] = (f) => (fa) => () => fa().then(f)
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -135,7 +134,10 @@ export const ap: <A>(fa: Task<A>) => <B>(fab: Task<(a: A) => B>) => Task<B> = (f
  */
 export const apFirst: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<A> = (fb) => (fa) =>
   apPar_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -145,9 +147,12 @@ export const apFirst: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<A> = (fb) => 
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<B> = (fb) => (fa) =>
+export const apSecond = <B>(fb: Task<B>) => <A>(fa: Task<A>): Task<B> =>
   apPar_(
-    map_(fa, () => (b) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -173,7 +178,12 @@ export const chain: <A, B>(f: (a: A) => Task<B>) => (ma: Task<A>) => Task<B> = (
  * @since 2.0.0
  */
 export const chainFirst: <A, B>(f: (a: A) => Task<B>) => (ma: Task<A>) => Task<A> = (f) => (ma) =>
-  chain_(ma, (a) => map_(f(a), () => a))
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Monad
@@ -280,7 +290,7 @@ export function getRaceMonoid<A = never>(): Monoid<Task<A>> {
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -289,7 +299,7 @@ export const Functor: Functor1<URI> = {
  */
 export const ApplicativePar: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apPar_,
   of
 }
@@ -300,7 +310,7 @@ export const ApplicativePar: Applicative1<URI> = {
  */
 export const ApplicativeSeq: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apSeq_,
   of
 }
@@ -312,7 +322,7 @@ export const ApplicativeSeq: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_
@@ -325,7 +335,7 @@ export const Monad: Monad1<URI> = {
  */
 export const task: Monad1<URI> & MonadTask1<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_,
@@ -342,7 +352,7 @@ export const task: Monad1<URI> & MonadTask1<URI> = {
  */
 export const taskSeq: typeof task = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apSeq_,
   chain: chain_,

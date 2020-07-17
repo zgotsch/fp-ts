@@ -105,9 +105,8 @@ export const chainTaskK: <A, B>(f: (a: A) => Task<B>) => <R>(ma: ReaderTask<R, A
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad2<URI>['map'] = (fa, f) => pipe(fa, map(f))
 const apPar_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Monad2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => map_(fa, f))
+const apSeq_: Monad2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 
 // -------------------------------------------------------------------------------------
@@ -118,8 +117,7 @@ const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
  * @category Functor
  * @since 2.3.0
  */
-export const map: <A, B>(f: (a: A) => B) => <R>(fa: ReaderTask<R, A>) => ReaderTask<R, B> = (f) => (fa) =>
-  flow(fa, T.map(f))
+export const map: Functor2<URI>['map'] = (f) => (fa) => flow(fa, T.map(f))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -255,7 +253,7 @@ export function getMonoid<R, A>(M: Monoid<A>): Monoid<ReaderTask<R, A>> {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -264,7 +262,7 @@ export const Functor: Functor2<URI> = {
  */
 export const ApplicativePar: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apPar_,
   of
 }
@@ -275,7 +273,7 @@ export const ApplicativePar: Applicative2<URI> = {
  */
 export const ApplicativeSeq: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apSeq_,
   of
 }
@@ -285,7 +283,7 @@ export const ApplicativeSeq: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_
@@ -298,7 +296,7 @@ export const Monad: Monad2<URI> = {
  */
 export const readerTask: MonadTask2<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_,
@@ -315,7 +313,7 @@ export const readerTask: MonadTask2<URI> = {
  */
 export const readerTaskSeq: typeof readerTask = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apSeq_,
   chain: chain_,

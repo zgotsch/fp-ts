@@ -289,13 +289,12 @@ export const chainIOEitherK: <E, A, B>(
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad2<URI>['map'] = (fa, f) => pipe(fa, map(f))
 /* istanbul ignore next */
 const bimap_: Bifunctor2<URI>['bimap'] = (fa, f, g) => pipe(fa, bimap(f, g))
 /* istanbul ignore next */
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fa, f) => pipe(fa, mapLeft(f))
 const apPar_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Applicative2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => map_(fa, f))
+const apSeq_: Applicative2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const alt_: Alt2<URI>['alt'] = (fa, that) => pipe(fa, alt(that))
@@ -311,7 +310,7 @@ const alt_: Alt2<URI>['alt'] = (fa, that) => pipe(fa, alt(that))
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: TaskEither<E, A>) => TaskEither<E, B> = (f) => T.map(E.map(f))
+export const map: Functor2<URI>['map'] = (f) => T.map(E.map(f))
 
 /**
  * Map a pair of functions over the two type arguments of the bifunctor.
@@ -542,14 +541,17 @@ export function getApplicativeTaskValidation<E>(A: Apply1<T.URI>, SE: Semigroup<
   const AV = E.getApplicativeValidation(SE)
   const ap = <A>(fa: TaskEither<E, A>) => <B>(fab: TaskEither<E, (a: A) => B>): TaskEither<E, B> =>
     A.ap(
-      A.map(fab, (gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga)),
+      pipe(
+        fab,
+        A.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga))
+      ),
       fa
     )
 
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -563,7 +565,7 @@ export function getAltTaskValidation<E>(SE: Semigroup<E>): Alt2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     alt: (me, that) =>
       pipe(
         me,
@@ -587,8 +589,8 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
   const F = E.getFilterable(M)
   const compact: Filterable2C<URI, E>['compact'] = T.map(F.compact)
   const separate: Filterable2C<URI, E>['separate'] = (fge) => ({
-    left: compact(map_(fge, getLeft)),
-    right: compact(map_(fge, getRight))
+    left: compact(pipe(fge, map(getLeft))),
+    right: compact(pipe(fge, map(getRight)))
   })
   const filter: Filterable2C<URI, E>['filter'] = <A>(fga: TaskEither<E, A>, predicate: Predicate<A>) =>
     pipe(
@@ -604,7 +606,7 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     compact,
     separate,
     filter,
@@ -626,7 +628,7 @@ export function getFilterable<E>(M: Monoid<E>): Filterable2C<URI, E> {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -635,7 +637,7 @@ export const Functor: Functor2<URI> = {
  */
 export const ApplicativePar: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apPar_,
   of
 }
@@ -646,7 +648,7 @@ export const ApplicativePar: Applicative2<URI> = {
  */
 export const ApplicativeSeq: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apSeq_,
   of
 }
@@ -667,7 +669,7 @@ export const Bifunctor: Bifunctor2<URI> = {
  */
 export const Alt: Alt2<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -680,7 +682,7 @@ export const taskEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadTask2<
   URI,
   bimap: bimap_,
   mapLeft: mapLeft_,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_,
@@ -701,7 +703,7 @@ export const taskEitherSeq: typeof taskEither = {
   URI,
   bimap: bimap_,
   mapLeft: mapLeft_,
-  map: map_,
+  map,
   of,
   ap: apSeq_,
   chain: chain_,

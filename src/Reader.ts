@@ -60,8 +60,6 @@ export const local: <Q, R>(f: (d: Q) => R) => <A>(ma: Reader<R, A>) => Reader<Q,
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const map_: Monad2<URI>['map'] = (fa, f) => F.pipe(fa, map(f))
-/* istanbul ignore next */
 const ap_: Monad2<URI>['ap'] = (fab, fa) => F.pipe(fab, ap(fa))
 /* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => F.pipe(ma, chain(f))
@@ -80,7 +78,7 @@ const promap_: <E, A, D, B>(fbc: Reader<E, A>, f: (d: D) => E, g: (a: A) => B) =
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <R>(fa: Reader<R, A>) => Reader<R, B> = (f) => (fa) => (r) => f(fa(r))
+export const map: Functor2<URI>['map'] = (f) => (fa) => (r) => f(fa(r))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -234,7 +232,7 @@ export function getMonoid<R, A>(M: Monoid<A>): Monoid<Reader<R, A>> {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -243,7 +241,7 @@ export const Functor: Functor2<URI> = {
  */
 export const Applicative: Applicative2<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -254,7 +252,7 @@ export const Applicative: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_
@@ -266,7 +264,7 @@ export const Monad: Monad2<URI> = {
  */
 export const Profunctor: Profunctor2<URI> = {
   URI,
-  map: map_,
+  map,
   promap: promap_
 }
 
@@ -287,7 +285,7 @@ export const Category: Category2<URI> = {
  */
 export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

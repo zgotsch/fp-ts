@@ -7,7 +7,7 @@ import { Bifunctor2 } from './Bifunctor'
 import { Comonad2 } from './Comonad'
 import { Extend2 } from './Extend'
 import { Foldable2 } from './Foldable'
-import { identity } from './function'
+import { identity, pipe } from './function'
 import { Functor2 } from './Functor'
 import { HKT } from './HKT'
 import { Monad2C } from './Monad'
@@ -52,7 +52,7 @@ export function getApply<S>(S: Semigroup<S>): Apply2C<URI, S> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => [fst(fab)(fst(fa)), S.concat(snd(fab), snd(fa))]
   }
 }
@@ -100,7 +100,6 @@ export function getMonad<S>(M: Monoid<S>): Monad2C<URI, S> {
 // -------------------------------------------------------------------------------------
 
 const compose_: Semigroupoid2<URI>['compose'] = (ba, ae) => [fst(ba), snd(ae)]
-const map_: Functor2<URI>['map'] = (ae, f) => [f(fst(ae)), snd(ae)]
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => [g(fst(fea)), f(snd(fea))]
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => [fst(fea), f(snd(fea))]
 const extend_: Extend2<URI>['extend'] = (ae, f) => [f(ae), snd(ae)]
@@ -111,7 +110,10 @@ const traverse_ = <F>(F: Applicative<F>) => <A, S, B>(
   as: readonly [A, S],
   f: (a: A) => HKT<F, B>
 ): HKT<F, readonly [B, S]> => {
-  return F.map(f(fst(as)), (b) => [b, snd(as)])
+  return pipe(
+    f(fst(as)),
+    F.map((b) => [b, snd(as)])
+  )
 }
 
 // -------------------------------------------------------------------------------------
@@ -181,7 +183,7 @@ export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => <E>(fa: readon
  * @category Functor
  * @since 2.5.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: readonly [A, E]) => readonly [B, E] = (f) => (fa) => map_(fa, f)
+export const map: Functor2<URI>['map'] = (f) => (fa) => [f(fst(fa)), snd(fa)]
 
 /**
  * @category Foldable
@@ -212,7 +214,10 @@ export const traverse: PipeableTraverse2<URI> = <F>(
 export const sequence: Traversable2<URI>['sequence'] = <F>(F: Applicative<F>) => <A, S>(
   fas: readonly [HKT<F, A>, S]
 ): HKT<F, readonly [A, S]> => {
-  return F.map(fst(fas), (a) => [a, snd(fas)])
+  return pipe(
+    fst(fas),
+    F.map((a) => [a, snd(fas)])
+  )
 }
 
 // -------------------------------------------------------------------------------------
@@ -243,7 +248,7 @@ declare module './HKT' {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -271,7 +276,7 @@ export const Semigroupoid: Semigroupoid2<URI> = {
  */
 export const Comonad: Comonad2<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_,
   extract
 }
@@ -293,7 +298,7 @@ export const Foldable: Foldable2<URI> = {
  */
 export const Traversable: Traversable2<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -313,7 +318,7 @@ export const readonlyTuple: Semigroupoid2<URI> &
   Traversable2<URI> = {
   URI,
   compose: compose_,
-  map: map_,
+  map,
   bimap: bimap_,
   mapLeft: mapLeft_,
   extract,

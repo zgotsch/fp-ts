@@ -349,9 +349,8 @@ export const chainTaskEitherK: <E, A, B>(
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad3<URI>['map'] = (fa, f) => pipe(fa, map(f))
 const apPar_: Monad3<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Monad3<URI>['ap'] = (fab, fa) => chain_(fab, (f) => map_(fa, f))
+const apSeq_: Monad3<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad3<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 const alt_: <R, E, A>(
   fa: ReaderTaskEither<R, E, A>,
@@ -603,7 +602,7 @@ export function getApplicativeReaderTaskValidation<E>(A: Apply1<T.URI>, SE: Semi
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -618,7 +617,7 @@ export function getAltReaderTaskValidation<E>(SE: Semigroup<E>): Alt3C<URI, E> {
   return {
     URI,
     _E: undefined as any,
-    map: map_,
+    map,
     alt: (me, that) => (r) => A.alt(me(r), () => that()(r))
   }
 }
@@ -629,7 +628,7 @@ export function getAltReaderTaskValidation<E>(SE: Semigroup<E>): Alt3C<URI, E> {
  */
 export const Functor: Functor3<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -638,7 +637,7 @@ export const Functor: Functor3<URI> = {
  */
 export const ApplicativePar: Applicative3<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apPar_,
   of
 }
@@ -649,7 +648,7 @@ export const ApplicativePar: Applicative3<URI> = {
  */
 export const ApplicativeSeq: Applicative3<URI> = {
   URI,
-  map: map_,
+  map,
   ap: apSeq_,
   of
 }
@@ -670,7 +669,7 @@ export const Bifunctor: Bifunctor3<URI> = {
  */
 export const Alt: Alt3<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -681,7 +680,7 @@ export const Alt: Alt3<URI> = {
  */
 export const readerTaskEither: Monad3<URI> & Bifunctor3<URI> & Alt3<URI> & MonadTask3<URI> & MonadThrow3<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apPar_,
   chain: chain_,
@@ -702,7 +701,7 @@ export const readerTaskEither: Monad3<URI> & Bifunctor3<URI> & Alt3<URI> & Monad
  */
 export const readerTaskEitherSeq: typeof readerTaskEither = {
   URI,
-  map: map_,
+  map,
   of,
   ap: apSeq_,
   chain: chain_,

@@ -2,6 +2,7 @@ import * as _ from '../../src/Apply'
 import { URIS, Kind } from '../../src/HKT'
 import * as RTE from '../../src/ReaderTaskEither'
 import * as E from '../../src/Either'
+import { pipe } from '../../src/function'
 
 //
 // sequenceS
@@ -31,8 +32,9 @@ export function factoryS<F extends URIS>(
   a8: Kind<F, number>,
   a9: Kind<F, boolean>
 ): Kind<F, boolean> {
-  return F.map(_.sequenceS(F)({ a1, a2, a3, a4, a5, a6, a7, a8, a9 }), ({ a1, a2, a3, a4, a5, a6, a7, a8, a9 }) =>
-    functionForfactoryS(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+  return pipe(
+    _.sequenceS(F)({ a1, a2, a3, a4, a5, a6, a7, a8, a9 }),
+    F.map(({ a1, a2, a3, a4, a5, a6, a7, a8, a9 }) => functionForfactoryS(a1, a2, a3, a4, a5, a6, a7, a8, a9))
   )
 }
 
@@ -80,8 +82,9 @@ export function factoryT<F extends URIS>(
   f8: Kind<F, number>,
   f9: Kind<F, boolean>
 ): Kind<F, boolean> {
-  return F.map(_.sequenceT(F)(f1, f2, f3, f4, f5, f6, f7, f8, f9), ([a1, a2, a3, a4, a5, a6, a7, a8, a9]) =>
-    functionForfactoryS(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+  return pipe(
+    _.sequenceT(F)(f1, f2, f3, f4, f5, f6, f7, f8, f9),
+    F.map(([a1, a2, a3, a4, a5, a6, a7, a8, a9]) => functionForfactoryS(a1, a2, a3, a4, a5, a6, a7, a8, a9))
   )
 }
 

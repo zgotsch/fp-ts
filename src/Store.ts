@@ -2,7 +2,7 @@
  * @since 2.0.0
  */
 import { Comonad2 } from './Comonad'
-import { Endomorphism, identity } from './function'
+import { Endomorphism, identity, pipe } from './function'
 import { Functor as FunctorHKT, Functor1, Functor2, Functor2C, Functor3, Functor3C } from './Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
 import { Extend2 } from './Extend'
@@ -69,17 +69,17 @@ export function experiment<F extends URIS>(
 ): <S>(f: (s: S) => Kind<F, S>) => <A>(wa: Store<S, A>) => Kind<F, A>
 export function experiment<F>(F: FunctorHKT<F>): <S>(f: (s: S) => HKT<F, S>) => <A>(wa: Store<S, A>) => HKT<F, A>
 export function experiment<F>(F: FunctorHKT<F>): <S>(f: (s: S) => HKT<F, S>) => <A>(wa: Store<S, A>) => HKT<F, A> {
-  return (f) => (wa) => F.map(f(wa.pos), (s) => wa.peek(s))
+  return (f) => (wa) =>
+    pipe(
+      f(wa.pos),
+      F.map((s) => wa.peek(s))
+    )
 }
 
 // -------------------------------------------------------------------------------------
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Functor2<URI>['map'] = (wa, f) => ({
-  peek: (s) => f(wa.peek(s)),
-  pos: wa.pos
-})
 const extend_: Extend2<URI>['extend'] = (wa, f) => ({
   peek: (s) => f({ peek: wa.peek, pos: s }),
   pos: wa.pos
@@ -115,7 +115,10 @@ export const extend: <E, A, B>(f: (wa: Store<E, A>) => B) => (wa: Store<E, A>) =
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: Store<E, A>) => Store<E, B> = (f) => (fa) => map_(fa, f)
+export const map: Functor2<URI>['map'] = (f) => (fa) => ({
+  peek: (s) => f(fa.peek(s)),
+  pos: fa.pos
+})
 
 // -------------------------------------------------------------------------------------
 // instances
@@ -145,7 +148,7 @@ declare module './HKT' {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -154,7 +157,7 @@ export const Functor: Functor2<URI> = {
  */
 export const Comonad: Comonad2<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_,
   extract
 }

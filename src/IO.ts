@@ -12,7 +12,7 @@
  * @since 2.0.0
  */
 import { Applicative1 } from './Applicative'
-import { identity } from './function'
+import { identity, pipe } from './function'
 import { Functor1 } from './Functor'
 import { Monad1 } from './Monad'
 import { MonadIO1 } from './MonadIO'
@@ -35,7 +35,6 @@ export interface IO<A> {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Monad1<URI>['map'] = (ma, f) => () => f(ma())
 const ap_: Monad1<URI>['ap'] = (mab, ma) => () => mab()(ma())
 const chain_: Monad1<URI>['chain'] = (ma, f) => () => f(ma())()
 
@@ -50,7 +49,7 @@ const chain_: Monad1<URI>['chain'] = (ma, f) => () => f(ma())()
  * @category Functor
  * @since 2.0.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: IO<A>) => IO<B> = (f) => (fa) => map_(fa, f)
+export const map: Functor1<URI>['map'] = (f) => (fa) => () => f(fa())
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -68,7 +67,10 @@ export const ap: <A>(fa: IO<A>) => <B>(fab: IO<(a: A) => B>) => IO<B> = (fa) => 
  */
 export const apFirst: <B>(fb: IO<B>) => <A>(fa: IO<A>) => IO<A> = (fb) => (fa) =>
   ap_(
-    map_(fa, (a) => () => a),
+    pipe(
+      fa,
+      map((a) => () => a)
+    ),
     fb
   )
 
@@ -80,7 +82,10 @@ export const apFirst: <B>(fb: IO<B>) => <A>(fa: IO<A>) => IO<A> = (fb) => (fa) =
  */
 export const apSecond = <B>(fb: IO<B>) => <A>(fa: IO<A>): IO<B> =>
   ap_(
-    map_(fa, () => (b: B) => b),
+    pipe(
+      fa,
+      map(() => (b: B) => b)
+    ),
     fb
   )
 
@@ -104,7 +109,12 @@ export const chain: <A, B>(f: (a: A) => IO<B>) => (ma: IO<A>) => IO<B> = (f) => 
  * @since 2.0.0
  */
 export const chainFirst: <A, B>(f: (a: A) => IO<B>) => (ma: IO<A>) => IO<A> = (f) => (ma) =>
-  chain_(ma, (a) => map_(f(a), () => a))
+  chain_(ma, (a) =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @category Monad
@@ -167,7 +177,7 @@ export function getMonoid<A>(M: Monoid<A>): Monoid<IO<A>> {
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -176,7 +186,7 @@ export const Functor: Functor1<URI> = {
  */
 export const Applicative: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -187,7 +197,7 @@ export const Applicative: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -199,7 +209,7 @@ export const Monad: Monad1<URI> = {
  */
 export const MonadIO: MonadIO1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_,
@@ -213,7 +223,7 @@ export const MonadIO: MonadIO1<URI> = {
  */
 export const io: Monad1<URI> & MonadIO1<URI> = {
   URI,
-  map: map_,
+  map,
   of,
   ap: ap_,
   chain: chain_,

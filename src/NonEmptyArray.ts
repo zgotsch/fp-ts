@@ -17,7 +17,7 @@ import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { Monad1 } from './Monad'
 import { none, Option, some } from './Option'
 import { Ord } from './Ord'
-import * as RA from './Array'
+import * as A from './Array'
 import { ReadonlyRecord } from './Record'
 import { getJoinSemigroup, getMeetSemigroup, Semigroup } from './Semigroup'
 import { Show } from './Show'
@@ -48,7 +48,7 @@ export type NonEmptyArray<A> = ReadonlyArray<A> & {
  * @category constructors
  * @since 2.5.0
  */
-export const cons: <A>(head: A) => (tail: ReadonlyArray<A>) => NonEmptyArray<A> = RA.cons
+export const cons: <A>(head: A) => (tail: ReadonlyArray<A>) => NonEmptyArray<A> = A.cons
 
 /**
  * Append an element to the end of an array, creating a new non empty array
@@ -62,7 +62,7 @@ export const cons: <A>(head: A) => (tail: ReadonlyArray<A>) => NonEmptyArray<A> 
  * @category constructors
  * @since 2.5.0
  */
-export const snoc: <A>(end: A) => (init: ReadonlyArray<A>) => NonEmptyArray<A> = RA.snoc
+export const snoc: <A>(end: A) => (init: ReadonlyArray<A>) => NonEmptyArray<A> = A.snoc
 
 /**
  * Builds a `ReadonlyNonEmptyArray` from an array returning `none` if `as` is an empty array
@@ -71,14 +71,14 @@ export const snoc: <A>(end: A) => (init: ReadonlyArray<A>) => NonEmptyArray<A> =
  * @since 2.5.0
  */
 export function fromArray<A>(as: ReadonlyArray<A>): Option<NonEmptyArray<A>> {
-  return RA.isNonEmpty(as) ? some(as) : none
+  return A.isNonEmpty(as) ? some(as) : none
 }
 
 /**
  * @category instances
  * @since 2.5.0
  */
-export const getShow: <A>(S: Show<A>) => Show<NonEmptyArray<A>> = RA.getShow
+export const getShow: <A>(S: Show<A>) => Show<NonEmptyArray<A>> = A.getShow
 
 /**
  * @since 2.5.0
@@ -98,7 +98,7 @@ export function tail<A>(nea: NonEmptyArray<A>): ReadonlyArray<A> {
  * @category combinators
  * @since 2.5.0
  */
-export const reverse: <A>(nea: NonEmptyArray<A>) => NonEmptyArray<A> = RA.reverse as any
+export const reverse: <A>(nea: NonEmptyArray<A>) => NonEmptyArray<A> = A.reverse as any
 
 /**
  * @since 2.5.0
@@ -140,7 +140,7 @@ export function getSemigroup<A = never>(): Semigroup<NonEmptyArray<A>> {
  * @category instances
  * @since 2.5.0
  */
-export const getEq: <A>(E: Eq<A>) => Eq<NonEmptyArray<A>> = RA.getEq
+export const getEq: <A>(E: Eq<A>) => Eq<NonEmptyArray<A>> = A.getEq
 
 /**
  * Group equal, consecutive elements of an array into non empty arrays.
@@ -168,7 +168,7 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonE
   return (as) => {
     const len = as.length
     if (len === 0) {
-      return RA.empty
+      return A.empty
     }
     // tslint:disable-next-line: readonly-array
     const r: Array<NonEmptyArray<A>> = []
@@ -203,7 +203,7 @@ export function group<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonE
  * @since 2.5.0
  */
 export function groupSort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<NonEmptyArray<A>> {
-  const sortO = RA.sort(O)
+  const sortO = A.sort(O)
   const groupO = group(O)
   return (as) => groupO(sortO(as))
 }
@@ -266,28 +266,28 @@ export function init<A>(nea: NonEmptyArray<A>): ReadonlyArray<A> {
  * @since 2.5.0
  */
 export function sort<A>(O: Ord<A>): (nea: NonEmptyArray<A>) => NonEmptyArray<A> {
-  return RA.sort(O) as any
+  return A.sort(O) as any
 }
 
 /**
  * @since 2.5.0
  */
 export function insertAt<A>(i: number, a: A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
-  return RA.insertAt(i, a) as any
+  return A.insertAt(i, a) as any
 }
 
 /**
  * @since 2.5.0
  */
 export function updateAt<A>(i: number, a: A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
-  return RA.updateAt(i, a) as any
+  return A.updateAt(i, a) as any
 }
 
 /**
  * @since 2.5.0
  */
 export function modifyAt<A>(i: number, f: (a: A) => A): (nea: NonEmptyArray<A>) => Option<NonEmptyArray<A>> {
-  return RA.modifyAt(i, f) as any
+  return A.modifyAt(i, f) as any
 }
 
 /**
@@ -314,7 +314,7 @@ export function filterWithIndex<A>(
  * @category Applicative
  * @since 2.5.0
  */
-export const of: <A>(a: A) => NonEmptyArray<A> = RA.of as any
+export const of: <A>(a: A) => NonEmptyArray<A> = A.of as any
 
 /**
  * @category constructors
@@ -341,7 +341,7 @@ export const zipWith: <A, B, C>(
   fa: NonEmptyArray<A>,
   fb: NonEmptyArray<B>,
   f: (a: A, b: B) => C
-) => NonEmptyArray<C> = RA.zipWith as any
+) => NonEmptyArray<C> = A.zipWith as any
 
 /**
  * @category combinators
@@ -350,35 +350,34 @@ export const zipWith: <A, B, C>(
 export const zip: {
   <B>(bs: NonEmptyArray<B>): <A>(as: NonEmptyArray<A>) => NonEmptyArray<readonly [A, B]>
   <A, B>(as: NonEmptyArray<A>, bs: NonEmptyArray<B>): NonEmptyArray<readonly [A, B]>
-} = RA.zip as any
+} = A.zip as any
 
 /**
  * @since 2.5.1
  */
 export const unzip: <A, B>(
   as: NonEmptyArray<readonly [A, B]>
-) => readonly [NonEmptyArray<A>, NonEmptyArray<B>] = RA.unzip as any
+) => readonly [NonEmptyArray<A>, NonEmptyArray<B>] = A.unzip as any
 
 // -------------------------------------------------------------------------------------
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const map_: Functor1<URI>['map'] = RA.functorArray.map as any
-const mapWithIndex_: FunctorWithIndex1<URI, number>['mapWithIndex'] = RA.Functor.mapWithIndex as any
-const ap_: Apply1<URI>['ap'] = RA.Applicative.ap as any
-const chain_: Monad1<URI>['chain'] = RA.Monad.chain as any
-const extend_: Extend1<URI>['extend'] = RA.Extend.extend as any
-const reduce_: Foldable1<URI>['reduce'] = RA.Foldable.reduce as any
-const foldMap_: Foldable1<URI>['foldMap'] = RA.Foldable.foldMap as any
-const reduceRight_: Foldable1<URI>['reduceRight'] = RA.Foldable.reduceRight as any
-const traverse_: Traversable1<URI>['traverse'] = RA.Traversable.traverse as any
-const alt_: Alt1<URI>['alt'] = RA.Alt.alt as any
-const reduceWithIndex_: FoldableWithIndex1<URI, number>['reduceWithIndex'] = RA.FoldableWithIndex.reduceWithIndex as any
-const foldMapWithIndex_: FoldableWithIndex1<URI, number>['foldMapWithIndex'] = RA.FoldableWithIndex
+const mapWithIndex_: FunctorWithIndex1<URI, number>['mapWithIndex'] = A.FunctorWithIndex.mapWithIndex as any
+const ap_: Apply1<URI>['ap'] = A.Applicative.ap as any
+const chain_: Monad1<URI>['chain'] = A.Monad.chain as any
+const extend_: Extend1<URI>['extend'] = A.Extend.extend as any
+const reduce_: Foldable1<URI>['reduce'] = A.Foldable.reduce as any
+const foldMap_: Foldable1<URI>['foldMap'] = A.Foldable.foldMap as any
+const reduceRight_: Foldable1<URI>['reduceRight'] = A.Foldable.reduceRight as any
+const traverse_: Traversable1<URI>['traverse'] = A.Traversable.traverse as any
+const alt_: Alt1<URI>['alt'] = A.Alt.alt as any
+const reduceWithIndex_: FoldableWithIndex1<URI, number>['reduceWithIndex'] = A.FoldableWithIndex.reduceWithIndex as any
+const foldMapWithIndex_: FoldableWithIndex1<URI, number>['foldMapWithIndex'] = A.FoldableWithIndex
   .foldMapWithIndex as any
-const reduceRightWithIndex_: FoldableWithIndex1<URI, number>['reduceRightWithIndex'] = RA.FoldableWithIndex
+const reduceRightWithIndex_: FoldableWithIndex1<URI, number>['reduceRightWithIndex'] = A.FoldableWithIndex
   .reduceRightWithIndex as any
-const traverseWithIndex_: TraversableWithIndex1<URI, number>['traverseWithIndex'] = RA.TraversableWithIndex
+const traverseWithIndex_: TraversableWithIndex1<URI, number>['traverseWithIndex'] = A.TraversableWithIndex
   .traverseWithIndex as any
 
 // -------------------------------------------------------------------------------------
@@ -406,13 +405,13 @@ export const foldMap = <S>(S: Semigroup<S>) => <A>(f: (a: A) => S) => (fa: NonEm
  * @category Alt
  * @since 2.6.2
  */
-export const alt: <A>(that: Lazy<NonEmptyArray<A>>) => (fa: NonEmptyArray<A>) => NonEmptyArray<A> = RA.alt as any
+export const alt: <A>(that: Lazy<NonEmptyArray<A>>) => (fa: NonEmptyArray<A>) => NonEmptyArray<A> = A.alt as any
 
 /**
  * @category Apply
  * @since 2.5.0
  */
-export const ap: <A>(fa: NonEmptyArray<A>) => <B>(fab: NonEmptyArray<(a: A) => B>) => NonEmptyArray<B> = RA.ap as any
+export const ap: <A>(fa: NonEmptyArray<A>) => <B>(fab: NonEmptyArray<(a: A) => B>) => NonEmptyArray<B> = A.ap as any
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -420,7 +419,7 @@ export const ap: <A>(fa: NonEmptyArray<A>) => <B>(fab: NonEmptyArray<(a: A) => B
  * @category Apply
  * @since 2.5.0
  */
-export const apFirst: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<A> = RA.apFirst as any
+export const apFirst: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<A> = A.apFirst as any
 
 /**
  * Combine two effectful actions, keeping only the result of the second.
@@ -428,7 +427,7 @@ export const apFirst: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => 
  * @category Apply
  * @since 2.5.0
  */
-export const apSecond: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.apSecond as any
+export const apSecond: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) => NonEmptyArray<B> = A.apSecond as any
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation.
@@ -436,9 +435,7 @@ export const apSecond: <B>(fb: NonEmptyArray<B>) => <A>(fa: NonEmptyArray<A>) =>
  * @category Monad
  * @since 2.5.0
  */
-export const chain: <A, B>(
-  f: (a: A) => NonEmptyArray<B>
-) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = RA.chain as any
+export const chain: <A, B>(f: (a: A) => NonEmptyArray<B>) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = A.chain as any
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation and
@@ -449,13 +446,13 @@ export const chain: <A, B>(
  */
 export const chainFirst: <A, B>(
   f: (a: A) => NonEmptyArray<B>
-) => (ma: NonEmptyArray<A>) => NonEmptyArray<A> = RA.chainFirst as any
+) => (ma: NonEmptyArray<A>) => NonEmptyArray<A> = A.chainFirst as any
 
 /**
  * @category Extend
  * @since 2.5.0
  */
-export const duplicate: <A>(ma: NonEmptyArray<A>) => NonEmptyArray<NonEmptyArray<A>> = RA.duplicate as any
+export const duplicate: <A>(ma: NonEmptyArray<A>) => NonEmptyArray<NonEmptyArray<A>> = A.duplicate as any
 
 /**
  * @category Extend
@@ -463,13 +460,13 @@ export const duplicate: <A>(ma: NonEmptyArray<A>) => NonEmptyArray<NonEmptyArray
  */
 export const extend: <A, B>(
   f: (fa: NonEmptyArray<A>) => B
-) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = RA.extend as any
+) => (ma: NonEmptyArray<A>) => NonEmptyArray<B> = A.extend as any
 
 /**
  * @category Monad
  * @since 2.5.0
  */
-export const flatten: <A>(mma: NonEmptyArray<NonEmptyArray<A>>) => NonEmptyArray<A> = RA.flatten as any
+export const flatten: <A>(mma: NonEmptyArray<NonEmptyArray<A>>) => NonEmptyArray<A> = A.flatten as any
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -478,7 +475,7 @@ export const flatten: <A>(mma: NonEmptyArray<NonEmptyArray<A>>) => NonEmptyArray
  * @category Functor
  * @since 2.5.0
  */
-export const map: <A, B>(f: (a: A) => B) => (fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.map as any
+export const map: Functor1<URI>['map'] = A.map as any
 
 /**
  * @category FunctorWithIndex
@@ -486,48 +483,48 @@ export const map: <A, B>(f: (a: A) => B) => (fa: NonEmptyArray<A>) => NonEmptyAr
  */
 export const mapWithIndex: <A, B>(
   f: (i: number, a: A) => B
-) => (fa: NonEmptyArray<A>) => NonEmptyArray<B> = RA.mapWithIndex as any
+) => (fa: NonEmptyArray<A>) => NonEmptyArray<B> = A.mapWithIndex as any
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: NonEmptyArray<A>) => B = RA.reduce
+export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: NonEmptyArray<A>) => B = A.reduce
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
 export const reduceWithIndex: <A, B>(b: B, f: (i: number, b: B, a: A) => B) => (fa: NonEmptyArray<A>) => B =
-  RA.reduceWithIndex
+  A.reduceWithIndex
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: NonEmptyArray<A>) => B = RA.reduceRight
+export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: NonEmptyArray<A>) => B = A.reduceRight
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
 export const reduceRightWithIndex: <A, B>(b: B, f: (i: number, a: A, b: B) => B) => (fa: NonEmptyArray<A>) => B =
-  RA.reduceRightWithIndex
+  A.reduceRightWithIndex
 
 /**
  * @since 2.6.3
  */
-export const traverse: PipeableTraverse1<URI> = RA.traverse as any
+export const traverse: PipeableTraverse1<URI> = A.traverse as any
 
 /**
  * @since 2.6.3
  */
-export const sequence: Traversable1<URI>['sequence'] = RA.sequence as any
+export const sequence: Traversable1<URI>['sequence'] = A.sequence as any
 
 /**
  * @since 2.6.3
  */
-export const traverseWithIndex: PipeableTraverseWithIndex1<URI, number> = RA.traverseWithIndex as any
+export const traverseWithIndex: PipeableTraverseWithIndex1<URI, number> = A.traverseWithIndex as any
 
 /**
  * @since 2.6.3
@@ -562,7 +559,7 @@ declare module './HKT' {
  */
 export const Functor: Functor1<URI> = {
   URI,
-  map: map_
+  map
 }
 
 /**
@@ -571,7 +568,7 @@ export const Functor: Functor1<URI> = {
  */
 export const FunctorWithIndex: FunctorWithIndex1<URI, number> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_
 }
 
@@ -581,7 +578,7 @@ export const FunctorWithIndex: FunctorWithIndex1<URI, number> = {
  */
 export const Applicative: Applicative1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of
 }
@@ -592,7 +589,7 @@ export const Applicative: Applicative1<URI> = {
  */
 export const Monad: Monad1<URI> = {
   URI,
-  map: map_,
+  map,
   ap: ap_,
   of,
   chain: chain_
@@ -629,7 +626,7 @@ export const FoldableWithIndex: FoldableWithIndex1<URI, number> = {
  */
 export const Traversable: Traversable1<URI> = {
   URI,
-  map: map_,
+  map,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -643,7 +640,7 @@ export const Traversable: Traversable1<URI> = {
  */
 export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
   URI,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   reduce: reduce_,
   foldMap: foldMap_,
@@ -662,7 +659,7 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
  */
 export const Alt: Alt1<URI> = {
   URI,
-  map: map_,
+  map,
   alt: alt_
 }
 
@@ -672,7 +669,7 @@ export const Alt: Alt1<URI> = {
  */
 export const Comonad: Comonad1<URI> = {
   URI,
-  map: map_,
+  map,
   extend: extend_,
   extract
 }
@@ -690,7 +687,7 @@ export const readonlyNonEmptyArray: Monad1<URI> &
   Alt1<URI> = {
   URI,
   of,
-  map: map_,
+  map,
   mapWithIndex: mapWithIndex_,
   ap: ap_,
   chain: chain_,
