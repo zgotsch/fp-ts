@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 import { Applicative1 } from './Applicative'
-import { identity, pipe } from './function'
+import { identity, pipe, flow } from './function'
 import { IO } from './IO'
 import { Monad1 } from './Monad'
 import { MonadTask1 } from './MonadTask'
@@ -101,8 +101,6 @@ export function chainIOK<A, B>(f: (a: A) => IO<B>): (ma: Task<A>) => Task<B> {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const apPar_: Monad1<URI>['ap'] = (mab, ma) => () => Promise.all([mab(), ma()]).then(([f, a]) => f(a))
-const apSeq_: Monad1<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad1<URI>['chain'] = (ma, f) => () => ma().then((a) => f(a)())
 
 // -------------------------------------------------------------------------------------
@@ -124,7 +122,7 @@ export const map: Functor1<URI>['map'] = (f) => (fa) => () => fa().then(f)
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <A>(fa: Task<A>) => <B>(fab: Task<(a: A) => B>) => Task<B> = (fa) => (fab) => apPar_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) => (fab) => () => Promise.all([fab(), fa()]).then(([f, a]) => f(a))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -132,13 +130,10 @@ export const ap: <A>(fa: Task<A>) => <B>(fab: Task<(a: A) => B>) => Task<B> = (f
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<A> = (fb) => (fa) =>
-  apPar_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -147,13 +142,10 @@ export const apFirst: <B>(fb: Task<B>) => <A>(fa: Task<A>) => Task<A> = (fb) => 
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <B>(fb: Task<B>) => <A>(fa: Task<A>): Task<B> =>
-  apPar_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: Task<B>): (<A>(fa: Task<A>) => Task<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -300,7 +292,7 @@ export const Functor: Functor1<URI> = {
 export const ApplicativePar: Applicative1<URI> = {
   URI,
   map,
-  ap: apPar_,
+  ap,
   of
 }
 
@@ -311,7 +303,13 @@ export const ApplicativePar: Applicative1<URI> = {
 export const ApplicativeSeq: Applicative1<URI> = {
   URI,
   map,
-  ap: apSeq_,
+  ap: (fa) =>
+    chain((f) =>
+      pipe(
+        fa,
+        map((a) => f(a))
+      )
+    ),
   of
 }
 
@@ -324,7 +322,7 @@ export const Monad: Monad1<URI> = {
   URI,
   map,
   of,
-  ap: apPar_,
+  ap,
   chain: chain_
 }
 
@@ -337,24 +335,7 @@ export const task: Monad1<URI> & MonadTask1<URI> = {
   URI,
   map,
   of,
-  ap: apPar_,
-  chain: chain_,
-  fromIO,
-  fromTask
-}
-
-// TODO: remove instance in v3
-/**
- * Like `task` but `ap` is sequential
- *
- * @category instances
- * @since 2.0.0
- */
-export const taskSeq: typeof task = {
-  URI,
-  map,
-  of,
-  ap: apSeq_,
+  ap,
   chain: chain_,
   fromIO,
   fromTask

@@ -853,15 +853,13 @@ const traverseWithIndex_ = <F>(F: Applicative<F>) => <A, B>(
   }
   let fr: HKT<F, Record<string, B>> = F.of({})
   for (const key of ks) {
-    fr = F.ap(
-      pipe(
-        fr,
-        F.map((r) => (b: B) => {
-          r[key] = b
-          return r
-        })
-      ),
-      f(key, ta[key])
+    fr = pipe(
+      fr,
+      F.map((r) => (b: B) => {
+        r[key] = b
+        return r
+      }),
+      F.ap(f(key, ta[key]))
     )
   }
   return fr

@@ -20,7 +20,7 @@ import { Separated } from './Compactable'
 import { Eq } from './Eq'
 import { Extend2 } from './Extend'
 import { Foldable2 } from './Foldable'
-import { identity, Lazy, Predicate, Refinement, pipe } from './function'
+import { identity, Lazy, Predicate, Refinement, pipe, flow } from './function'
 import { Functor2 } from './Functor'
 import { HKT } from './HKT'
 import { Monad2, Monad2C } from './Monad'
@@ -320,7 +320,6 @@ export const filterOrElse: {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const ap_: Monad2<URI>['ap'] = (mab, ma) => (isLeft(mab) ? mab : isLeft(ma) ? ma : right(mab.right(ma.right)))
 const chain_: <D, A, E, B>(fa: Either<D, A>, f: (a: A) => Either<E, B>) => Either<D | E, B> = (ma, f) =>
   isLeft(ma) ? ma : f(ma.right)
 const reduce_: Foldable2<URI>['reduce'] = (fa, b, f) => (isLeft(fa) ? b : f(b, fa.right))
@@ -372,8 +371,8 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: Either<E, A>) => Either<
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <E, A>(fa: Either<E, A>) => <B>(fab: Either<E, (a: A) => B>) => Either<E, B> = (fa) => (fab) =>
-  ap_(fab, fa)
+export const ap: Applicative2<URI>['ap'] = (fa) => (fab) =>
+  isLeft(fab) ? fab : isLeft(fa) ? fa : right(fab.right(fa.right))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -381,13 +380,10 @@ export const ap: <E, A>(fa: Either<E, A>) => <B>(fab: Either<E, (a: A) => B>) =>
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>) => Either<E, A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>) => Either<E, A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -396,13 +392,10 @@ export const apFirst: <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>) => Eithe
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <E, B>(fb: Either<E, B>) => <A>(fa: Either<E, A>): Either<E, B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <E, B>(fb: Either<E, B>): (<A>(fa: Either<E, A>) => Either<E, B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -738,7 +731,7 @@ export function getApplicativeValidation<E>(SE: Semigroup<E>): Applicative2C<URI
     URI,
     _E: undefined as any,
     map,
-    ap: (fab, fa) =>
+    ap: (fa) => (fab) =>
       isLeft(fab)
         ? isLeft(fa)
           ? left(SE.concat(fab.left, fa.left))
@@ -832,7 +825,7 @@ export const Functor: Functor2<URI> = {
 export const Applicative: Applicative2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -843,7 +836,7 @@ export const Applicative: Applicative2<URI> = {
 export const Monad: Monad2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -910,7 +903,7 @@ export const Extend: Extend2<URI> = {
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   throwError: throwError
@@ -930,7 +923,7 @@ export const either: Monad2<URI> &
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   reduce: reduce_,
   foldMap: foldMap_,

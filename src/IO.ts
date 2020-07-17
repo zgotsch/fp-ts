@@ -12,7 +12,7 @@
  * @since 2.0.0
  */
 import { Applicative1 } from './Applicative'
-import { identity, pipe } from './function'
+import { identity, pipe, flow } from './function'
 import { Functor1 } from './Functor'
 import { Monad1 } from './Monad'
 import { MonadIO1 } from './MonadIO'
@@ -35,7 +35,6 @@ export interface IO<A> {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const ap_: Monad1<URI>['ap'] = (mab, ma) => () => mab()(ma())
 const chain_: Monad1<URI>['chain'] = (ma, f) => () => f(ma())()
 
 // -------------------------------------------------------------------------------------
@@ -57,7 +56,7 @@ export const map: Functor1<URI>['map'] = (f) => (fa) => () => f(fa())
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <A>(fa: IO<A>) => <B>(fab: IO<(a: A) => B>) => IO<B> = (fa) => (fab) => ap_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) => (fab) => () => fab()(fa())
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -65,13 +64,10 @@ export const ap: <A>(fa: IO<A>) => <B>(fab: IO<(a: A) => B>) => IO<B> = (fa) => 
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <B>(fb: IO<B>) => <A>(fa: IO<A>) => IO<A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: IO<B>) => <A>(fa: IO<A>) => IO<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -80,13 +76,10 @@ export const apFirst: <B>(fb: IO<B>) => <A>(fa: IO<A>) => IO<A> = (fb) => (fa) =
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <B>(fb: IO<B>) => <A>(fa: IO<A>): IO<B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: IO<B>): (<A>(fa: IO<A>) => IO<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -187,7 +180,7 @@ export const Functor: Functor1<URI> = {
 export const Applicative: Applicative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -198,7 +191,7 @@ export const Applicative: Applicative1<URI> = {
 export const Monad: Monad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -210,7 +203,7 @@ export const Monad: Monad1<URI> = {
 export const MonadIO: MonadIO1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   fromIO
@@ -225,7 +218,7 @@ export const io: Monad1<URI> & MonadIO1<URI> = {
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   fromIO
 }

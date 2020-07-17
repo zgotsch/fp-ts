@@ -196,8 +196,6 @@ export const filterOrElse: {
 const bimap_: Bifunctor3<URI>['bimap'] = (fa, f, g) => pipe(fa, bimap(f, g))
 /* istanbul ignore next */
 const mapLeft_: Bifunctor3<URI>['mapLeft'] = (fa, f) => pipe(fa, mapLeft(f))
-/* istanbul ignore next */
-const ap_: Monad3<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
 const of = right
 /* istanbul ignore next */
 const chain_: Monad3<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
@@ -242,10 +240,11 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <R, A>(fa: ReaderEither<R, E, A>
  * @category Apply
  * @since 2.0.0
  */
-export const ap = <R, E, A>(
-  fa: ReaderEither<R, E, A>
-): (<B>(fab: ReaderEither<R, E, (a: A) => B>) => ReaderEither<R, E, B>) =>
-  flow(
+export const ap: Applicative3<URI>['ap'] = <R, E, A>(fa: ReaderEither<R, E, A>) => <B>(
+  fab: ReaderEither<R, E, (a: A) => B>
+) =>
+  pipe(
+    fab,
     R.map((gab) => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
     R.ap(fa)
   )
@@ -403,7 +402,7 @@ export function getApplicativeReaderValidation<E>(SE: Semigroup<E>): Applicative
   const AV = E.getApplicativeValidation(SE)
   const ap = <R, A>(fa: ReaderEither<R, E, A>): (<B>(fab: ReaderEither<R, E, (a: A) => B>) => ReaderEither<R, E, B>) =>
     flow(
-      R.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga)),
+      R.map((gab) => (ga: E.Either<E, A>) => pipe(gab, AV.ap(ga))),
       R.ap(fa)
     )
 
@@ -411,7 +410,7 @@ export function getApplicativeReaderValidation<E>(SE: Semigroup<E>): Applicative
     URI,
     _E: undefined as any,
     map,
-    ap: (fab, fa) => pipe(fab, ap(fa)),
+    ap,
     of
   }
 }
@@ -446,7 +445,7 @@ export const Functor: Functor3<URI> = {
 export const Applicative: Applicative3<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -457,7 +456,7 @@ export const Applicative: Applicative3<URI> = {
 export const Monad: Monad3<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -489,7 +488,7 @@ export const Alt: Alt3<URI> = {
 export const MonadThrow: MonadThrow3<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   throwError
@@ -506,7 +505,7 @@ export const readerEither: Monad3<URI> & Bifunctor3<URI> & Alt3<URI> & MonadThro
   mapLeft: mapLeft_,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   alt: alt_,
   throwError: left

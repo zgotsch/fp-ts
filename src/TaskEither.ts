@@ -293,8 +293,6 @@ export const chainIOEitherK: <E, A, B>(
 const bimap_: Bifunctor2<URI>['bimap'] = (fa, f, g) => pipe(fa, bimap(f, g))
 /* istanbul ignore next */
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fa, f) => pipe(fa, mapLeft(f))
-const apPar_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Applicative2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const alt_: Alt2<URI>['alt'] = (fa, that) => pipe(fa, alt(that))
@@ -337,8 +335,9 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: TaskEither<E, A>) => Tas
  * @category Apply
  * @since 2.0.0
  */
-export const ap = <E, A>(fa: TaskEither<E, A>): (<B>(fab: TaskEither<E, (a: A) => B>) => TaskEither<E, B>) =>
-  flow(
+export const ap: Applicative2<URI>['ap'] = <E, A>(fa: TaskEither<E, A>) => <B>(fab: TaskEither<E, (a: A) => B>) =>
+  pipe(
+    fab,
     T.map((gab) => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
     T.ap(fa)
   )
@@ -349,9 +348,8 @@ export const ap = <E, A>(fa: TaskEither<E, A>): (<B>(fab: TaskEither<E, (a: A) =
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <E, B>(fb: TaskEither<E, B>) => <A>(fa: TaskEither<E, A>) => TaskEither<E, A> = (fb) => (fa) =>
-  pipe(
-    fa,
+export const apFirst: <E, B>(fb: TaskEither<E, B>) => <A>(fa: TaskEither<E, A>) => TaskEither<E, A> = (fb) =>
+  flow(
     map((a) => () => a),
     ap(fb)
   )
@@ -362,9 +360,8 @@ export const apFirst: <E, B>(fb: TaskEither<E, B>) => <A>(fa: TaskEither<E, A>) 
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <E, B>(fb: TaskEither<E, B>) => <A>(fa: TaskEither<E, A>): TaskEither<E, B> =>
-  pipe(
-    fa,
+export const apSecond = <E, B>(fb: TaskEither<E, B>): (<A>(fa: TaskEither<E, A>) => TaskEither<E, B>) =>
+  flow(
     map(() => (b: B) => b),
     ap(fb)
   )
@@ -540,19 +537,17 @@ export function getApplyMonoid<E, A>(M: Monoid<A>): Monoid<TaskEither<E, A>> {
 export function getApplicativeTaskValidation<E>(A: Apply1<T.URI>, SE: Semigroup<E>): Applicative2C<URI, E> {
   const AV = E.getApplicativeValidation(SE)
   const ap = <A>(fa: TaskEither<E, A>) => <B>(fab: TaskEither<E, (a: A) => B>): TaskEither<E, B> =>
-    A.ap(
-      pipe(
-        fab,
-        A.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga))
-      ),
-      fa
+    pipe(
+      fab,
+      A.map((gab) => (ga: E.Either<E, A>) => pipe(gab, AV.ap(ga))),
+      A.ap(fa)
     )
 
   return {
     URI,
     _E: undefined as any,
     map,
-    ap: (fab, fa) => pipe(fab, ap(fa)),
+    ap,
     of
   }
 }
@@ -638,7 +633,7 @@ export const Functor: Functor2<URI> = {
 export const ApplicativePar: Applicative2<URI> = {
   URI,
   map,
-  ap: apPar_,
+  ap,
   of
 }
 
@@ -649,7 +644,13 @@ export const ApplicativePar: Applicative2<URI> = {
 export const ApplicativeSeq: Applicative2<URI> = {
   URI,
   map,
-  ap: apSeq_,
+  ap: (fa) =>
+    chain((f) =>
+      pipe(
+        fa,
+        map((a) => f(a))
+      )
+    ),
   of
 }
 
@@ -684,28 +685,7 @@ export const taskEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadTask2<
   mapLeft: mapLeft_,
   map,
   of,
-  ap: apPar_,
-  chain: chain_,
-  alt: alt_,
-  fromIO,
-  fromTask,
-  throwError
-}
-
-// TODO: remove instance in v3
-/**
- * Like `TaskEither` but `ap` is sequential
- *
- * @category instances
- * @since 2.0.0
- */
-export const taskEitherSeq: typeof taskEither = {
-  URI,
-  bimap: bimap_,
-  mapLeft: mapLeft_,
-  map,
-  of,
-  ap: apSeq_,
+  ap,
   chain: chain_,
   alt: alt_,
   fromIO,

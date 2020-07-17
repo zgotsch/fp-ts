@@ -192,9 +192,6 @@ export const fromEither: <E, A>(ma: E.Either<E, A>) => IOEither<E, A> = (ma) =>
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-/* istanbul ignore next */
-/* istanbul ignore next */
-const ap_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
 const of = right
 /* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
@@ -243,8 +240,9 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: IOEither<E, A>) => IOEit
  * @category Apply
  * @since 2.0.0
  */
-export const ap = <E, A>(fa: IOEither<E, A>): (<B>(fab: IOEither<E, (a: A) => B>) => IOEither<E, B>) =>
-  flow(
+export const ap: Applicative2<URI>['ap'] = <E, A>(fa: IOEither<E, A>) => <B>(fab: IOEither<E, (a: A) => B>) =>
+  pipe(
+    fab,
     I.map((gab) => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
     I.ap(fa)
   )
@@ -255,9 +253,8 @@ export const ap = <E, A>(fa: IOEither<E, A>): (<B>(fab: IOEither<E, (a: A) => B>
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <E, B>(fb: IOEither<E, B>) => <A>(fa: IOEither<E, A>) => IOEither<E, A> = (fb) => (fa) =>
-  pipe(
-    fa,
+export const apFirst: <E, B>(fb: IOEither<E, B>) => <A>(fa: IOEither<E, A>) => IOEither<E, A> = (fb) =>
+  flow(
     map((a) => () => a),
     ap(fb)
   )
@@ -268,9 +265,8 @@ export const apFirst: <E, B>(fb: IOEither<E, B>) => <A>(fa: IOEither<E, A>) => I
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <E, B>(fb: IOEither<E, B>) => <A>(fa: IOEither<E, A>): IOEither<E, B> =>
-  pipe(
-    fa,
+export const apSecond = <E, B>(fb: IOEither<E, B>): (<A>(fa: IOEither<E, A>) => IOEither<E, B>) =>
+  flow(
     map(() => (b: B) => b),
     ap(fb)
   )
@@ -398,7 +394,7 @@ export function getApplicativeIOValidation<E>(SE: Semigroup<E>): Applicative2C<U
   const AV = E.getApplicativeValidation(SE)
   const ap = <A>(fa: IOEither<E, A>): (<B>(fab: IOEither<E, (a: A) => B>) => IOEither<E, B>) =>
     flow(
-      I.map((gab) => (ga: E.Either<E, A>) => AV.ap(gab, ga)),
+      I.map((gab) => (ga: E.Either<E, A>) => pipe(gab, AV.ap(ga))),
       I.ap(fa)
     )
 
@@ -406,7 +402,7 @@ export function getApplicativeIOValidation<E>(SE: Semigroup<E>): Applicative2C<U
     URI,
     _E: undefined as any,
     map,
-    ap: (fab, fa) => pipe(fab, ap(fa)),
+    ap,
     of
   }
 }
@@ -492,7 +488,7 @@ export const Bifunctor: Bifunctor2<URI> = {
 export const Applicative: Applicative2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -503,7 +499,7 @@ export const Applicative: Applicative2<URI> = {
 export const Monad: Monad2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -525,7 +521,7 @@ export const Alt: Alt2<URI> = {
 export const MonadIO: MonadIO2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   fromIO: fromIO
@@ -538,7 +534,7 @@ export const MonadIO: MonadIO2<URI> = {
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   throwError
@@ -555,7 +551,7 @@ export const ioEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadIO2<URI>
   mapLeft: mapLeft_,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   alt: alt_,
   fromIO,

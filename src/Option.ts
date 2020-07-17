@@ -21,7 +21,7 @@ import { Eq } from './Eq'
 import { Extend1 } from './Extend'
 import { Filterable1 } from './Filterable'
 import { Foldable1 } from './Foldable'
-import { identity, Lazy, Predicate, Refinement, pipe } from './function'
+import { identity, Lazy, Predicate, Refinement, pipe, flow } from './function'
 import { Functor1 } from './Functor'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
@@ -382,7 +382,6 @@ export function mapNullable<A, B>(f: (a: A) => B | null | undefined): (ma: Optio
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const ap_: Monad1<URI>['ap'] = (fab, fa) => (isNone(fab) ? none : isNone(fa) ? none : some(fab.value(fa.value)))
 const chain_: Monad1<URI>['chain'] = (ma, f) => (isNone(ma) ? none : f(ma.value))
 const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => (isNone(fa) ? b : f(b, fa.value))
 const foldMap_: Foldable1<URI>['foldMap'] = (M) => (fa, f) => (isNone(fa) ? M.empty : f(fa.value))
@@ -442,7 +441,8 @@ export const map: Functor1<URI>['map'] = (f) => (fa) => (isNone(fa) ? none : som
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <A>(fa: Option<A>) => <B>(fab: Option<(a: A) => B>) => Option<B> = (fa) => (fab) => ap_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) => (fab) =>
+  isNone(fab) ? none : isNone(fa) ? none : some(fab.value(fa.value))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -450,13 +450,10 @@ export const ap: <A>(fa: Option<A>) => <B>(fab: Option<(a: A) => B>) => Option<B
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <B>(fb: Option<B>) => <A>(fa: Option<A>) => Option<A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: Option<B>) => <A>(fa: Option<A>) => Option<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -465,13 +462,10 @@ export const apFirst: <B>(fb: Option<B>) => <A>(fa: Option<A>) => Option<A> = (f
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <B>(fb: Option<B>) => <A>(fa: Option<A>): Option<B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: Option<B>): (<A>(fa: Option<A>) => Option<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -908,7 +902,7 @@ export const Functor: Functor1<URI> = {
 export const Applicative: Applicative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -919,7 +913,7 @@ export const Applicative: Applicative1<URI> = {
 export const Monad: Monad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -952,7 +946,7 @@ export const Alt: Alt1<URI> = {
 export const Alternative: Alternative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   alt: alt_,
   zero
@@ -1036,7 +1030,7 @@ export const Witherable: Witherable1<URI> = {
 export const MonadThrow: MonadThrow1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   throwError
@@ -1056,7 +1050,7 @@ export const option: Monad1<URI> &
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   reduce: reduce_,
   foldMap: foldMap_,

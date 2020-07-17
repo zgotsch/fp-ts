@@ -349,8 +349,6 @@ export const chainTaskEitherK: <E, A, B>(
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const apPar_: Monad3<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Monad3<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad3<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 const alt_: <R, E, A>(
   fa: ReaderTaskEither<R, E, A>,
@@ -411,10 +409,7 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <R, A>(fa: ReaderTaskEither<R, E
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <R, E, A>(
-  fa: ReaderTaskEither<R, E, A>
-) => <B>(fab: ReaderTaskEither<R, E, (a: A) => B>) => ReaderTaskEither<R, E, B> = (fa) => (fab) => (r) =>
-  pipe(fab(r), TE.ap(fa(r)))
+export const ap: Applicative3<URI>['ap'] = (fa) => (fab) => (r) => pipe(fab(r), TE.ap(fa(r)))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -595,7 +590,7 @@ export function getApplicativeReaderTaskValidation<E>(A: Apply1<T.URI>, SE: Semi
     fa: ReaderTaskEither<R, E, A>
   ): (<B>(fab: ReaderTaskEither<R, E, (a: A) => B>) => ReaderTaskEither<R, E, B>) =>
     flow(
-      R.map((gab) => (ga: TE.TaskEither<E, A>) => AV.ap(gab, ga)),
+      R.map((gab) => (ga: TE.TaskEither<E, A>) => pipe(gab, AV.ap(ga))),
       R.ap(fa)
     )
 
@@ -603,7 +598,7 @@ export function getApplicativeReaderTaskValidation<E>(A: Apply1<T.URI>, SE: Semi
     URI,
     _E: undefined as any,
     map,
-    ap: (fab, fa) => pipe(fab, ap(fa)),
+    ap,
     of
   }
 }
@@ -638,7 +633,7 @@ export const Functor: Functor3<URI> = {
 export const ApplicativePar: Applicative3<URI> = {
   URI,
   map,
-  ap: apPar_,
+  ap,
   of
 }
 
@@ -649,7 +644,13 @@ export const ApplicativePar: Applicative3<URI> = {
 export const ApplicativeSeq: Applicative3<URI> = {
   URI,
   map,
-  ap: apSeq_,
+  ap: (fa) =>
+    chain((f) =>
+      pipe(
+        fa,
+        map((a) => f(a))
+      )
+    ),
   of
 }
 
@@ -682,28 +683,7 @@ export const readerTaskEither: Monad3<URI> & Bifunctor3<URI> & Alt3<URI> & Monad
   URI,
   map,
   of,
-  ap: apPar_,
-  chain: chain_,
-  alt: alt_,
-  bimap: bimap_,
-  mapLeft: mapLeft_,
-  fromIO,
-  fromTask,
-  throwError
-}
-
-// TODO: remove instance in v3
-/**
- * Like `readerTaskEither` but `ap` is sequential
- *
- * @category instances
- * @since 2.0.0
- */
-export const readerTaskEitherSeq: typeof readerTaskEither = {
-  URI,
-  map,
-  of,
-  ap: apSeq_,
+  ap,
   chain: chain_,
   alt: alt_,
   bimap: bimap_,

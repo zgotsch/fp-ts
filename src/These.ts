@@ -171,7 +171,7 @@ export function getApplicative<E>(SE: Semigroup<E>): Applicative2C<URI, E> {
     _E: undefined as any,
     map,
     of: right,
-    ap: (fab, fa) =>
+    ap: (fa) => (fab) =>
       isLeft(fab)
         ? isLeft(fa)
           ? left(SE.concat(fab.left, fa.left))

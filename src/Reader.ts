@@ -60,8 +60,6 @@ export const local: <Q, R>(f: (d: Q) => R) => <A>(ma: Reader<R, A>) => Reader<Q,
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const ap_: Monad2<URI>['ap'] = (fab, fa) => F.pipe(fab, ap(fa))
-/* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => F.pipe(ma, chain(f))
 const compose_: <E, A, B>(ab: Reader<A, B>, la: Reader<E, A>) => Reader<E, B> = (ab, la) => (l) => ab(la(l))
 const promap_: <E, A, D, B>(fbc: Reader<E, A>, f: (d: D) => E, g: (a: A) => B) => Reader<D, B> = (mbc, f, g) => (a) =>
@@ -86,8 +84,7 @@ export const map: Functor2<URI>['map'] = (f) => (fa) => (r) => f(fa(r))
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <R, A>(fa: Reader<R, A>) => <B>(fab: Reader<R, (a: A) => B>) => Reader<R, B> = (fa) => (fab) => (r) =>
-  fab(r)(fa(r))
+export const ap: Applicative2<URI>['ap'] = (fa) => (fab) => (r) => fab(r)(fa(r))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -242,7 +239,7 @@ export const Functor: Functor2<URI> = {
 export const Applicative: Applicative2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -254,7 +251,7 @@ export const Monad: Monad2<URI> = {
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_
 }
 
@@ -287,7 +284,7 @@ export const reader: Monad2<URI> & Profunctor2<URI> & Category2<URI> = {
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   promap: promap_,
   compose: compose_,

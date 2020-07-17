@@ -61,8 +61,6 @@ export const gets: <S, A>(f: (s: S) => A) => State<S, A> = (f) => (s) => [f(s), 
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const ap_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-/* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 
 // -------------------------------------------------------------------------------------
@@ -87,7 +85,7 @@ export const map: Functor2<URI>['map'] = (f) => (fa) => (s1) => {
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <E, A>(fa: State<E, A>) => <B>(fab: State<E, (a: A) => B>) => State<E, B> = (fa) => (fab) => (s1) => {
+export const ap: Applicative2<URI>['ap'] = (fa) => (fab) => (s1) => {
   const [f, s2] = fab(s1)
   const [a, s3] = fa(s2)
   return [f(a), s3]
@@ -197,7 +195,7 @@ export const Functor: Functor2<URI> = {
 export const Applicative: Applicative2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -208,7 +206,7 @@ export const Applicative: Applicative2<URI> = {
 export const Monad: Monad2<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }

@@ -7,7 +7,7 @@ import { Comonad1 } from './Comonad'
 import { Eq } from './Eq'
 import { Extend1 } from './Extend'
 import { Foldable1 } from './Foldable'
-import { identity as id, pipe } from './function'
+import { identity as id, pipe, flow } from './function'
 import { Functor1 } from './Functor'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
@@ -29,7 +29,6 @@ export type Identity<A> = A
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const ap_: Monad1<URI>['ap'] = (mab, ma) => mab(ma)
 const chain_: Monad1<URI>['chain'] = (ma, f) => f(ma)
 const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => f(b, fa)
 const foldMap_: Foldable1<URI>['foldMap'] = (_) => (fa, f) => f(fa)
@@ -75,7 +74,7 @@ export const alt: <A>(that: () => Identity<A>) => (fa: Identity<A>) => Identity<
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <A>(fa: Identity<A>) => <B>(fab: Identity<(a: A) => B>) => Identity<B> = (fa) => (fab) => ap_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) => (fab) => fab(fa)
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -83,13 +82,10 @@ export const ap: <A>(fa: Identity<A>) => <B>(fab: Identity<(a: A) => B>) => Iden
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <B>(fb: Identity<B>) => <A>(fa: Identity<A>) => Identity<A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: Identity<B>) => <A>(fa: Identity<A>) => Identity<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -98,13 +94,10 @@ export const apFirst: <B>(fb: Identity<B>) => <A>(fa: Identity<A>) => Identity<A
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <B>(fb: Identity<B>) => <A>(fa: Identity<A>): Identity<B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: Identity<B>): (<A>(fa: Identity<A>) => Identity<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -242,7 +235,7 @@ export const Functor: Functor1<URI> = {
 export const Applicative: Applicative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -253,7 +246,7 @@ export const Applicative: Applicative1<URI> = {
 export const Monad: Monad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -312,7 +305,7 @@ export const Comonad: Comonad1<URI> = {
 export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<URI> & Comonad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   reduce: reduce_,

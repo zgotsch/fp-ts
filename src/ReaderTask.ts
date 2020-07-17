@@ -105,8 +105,6 @@ export const chainTaskK: <A, B>(f: (a: A) => Task<B>) => <R>(ma: ReaderTask<R, A
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const apPar_: Monad2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-const apSeq_: Monad2<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 
 // -------------------------------------------------------------------------------------
@@ -125,9 +123,7 @@ export const map: Functor2<URI>['map'] = (f) => (fa) => flow(fa, T.map(f))
  * @category Apply
  * @since 2.3.0
  */
-export const ap: <R, A>(fa: ReaderTask<R, A>) => <B>(fab: ReaderTask<R, (a: A) => B>) => ReaderTask<R, B> = (fa) => (
-  fab
-) => (r) => pipe(fab(r), T.ap(fa(r)))
+export const ap: Applicative2<URI>['ap'] = (fa) => (fab) => (r) => pipe(fab(r), T.ap(fa(r)))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -263,7 +259,7 @@ export const Functor: Functor2<URI> = {
 export const ApplicativePar: Applicative2<URI> = {
   URI,
   map,
-  ap: apPar_,
+  ap,
   of
 }
 
@@ -274,7 +270,13 @@ export const ApplicativePar: Applicative2<URI> = {
 export const ApplicativeSeq: Applicative2<URI> = {
   URI,
   map,
-  ap: apSeq_,
+  ap: (fa) =>
+    chain((f) =>
+      pipe(
+        fa,
+        map((a) => f(a))
+      )
+    ),
   of
 }
 
@@ -285,7 +287,7 @@ export const Monad: Monad2<URI> = {
   URI,
   map,
   of,
-  ap: apPar_,
+  ap,
   chain: chain_
 }
 
@@ -298,24 +300,7 @@ export const readerTask: MonadTask2<URI> = {
   URI,
   map,
   of,
-  ap: apPar_,
-  chain: chain_,
-  fromIO,
-  fromTask
-}
-
-// TODO: remove instance in v3
-/**
- * Like `readerTask` but `ap` is sequential
- *
- * @category instances
- * @since 2.3.0
- */
-export const readerTaskSeq: typeof readerTask = {
-  URI,
-  map,
-  of,
-  ap: apSeq_,
+  ap,
   chain: chain_,
   fromIO,
   fromTask

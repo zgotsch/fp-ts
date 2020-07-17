@@ -17,7 +17,7 @@ import {
 } from './FilterableWithIndex'
 import { Foldable1 } from './Foldable'
 import { FoldableWithIndex1 } from './FoldableWithIndex'
-import { identity, Lazy, Predicate, Refinement, pipe } from './function'
+import { flow, identity, Lazy, pipe, Predicate, Refinement } from './function'
 import { Functor1 } from './Functor'
 import { FunctorWithIndex1 } from './FunctorWithIndex'
 import { HKT } from './HKT'
@@ -1347,13 +1347,6 @@ export const zero: Alternative1<URI>['zero'] = () => empty
 // -------------------------------------------------------------------------------------
 
 const mapWithIndex_: FunctorWithIndex1<URI, number>['mapWithIndex'] = (fa, f) => fa.map((a, i) => f(i, a))
-const ap_: Monad1<URI>['ap'] = (fab, fa) =>
-  flatten(
-    pipe(
-      fab,
-      map((f) => pipe(fa, map(f)))
-    )
-  )
 const chainWithIndex_: <A, B>(fa: ReadonlyArray<A>, f: (i: number, a: A) => ReadonlyArray<B>) => ReadonlyArray<B> = (
   fa,
   f
@@ -1478,17 +1471,14 @@ const traverse_ = <F>(
 const traverseWithIndex_ = <F>(F: ApplicativeHKT<F>) => <A, B>(
   ta: ReadonlyArray<A>,
   f: (i: number, a: A) => HKT<F, B>
-): HKT<F, ReadonlyArray<B>> => {
-  return reduceWithIndex_(ta, F.of<ReadonlyArray<B>>(zero()), (i, fbs, a) =>
-    F.ap(
-      pipe(
-        fbs,
-        F.map((bs) => (b: B) => snoc(b)(bs))
-      ),
-      f(i, a)
+): HKT<F, ReadonlyArray<B>> =>
+  reduceWithIndex_(ta, F.of<ReadonlyArray<B>>(zero()), (i, fbs, a) =>
+    pipe(
+      fbs,
+      F.map((bs) => (b: B) => snoc(b)(bs)),
+      F.ap(f(i, a))
     )
   )
-}
 const wither_ = <F>(
   F: ApplicativeHKT<F>
 ): (<A, B>(ta: ReadonlyArray<A>, f: (a: A) => HKT<F, Option<B>>) => HKT<F, ReadonlyArray<B>>) => {
@@ -1525,9 +1515,13 @@ export const alt: <A>(that: Lazy<ReadonlyArray<A>>) => (fa: ReadonlyArray<A>) =>
  * @category Apply
  * @since 2.5.0
  */
-export const ap: <A>(fa: ReadonlyArray<A>) => <B>(fab: ReadonlyArray<(a: A) => B>) => ReadonlyArray<B> = (fa) => (
-  fab
-) => ap_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) => (fab) =>
+  flatten(
+    pipe(
+      fab,
+      map((f) => pipe(fa, map(f)))
+    )
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -1535,13 +1529,10 @@ export const ap: <A>(fa: ReadonlyArray<A>) => <B>(fab: ReadonlyArray<(a: A) => B
  * @category Apply
  * @since 2.5.0
  */
-export const apFirst: <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>) => ReadonlyArray<A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>) => ReadonlyArray<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -1550,13 +1541,10 @@ export const apFirst: <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>) => 
  * @category Apply
  * @since 2.5.0
  */
-export const apSecond = <B>(fb: ReadonlyArray<B>) => <A>(fa: ReadonlyArray<A>): ReadonlyArray<B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: ReadonlyArray<B>): (<A>(fa: ReadonlyArray<A>) => ReadonlyArray<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -1795,17 +1783,14 @@ export const traverse: PipeableTraverse1<URI> = <F>(
  */
 export const sequence: Traversable1<URI>['sequence'] = <F>(F: ApplicativeHKT<F>) => <A>(
   ta: ReadonlyArray<HKT<F, A>>
-): HKT<F, ReadonlyArray<A>> => {
-  return reduce_(ta, F.of(zero()), (fas, fa) =>
-    F.ap(
-      pipe(
-        fas,
-        F.map((as) => (a: A) => snoc(a)(as))
-      ),
-      fa
+): HKT<F, ReadonlyArray<A>> =>
+  reduce_(ta, F.of(zero()), (fas, fa) =>
+    pipe(
+      fas,
+      F.map((as) => (a: A) => snoc(a)(as)),
+      F.ap(fa)
     )
   )
-}
 
 /**
  * @category TraversableWithIndex
@@ -1911,7 +1896,7 @@ export const FunctorWithIndex: FunctorWithIndex1<URI, number> = {
 export const Applicative: Applicative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -1922,7 +1907,7 @@ export const Applicative: Applicative1<URI> = {
 export const Monad: Monad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -1953,7 +1938,7 @@ export const Alt: Alt1<URI> = {
 export const Alternative: Alternative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   alt: alt_,
   zero
@@ -2112,7 +2097,7 @@ export const readonlyArray: FunctorWithIndex1<URI, number> &
   compact,
   separate,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_,
   filter: filter_,

@@ -12,7 +12,7 @@ import * as A from './Array'
 import { Comonad1 } from './Comonad'
 import { Eq, fromEquals } from './Eq'
 import { Foldable1 } from './Foldable'
-import { identity, pipe } from './function'
+import { identity, pipe, flow } from './function'
 import { Functor1 } from './Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
 import { Monad as MonadHKT, Monad1, Monad2, Monad2C, Monad3, Monad3C } from './Monad'
@@ -253,7 +253,6 @@ export function fold<A, B>(f: (a: A, bs: Array<B>) => B): (tree: Tree<A>) => B {
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const ap_: Monad1<URI>['ap'] = (fab, fa) => chain_(fab, (f) => pipe(fa, map(f)))
 const chain_ = <A, B>(fa: Tree<A>, f: (a: A) => Tree<B>): Tree<B> => {
   const { value, forest } = f(fa.value)
   const concat = A.getMonoid<Tree<B>>().concat
@@ -289,17 +288,17 @@ const extend_: Extend1<URI>['extend'] = (wa, f) => ({
 const traverse_ = <F>(F: ApplicativeHKT<F>): (<A, B>(ta: Tree<A>, f: (a: A) => HKT<F, B>) => HKT<F, Tree<B>>) => {
   const traverseF = A.traverse(F)
   const r = <A, B>(ta: Tree<A>, f: (a: A) => HKT<F, B>): HKT<F, Tree<B>> =>
-    F.ap(
-      pipe(
-        f(ta.value),
-        F.map((value: B) => (forest: Forest<B>) => ({
-          value,
-          forest
-        }))
-      ),
-      pipe(
-        ta.forest,
-        traverseF((t) => r(t, f))
+    pipe(
+      f(ta.value),
+      F.map((value: B) => (forest: Forest<B>) => ({
+        value,
+        forest
+      })),
+      F.ap(
+        pipe(
+          ta.forest,
+          traverseF((t) => r(t, f))
+        )
       )
     )
   return r
@@ -315,7 +314,13 @@ const traverse_ = <F>(F: ApplicativeHKT<F>): (<A, B>(ta: Tree<A>, f: (a: A) => H
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <A>(fa: Tree<A>) => <B>(fab: Tree<(a: A) => B>) => Tree<B> = (fa) => (fab) => ap_(fab, fa)
+export const ap: Applicative1<URI>['ap'] = (fa) =>
+  chain((f) =>
+    pipe(
+      fa,
+      map((a) => f(a))
+    )
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -323,13 +328,10 @@ export const ap: <A>(fa: Tree<A>) => <B>(fab: Tree<(a: A) => B>) => Tree<B> = (f
  * @category Apply
  * @since 2.0.0
  */
-export const apFirst: <B>(fb: Tree<B>) => <A>(fa: Tree<A>) => Tree<A> = (fb) => (fa) =>
-  ap_(
-    pipe(
-      fa,
-      map((a) => () => a)
-    ),
-    fb
+export const apFirst: <B>(fb: Tree<B>) => <A>(fa: Tree<A>) => Tree<A> = (fb) =>
+  flow(
+    map((a) => () => a),
+    ap(fb)
   )
 
 /**
@@ -338,13 +340,10 @@ export const apFirst: <B>(fb: Tree<B>) => <A>(fa: Tree<A>) => Tree<A> = (fb) => 
  * @category Apply
  * @since 2.0.0
  */
-export const apSecond = <B>(fb: Tree<B>) => <A>(fa: Tree<A>): Tree<B> =>
-  ap_(
-    pipe(
-      fa,
-      map(() => (b: B) => b)
-    ),
-    fb
+export const apSecond = <B>(fb: Tree<B>): (<A>(fa: Tree<A>) => Tree<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
   )
 
 /**
@@ -494,7 +493,7 @@ export const Functor: Functor1<URI> = {
 export const Applicative: Applicative1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -505,7 +504,7 @@ export const Applicative: Applicative1<URI> = {
 export const Monad: Monad1<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of,
   chain: chain_
 }
@@ -555,7 +554,7 @@ export const tree: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Comonad1<U
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   reduce: reduce_,
   foldMap: foldMap_,

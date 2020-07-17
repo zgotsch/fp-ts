@@ -41,6 +41,9 @@ high state of flux, you're at risk of it changing without notice.
     - `TheseT` (@gcanti)
     - `WriterT` (@gcanti)
     - `ValidationT` (@gcanti)
+  - **Type classes**
+    - make `Functor` type class data-last
+    - make `Apply` type class data-last
   - **Modules**
     - rename `ReadonlyArray` module to `Array` (@gcanti)
     - rename `ReadonlyMap` module to `Map` (@gcanti)
@@ -109,10 +112,12 @@ high state of flux, you're at risk of it changing without notice.
     - `ReaderTask`
       - remove `local` combinator (@gcanti)
       - remove `run` util (@gcanti)
+      - remove `readerTaskSeq` mega instance (@gcanti)
     - `ReaderTaskEither`
       - remove `local` combinator (@gcanti)
       - remove `getReaderTaskValidation` constrained instance (@gcanti)
       - remove `run` util (@gcanti)
+      - remove `readerTaskEitherSeq` mega instance (@gcanti)
     - `Record`
       - rename `hasOwnProperty` to `has` (@gcanti)
       - remove deprecated `isSubrecord` overloading (@gcanti)
@@ -133,8 +138,11 @@ high state of flux, you're at risk of it changing without notice.
       - remove `run` util (@gcanti)
       - rename `eval` to `evaluate` (@gcanti)
       - rename `exec` to `execute` (@gcanti)
+    - `Task`
+      - remove `taskSeq` instance (@gcanti)
     - `TaskEither`
       - remove `getTaskValidation` constrained instance (@gcanti)
+      - remove `taskEitherSeq` mega instance (@gcanti)
     - `TaskThese`
       - make `toTuple` lazy (@gcanti)
     - `These`

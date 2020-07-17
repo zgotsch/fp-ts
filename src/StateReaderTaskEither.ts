@@ -358,8 +358,6 @@ export const filterOrElse: {
 // -------------------------------------------------------------------------------------
 
 /* istanbul ignore next */
-const ap_: Monad4<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
-/* istanbul ignore next */
 const chain_: Monad4<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const alt_: <S, R, E, A>(
@@ -429,11 +427,7 @@ export const mapLeft: <E, G>(
  * @category Apply
  * @since 2.0.0
  */
-export const ap: <S, R, E, A>(
-  fa: StateReaderTaskEither<S, R, E, A>
-) => <B>(fab: StateReaderTaskEither<S, R, E, (a: A) => B>) => StateReaderTaskEither<S, R, E, B> = (fa) => (fab) => (
-  s1
-) =>
+export const ap: Applicative4<URI>['ap'] = (fa) => (fab) => (s1) =>
   pipe(
     fab(s1),
     RTE.chain(([f, s2]) =>
@@ -602,7 +596,7 @@ export const Functor: Functor4<URI> = {
 export const Applicative: Applicative4<URI> = {
   URI,
   map,
-  ap: ap_,
+  ap,
   of
 }
 
@@ -635,7 +629,7 @@ export const stateReaderTaskEither: Monad4<URI> & Bifunctor4<URI> & Alt4<URI> & 
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   bimap: bimap_,
   mapLeft: mapLeft_,
@@ -656,7 +650,7 @@ export const stateReaderTaskEitherSeq: typeof stateReaderTaskEither = {
   URI,
   map,
   of,
-  ap: ap_,
+  ap,
   chain: chain_,
   bimap: bimap_,
   mapLeft: mapLeft_,
