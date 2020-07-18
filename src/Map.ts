@@ -701,7 +701,7 @@ export function getFilterableWithIndex<K = never>(): FilterableWithIndex2C<URI, 
 export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableWithIndex2C<URI, K, K> {
   const keysO = keys(O)
 
-  const reduceWithIndex = <A, B>(fa: ReadonlyMap<K, A>, b: B, f: (k: K, b: B, a: A) => B): B => {
+  const reduceWithIndex = <A, B>(b: B, f: (k: K, b: B, a: A) => B) => (fa: ReadonlyMap<K, A>): B => {
     let out: B = b
     const ks = keysO(fa)
     const len = ks.length
@@ -712,7 +712,7 @@ export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableW
     return out
   }
 
-  const foldMapWithIndex = <M>(M: Monoid<M>) => <A>(fa: ReadonlyMap<K, A>, f: (k: K, a: A) => M): M => {
+  const foldMapWithIndex = <M>(M: Monoid<M>) => <A>(f: (k: K, a: A) => M) => (fa: ReadonlyMap<K, A>): M => {
     let out: M = M.empty
     const ks = keysO(fa)
     const len = ks.length
@@ -723,7 +723,7 @@ export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableW
     return out
   }
 
-  const reduceRightWithIndex = <A, B>(fa: ReadonlyMap<K, A>, b: B, f: (k: K, a: A, b: B) => B): B => {
+  const reduceRightWithIndex = <A, B>(b: B, f: (k: K, a: A, b: B) => B) => (fa: ReadonlyMap<K, A>): B => {
     let out: B = b
     const ks = keysO(fa)
     const len = ks.length
@@ -776,12 +776,12 @@ export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableW
     filterMap: filterMap_,
     partition: partition_,
     partitionMap: partitionMap_,
-    reduce: (b, f) => (fa) => reduceWithIndex(fa, b, (_, b, a) => f(b, a)),
+    reduce: (b, f) => reduceWithIndex(b, (_, b, a) => f(b, a)),
     foldMap: (M) => {
       const foldMapWithIndexM = foldMapWithIndex(M)
-      return (f) => (fa) => foldMapWithIndexM(fa, (_, a) => f(a))
+      return (f) => foldMapWithIndexM((_, a) => f(a))
     },
-    reduceRight: (b, f) => (fa) => reduceRightWithIndex(fa, b, (_, a, b) => f(a, b)),
+    reduceRight: (b, f) => reduceRightWithIndex(b, (_, a, b) => f(a, b)),
     traverse,
     sequence,
     mapWithIndex,

@@ -1425,18 +1425,6 @@ const partitionMapWithIndex_ = <A, B, C>(
   }
 }
 const alt_: Alt1<URI>['alt'] = (fa, that) => concat(fa, that())
-const reduceWithIndex_: FoldableWithIndex1<URI, number>['reduceWithIndex'] = (fa, b, f) => {
-  const l = fa.length
-  let r = b
-  for (let i = 0; i < l; i++) {
-    r = f(i, r, fa[i])
-  }
-  return r
-}
-const foldMapWithIndex_: FoldableWithIndex1<URI, number>['foldMapWithIndex'] = (M) => (fa, f) =>
-  fa.reduce((b, a, i) => M.concat(b, f(i, a)), M.empty)
-const reduceRightWithIndex_: FoldableWithIndex1<URI, number>['reduceRightWithIndex'] = (fa, b, f) =>
-  fa.reduceRight((b, a, i) => f(i, a, b), b)
 const filterMapWithIndex_ = <A, B>(fa: ReadonlyArray<A>, f: (i: number, a: A) => Option<B>): ReadonlyArray<B> => {
   // tslint:disable-next-line: readonly-array
   const result: Array<B> = []
@@ -1465,11 +1453,14 @@ const traverseWithIndex_ = <F>(F: ApplicativeHKT<F>) => <A, B>(
   ta: ReadonlyArray<A>,
   f: (i: number, a: A) => HKT<F, B>
 ): HKT<F, ReadonlyArray<B>> =>
-  reduceWithIndex_(ta, F.of<ReadonlyArray<B>>(zero()), (i, fbs, a) =>
-    pipe(
-      fbs,
-      F.map((bs) => (b: B) => snoc(b)(bs)),
-      F.ap(f(i, a))
+  pipe(
+    ta,
+    reduceWithIndex(F.of(zero()), (i, fbs, a) =>
+      pipe(
+        fbs,
+        F.map((bs) => (b: B) => snoc(b)(bs)),
+        F.ap(f(i, a))
+      )
     )
   )
 const wither_ = <F>(
@@ -1710,51 +1701,49 @@ export const extend: <A, B>(f: (fa: ReadonlyArray<A>) => B) => (wa: ReadonlyArra
  * @category Foldable
  * @since 2.5.0
  */
-export const reduce: Foldable1<URI>['reduce'] = (b, f) => (fa) => reduceWithIndex_(fa, b, (_, b, a) => f(b, a))
+export const reduce: Foldable1<URI>['reduce'] = (b, f) => reduceWithIndex(b, (_, b, a) => f(b, a))
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
 export const foldMap: Foldable1<URI>['foldMap'] = (M) => {
-  const foldMapWithIndexM = foldMapWithIndex_(M)
-  return (f) => (fa) => foldMapWithIndexM(fa, (_, a) => f(a))
+  const foldMapWithIndexM = foldMapWithIndex(M)
+  return (f) => foldMapWithIndexM((_, a) => f(a))
 }
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => (fa) =>
-  reduceRightWithIndex_(fa, b, (_, a, b) => f(a, b))
+export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => reduceRightWithIndex(b, (_, a, b) => f(a, b))
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
-export const reduceWithIndex: <A, B>(b: B, f: (i: number, b: B, a: A) => B) => (fa: ReadonlyArray<A>) => B = (b, f) => (
-  fa
-) => reduceWithIndex_(fa, b, f)
-
-/**
- * @category FoldableWithIndex
- * @since 2.5.0
- */
-export const foldMapWithIndex: <M>(M: Monoid<M>) => <A>(f: (i: number, a: A) => M) => (fa: ReadonlyArray<A>) => M = (
-  M
-) => {
-  const foldMapWithIndexM = foldMapWithIndex_(M)
-  return (f) => (fa) => foldMapWithIndexM(fa, f)
+export const reduceWithIndex: FoldableWithIndex1<URI, number>['reduceWithIndex'] = (b, f) => (fa) => {
+  const l = fa.length
+  let r = b
+  for (let i = 0; i < l; i++) {
+    r = f(i, r, fa[i])
+  }
+  return r
 }
 
 /**
  * @category FoldableWithIndex
  * @since 2.5.0
  */
-export const reduceRightWithIndex: <A, B>(b: B, f: (i: number, a: A, b: B) => B) => (fa: ReadonlyArray<A>) => B = (
-  b,
-  f
-) => (fa) => reduceRightWithIndex_(fa, b, f)
+export const foldMapWithIndex: FoldableWithIndex1<URI, number>['foldMapWithIndex'] = (M) => (f) => (fa) =>
+  fa.reduce((b, a, i) => M.concat(b, f(i, a)), M.empty)
+
+/**
+ * @category FoldableWithIndex
+ * @since 2.5.0
+ */
+export const reduceRightWithIndex: FoldableWithIndex1<URI, number>['reduceRightWithIndex'] = (b, f) => (fa) =>
+  fa.reduceRight((b, a, i) => f(i, a, b), b)
 
 /**
  * @category Traversable
@@ -2012,9 +2001,9 @@ export const FoldableWithIndex: FoldableWithIndex1<URI, number> = {
   reduce,
   foldMap,
   reduceRight,
-  reduceWithIndex: reduceWithIndex_,
-  foldMapWithIndex: foldMapWithIndex_,
-  reduceRightWithIndex: reduceRightWithIndex_
+  reduceWithIndex,
+  foldMapWithIndex,
+  reduceRightWithIndex
 }
 
 /**
@@ -2042,9 +2031,9 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
   reduce,
   foldMap,
   reduceRight,
-  reduceWithIndex: reduceWithIndex_,
-  foldMapWithIndex: foldMapWithIndex_,
-  reduceRightWithIndex: reduceRightWithIndex_,
+  reduceWithIndex,
+  foldMapWithIndex,
+  reduceRightWithIndex,
   traverse: traverse_,
   sequence,
   traverseWithIndex: traverseWithIndex_
@@ -2110,9 +2099,9 @@ export const readonlyArray: FunctorWithIndex1<URI, number> &
   reduceRight,
   traverse: traverse_,
   sequence,
-  reduceWithIndex: reduceWithIndex_,
-  foldMapWithIndex: foldMapWithIndex_,
-  reduceRightWithIndex: reduceRightWithIndex_,
+  reduceWithIndex,
+  foldMapWithIndex,
+  reduceRightWithIndex,
   traverseWithIndex: traverseWithIndex_,
   extend: extend_,
   wither: wither_,
