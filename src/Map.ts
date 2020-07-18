@@ -448,18 +448,6 @@ export function fromFoldable<F, K, A>(
   }
 }
 
-const mapWithIndex_ = <K, A, B>(fa: ReadonlyMap<K, A>, f: (k: K, a: A) => B): ReadonlyMap<K, B> => {
-  const m = new Map<K, B>()
-  const entries = fa.entries()
-  let e: Next<readonly [K, A]>
-  // tslint:disable-next-line: strict-boolean-expressions
-  while (!(e = entries.next()).done) {
-    const [key, a] = e.value
-    m.set(key, f(key, a))
-  }
-  return m
-}
-
 const partitionMapWithIndex_ = <K, A, B, C>(
   fa: ReadonlyMap<K, A>,
   f: (k: K, a: A) => Either<B, C>
@@ -595,7 +583,23 @@ export const filterMap: <A, B>(f: (a: A) => Option<B>) => <K>(fa: ReadonlyMap<K,
  * @category Functor
  * @since 2.5.0
  */
-export const map: Functor2<URI>['map'] = (f) => (fa) => mapWithIndex_(fa, (_, a) => f(a))
+export const map: Functor2<URI>['map'] = (f) => mapWithIndex((_, a) => f(a))
+
+/**
+ * @category FunctorWithIndex
+ * @since 3.0.0
+ */
+export const mapWithIndex = <K, A, B>(f: (k: K, a: A) => B) => (fa: ReadonlyMap<K, A>): ReadonlyMap<K, B> => {
+  const m = new Map<K, B>()
+  const entries = fa.entries()
+  let e: Next<readonly [K, A]>
+  // tslint:disable-next-line: strict-boolean-expressions
+  while (!(e = entries.next()).done) {
+    const [key, a] = e.value
+    m.set(key, f(key, a))
+  }
+  return m
+}
 
 /**
  * @category Filterable
@@ -673,7 +677,7 @@ export function getFilterableWithIndex<K = never>(): FilterableWithIndex2C<URI, 
     URI,
     _E: undefined as any,
     map,
-    mapWithIndex: mapWithIndex_,
+    mapWithIndex,
     compact,
     separate,
     filter: filter_,
@@ -777,7 +781,7 @@ export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableW
     reduceRight: (fa, b, f) => reduceRightWithIndex(fa, b, (_, a, b) => f(a, b)),
     traverse,
     sequence,
-    mapWithIndex: mapWithIndex_,
+    mapWithIndex,
     reduceWithIndex,
     foldMapWithIndex,
     reduceRightWithIndex,

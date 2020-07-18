@@ -1346,7 +1346,6 @@ export const zero: Alternative1<URI>['zero'] = () => empty
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const mapWithIndex_: FunctorWithIndex1<URI, number>['mapWithIndex'] = (fa, f) => fa.map((a, i) => f(i, a))
 const chainWithIndex_: <A, B>(fa: ReadonlyArray<A>, f: (i: number, a: A) => ReadonlyArray<B>) => ReadonlyArray<B> = (
   fa,
   f
@@ -1599,9 +1598,7 @@ export const map: Functor1<URI>['map'] = (f) => (fa) => fa.map((a) => f(a))
  * @category FunctorWithIndex
  * @since 2.5.0
  */
-export const mapWithIndex: <A, B>(f: (i: number, a: A) => B) => (fa: ReadonlyArray<A>) => ReadonlyArray<B> = (f) => (
-  fa
-) => mapWithIndex_(fa, f)
+export const mapWithIndex: FunctorWithIndex1<URI, number>['mapWithIndex'] = (f) => (fa) => fa.map((a, i) => f(i, a))
 
 /**
  * @category Compactable
@@ -1886,7 +1883,7 @@ export const Functor: Functor1<URI> = {
 export const FunctorWithIndex: FunctorWithIndex1<URI, number> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_
+  mapWithIndex
 }
 
 /**
@@ -1986,7 +1983,7 @@ export const Filterable: Filterable1<URI> = {
 export const FilterableWithIndex: FilterableWithIndex1<URI, number> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   compact,
   separate,
   filter: filter_,
@@ -2045,7 +2042,7 @@ export const Traversable: Traversable1<URI> = {
 export const TraversableWithIndex: TraversableWithIndex1<URI, number> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -2104,7 +2101,7 @@ export const readonlyArray: FunctorWithIndex1<URI, number> &
   filterMap: filterMap_,
   partition: partition_,
   partitionMap: partitionMap_,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   partitionMapWithIndex: partitionMapWithIndex_,
   partitionWithIndex: partitionWithIndex_,
   filterMapWithIndex: filterMapWithIndex_,

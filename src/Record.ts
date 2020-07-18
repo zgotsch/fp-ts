@@ -334,7 +334,14 @@ export function mapWithIndex<K extends string, A, B>(
 export function mapWithIndex<A, B>(
   f: (k: string, a: A) => B
 ): (fa: ReadonlyRecord<string, A>) => ReadonlyRecord<string, B> {
-  return (fa) => mapWithIndex_(fa, f)
+  return (fa) => {
+    const out: Record<string, B> = {}
+    const keys = Object.keys(fa)
+    for (const key of keys) {
+      out[key] = f(key, fa[key])
+    }
+    return out
+  }
 }
 
 /**
@@ -716,14 +723,6 @@ export const elem = <A>(E: Eq<A>) => (a: A) => (fa: ReadonlyRecord<string, A>): 
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const mapWithIndex_ = <A, B>(fa: ReadonlyRecord<string, A>, f: (k: string, a: A) => B) => {
-  const out: Record<string, B> = {}
-  const keys = Object.keys(fa)
-  for (const key of keys) {
-    out[key] = f(key, fa[key])
-  }
-  return out
-}
 const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => reduceWithIndex_(fa, b, (_, b, a) => f(b, a))
 const foldMap_: Foldable1<URI>['foldMap'] = (M) => {
   const foldMapWithIndexM = foldMapWithIndex_(M)
@@ -1029,7 +1028,7 @@ export const Functor: Functor1<URI> = {
 export const FunctorWithIndex: FunctorWithIndex1<URI, string> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_
+  mapWithIndex
 }
 
 /**
@@ -1089,7 +1088,7 @@ export const Filterable: Filterable1<URI> = {
 export const FilterableWithIndex: FilterableWithIndex1<URI, string> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   compact,
   separate,
   filter: filter_,
@@ -1123,7 +1122,7 @@ export const Traversable: Traversable1<URI> = {
 export const TraversableWithIndex: TraversableWithIndex1<URI, string> = {
   URI,
   map,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   reduce: reduce_,
   foldMap: foldMap_,
   reduceRight: reduceRight_,
@@ -1180,7 +1179,7 @@ export const readonlyRecord: FunctorWithIndex1<URI, string> &
   filterMap: filterMap_,
   partition: partition_,
   partitionMap: partitionMap_,
-  mapWithIndex: mapWithIndex_,
+  mapWithIndex,
   reduceWithIndex: reduceWithIndex_,
   foldMapWithIndex: foldMapWithIndex_,
   reduceRightWithIndex: reduceRightWithIndex_,

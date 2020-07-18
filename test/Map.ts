@@ -768,12 +768,12 @@ describe('Map', () => {
     })
 
     it('mapWithIndex', () => {
-      const mapWithIndex = W.mapWithIndex
-      const aa1 = new Map<User, number>([[{ id: 'aa' }, 1]])
-      const aa3 = new Map<User, number>([[{ id: 'aa' }, 3]])
       assert.deepStrictEqual(
-        mapWithIndex(aa1, (k, a) => a + k.id.length),
-        aa3
+        pipe(
+          new Map<User, number>([[{ id: 'aa' }, 1]]),
+          W.mapWithIndex((k, a) => a + k.id.length)
+        ),
+        new Map<User, number>([[{ id: 'aa' }, 3]])
       )
     })
 
