@@ -11,15 +11,14 @@ import { Applicative as ApplicativeHKT, Applicative1 } from './Applicative'
 import * as A from './Array'
 import { Comonad1 } from './Comonad'
 import { Eq, fromEquals } from './Eq'
+import { Extend1 } from './Extend'
 import { Foldable1 } from './Foldable'
-import { identity, pipe, flow } from './function'
+import { flow, identity, pipe } from './function'
 import { Functor1 } from './Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
 import { Monad as MonadHKT, Monad1, Monad2, Monad2C, Monad3, Monad3C } from './Monad'
-import { Monoid } from './Monoid'
 import { Show } from './Show'
 import { PipeableTraverse1, Traversable1 } from './Traversable'
-import { Extend1 } from './Extend'
 
 // tslint:disable:readonly-array
 
@@ -264,23 +263,6 @@ const chain_ = <A, B>(fa: Tree<A>, f: (a: A) => Tree<B>): Tree<B> => {
     )
   }
 }
-const reduce_ = <A, B>(fa: Tree<A>, b: B, f: (b: B, a: A) => B): B => {
-  let r: B = f(b, fa.value)
-  const len = fa.forest.length
-  for (let i = 0; i < len; i++) {
-    r = reduce_(fa.forest[i], r, f)
-  }
-  return r
-}
-const foldMap_: Foldable1<URI>['foldMap'] = (M) => (fa, f) => reduce_(fa, M.empty, (acc, a) => M.concat(acc, f(a)))
-const reduceRight_ = <A, B>(fa: Tree<A>, b: B, f: (a: A, b: B) => B): B => {
-  let r: B = b
-  const len = fa.forest.length
-  for (let i = len - 1; i >= 0; i--) {
-    r = reduceRight_(fa.forest[i], r, f)
-  }
-  return f(fa.value, r)
-}
 const extend_: Extend1<URI>['extend'] = (wa, f) => ({
   value: f(wa),
   forest: wa.forest.map((t) => extend_(t, f))
@@ -388,15 +370,6 @@ export const extend: <A, B>(f: (wa: Tree<A>) => B) => (wa: Tree<A>) => Tree<B> =
 export const flatten: <A>(mma: Tree<Tree<A>>) => Tree<A> = (mma) => chain_(mma, identity)
 
 /**
- * @category Foldable
- * @since 2.0.0
- */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => (fa: Tree<A>) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
-
-/**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
  * use the type constructor `F` to represent some computational context.
  *
@@ -412,14 +385,33 @@ export const map: Functor1<URI>['map'] = (f) => (fa) => ({
  * @category Foldable
  * @since 2.0.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: Tree<A>) => B = (b, f) => (fa) => reduce_(fa, b, f)
+export const reduce: Foldable1<URI>['reduce'] = (b, f) => (fa) => {
+  let r = f(b, fa.value)
+  const len = fa.forest.length
+  for (let i = 0; i < len; i++) {
+    r = reduce(r, f)(fa.forest[i])
+  }
+  return r
+}
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: Tree<A>) => B = (b, f) => (fa) =>
-  reduceRight_(fa, b, f)
+export const foldMap: Foldable1<URI>['foldMap'] = (M) => (f) => reduce(M.empty, (acc, a) => M.concat(acc, f(a)))
+
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => (fa) => {
+  let r = b
+  const len = fa.forest.length
+  for (let i = len - 1; i >= 0; i--) {
+    r = reduceRight(r, f)(fa.forest[i])
+  }
+  return f(fa.value, r)
+}
 
 /**
  * @category Extract
@@ -515,9 +507,9 @@ export const Monad: Monad1<URI> = {
  */
 export const Foldable: Foldable1<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -527,9 +519,9 @@ export const Foldable: Foldable1<URI> = {
 export const Traversable: Traversable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -556,9 +548,9 @@ export const tree: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Comonad1<U
   of,
   ap,
   chain: chain_,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   extract,

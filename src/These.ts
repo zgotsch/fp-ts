@@ -24,16 +24,15 @@ import { Bifunctor2 } from './Bifunctor'
 import { Either, Left, Right } from './Either'
 import { Eq, fromEquals } from './Eq'
 import { Foldable2 } from './Foldable'
+import { Lazy, pipe } from './function'
 import { Functor2 } from './Functor'
 import { HKT } from './HKT'
 import { Monad2C } from './Monad'
 import { MonadThrow2C } from './MonadThrow'
-import { Monoid } from './Monoid'
 import { isNone, none, Option, some } from './Option'
 import { Semigroup } from './Semigroup'
 import { Show } from './Show'
 import { PipeableTraverse2, Traversable2 } from './Traversable'
-import { Lazy, pipe } from './function'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -409,11 +408,6 @@ const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) =>
   isLeft(fea) ? left(f(fea.left)) : isRight(fea) ? right(g(fea.right)) : both(f(fea.left), g(fea.right))
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) =>
   isLeft(fea) ? left(f(fea.left)) : isBoth(fea) ? both(f(fea.left), fea.right) : fea
-const reduce_: Foldable2<URI>['reduce'] = (fa, b, f) => (isLeft(fa) ? b : isRight(fa) ? f(b, fa.right) : f(b, fa.right))
-const foldMap_: Foldable2<URI>['foldMap'] = (M) => (fa, f) =>
-  isLeft(fa) ? M.empty : isRight(fa) ? f(fa.right) : f(fa.right)
-const reduceRight_: Foldable2<URI>['reduceRight'] = (fa, b, f) =>
-  isLeft(fa) ? b : isRight(fa) ? f(fa.right, b) : f(fa.right, b)
 const traverse_ = <F>(F: Applicative<F>) => <E, A, B>(ta: These<E, A>, f: (a: A) => HKT<F, B>): HKT<F, These<E, B>> => {
   return isLeft(ta)
     ? F.of(ta)
@@ -447,15 +441,6 @@ export const bimap: <E, G, A, B>(f: (e: E) => G, g: (a: A) => B) => (fa: These<E
 export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: These<E, A>) => These<G, A> = (f) => (fa) => mapLeft_(fa, f)
 
 /**
- * @category Foldable
- * @since 2.0.0
- */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => <E>(fa: These<E, A>) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
-
-/**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
  * use the type constructor `F` to represent some computational context.
  *
@@ -469,15 +454,22 @@ export const map: Functor2<URI>['map'] = (f) => (fa) =>
  * @category Foldable
  * @since 2.0.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => <E>(fa: These<E, A>) => B = (b, f) => (fa) =>
-  reduce_(fa, b, f)
+export const reduce: Foldable2<URI>['reduce'] = (b, f) => (fa) =>
+  isLeft(fa) ? b : isRight(fa) ? f(b, fa.right) : f(b, fa.right)
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => <E>(fa: These<E, A>) => B = (b, f) => (fa) =>
-  reduceRight_(fa, b, f)
+export const foldMap: Foldable2<URI>['foldMap'] = (M) => (f) => (fa) =>
+  isLeft(fa) ? M.empty : isRight(fa) ? f(fa.right) : f(fa.right)
+
+/**
+ * @category Foldable
+ * @since 2.0.0
+ */
+export const reduceRight: Foldable2<URI>['reduceRight'] = (b, f) => (fa) =>
+  isLeft(fa) ? b : isRight(fa) ? f(fa.right, b) : f(fa.right, b)
 
 /**
  * @since 2.6.3
@@ -552,9 +544,9 @@ export const Bifunctor: Bifunctor2<URI> = {
  */
 export const Foldable: Foldable2<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -564,9 +556,9 @@ export const Foldable: Foldable2<URI> = {
 export const Traversable: Traversable2<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -581,9 +573,9 @@ export const these: Functor2<URI> & Bifunctor2<URI> & Foldable2<URI> & Traversab
   map,
   bimap: bimap_,
   mapLeft: mapLeft_,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }

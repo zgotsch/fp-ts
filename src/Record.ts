@@ -671,11 +671,14 @@ export function fromFoldableMap<F, B>(
   F: FoldableHKT<F>
 ): <A>(fa: HKT<F, A>, f: (a: A) => readonly [string, B]) => ReadonlyRecord<string, B> {
   return <A>(ta: HKT<F, A>, f: (a: A) => readonly [string, B]) => {
-    return F.reduce<A, Record<string, B>>(ta, {}, (r, a) => {
-      const [k, b] = f(a)
-      r[k] = _hasOwnProperty.call(r, k) ? M.concat(r[k], b) : b
-      return r
-    })
+    return pipe(
+      ta,
+      F.reduce<A, Record<string, B>>({}, (r, a) => {
+        const [k, b] = f(a)
+        r[k] = _hasOwnProperty.call(r, k) ? M.concat(r[k], b) : b
+        return r
+      })
+    )
   }
 }
 
@@ -723,12 +726,6 @@ export const elem = <A>(E: Eq<A>) => (a: A) => (fa: ReadonlyRecord<string, A>): 
 // non-pipeables
 // -------------------------------------------------------------------------------------
 
-const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => reduceWithIndex_(fa, b, (_, b, a) => f(b, a))
-const foldMap_: Foldable1<URI>['foldMap'] = (M) => {
-  const foldMapWithIndexM = foldMapWithIndex_(M)
-  return (fa, f) => foldMapWithIndexM(fa, (_, a) => f(a))
-}
-const reduceRight_: Foldable1<URI>['reduceRight'] = (fa, b, f) => reduceRightWithIndex_(fa, b, (_, a, b) => f(a, b))
 const traverse_ = <F>(
   F: Applicative<F>
 ): (<A, B>(ta: ReadonlyRecord<string, A>, f: (a: A) => HKT<F, B>) => HKT<F, ReadonlyRecord<string, B>>) => {
@@ -901,15 +898,6 @@ export const filterMap: <A, B>(
 ) => (fa: Readonly<Record<string, A>>) => Readonly<Record<string, B>> = (f) => (fa) => filterMap_(fa, f)
 
 /**
- * @category Foldable
- * @since 2.5.0
- */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => (fa: Readonly<Record<string, A>>) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
-
-/**
  * @category Filterable
  * @since 2.5.0
  */
@@ -936,16 +924,23 @@ export const partitionMap: <A, B, C>(
  * @category Foldable
  * @since 2.5.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: Readonly<Record<string, A>>) => B = (b, f) => (fa) =>
-  reduce_(fa, b, f)
+export const reduce: Foldable1<URI>['reduce'] = (b, f) => (fa) => reduceWithIndex_(fa, b, (_, b, a) => f(b, a))
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: Readonly<Record<string, A>>) => B = (b, f) => (
-  fa
-) => reduceRight_(fa, b, f)
+export const foldMap: Foldable1<URI>['foldMap'] = (M) => {
+  const foldMapWithIndexM = foldMapWithIndex_(M)
+  return (f) => (fa) => foldMapWithIndexM(fa, (_, a) => f(a))
+}
+
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => (fa) =>
+  reduceRightWithIndex_(fa, b, (_, a, b) => f(a, b))
 
 /**
  * @category Compactable
@@ -1037,9 +1032,9 @@ export const FunctorWithIndex: FunctorWithIndex1<URI, string> = {
  */
 export const Foldable: Foldable1<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -1048,9 +1043,9 @@ export const Foldable: Foldable1<URI> = {
  */
 export const FoldableWithIndex: FoldableWithIndex1<URI, string> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   reduceWithIndex: reduceWithIndex_,
   foldMapWithIndex: foldMapWithIndex_,
   reduceRightWithIndex: reduceRightWithIndex_
@@ -1108,9 +1103,9 @@ export const FilterableWithIndex: FilterableWithIndex1<URI, string> = {
 export const Traversable: Traversable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -1123,9 +1118,9 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, string> = {
   URI,
   map,
   mapWithIndex,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   reduceWithIndex: reduceWithIndex_,
   foldMapWithIndex: foldMapWithIndex_,
   reduceRightWithIndex: reduceRightWithIndex_,
@@ -1141,9 +1136,9 @@ export const TraversableWithIndex: TraversableWithIndex1<URI, string> = {
 export const Witherable: Witherable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   compact,
@@ -1168,9 +1163,9 @@ export const readonlyRecord: FunctorWithIndex1<URI, string> &
   Witherable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   compact,

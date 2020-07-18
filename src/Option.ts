@@ -383,9 +383,6 @@ export function mapNullable<A, B>(f: (a: A) => B | null | undefined): (ma: Optio
 // -------------------------------------------------------------------------------------
 
 const chain_: Monad1<URI>['chain'] = (ma, f) => (isNone(ma) ? none : f(ma.value))
-const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => (isNone(fa) ? b : f(b, fa.value))
-const foldMap_: Foldable1<URI>['foldMap'] = (M) => (fa, f) => (isNone(fa) ? M.empty : f(fa.value))
-const reduceRight_: Foldable1<URI>['reduceRight'] = (fa, b, f) => (isNone(fa) ? b : f(fa.value, b))
 const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Option<A>, f: (a: A) => HKT<F, B>): HKT<F, Option<B>> =>
   isNone(ta) ? F.of(none) : pipe(f(ta.value), F.map(some))
 const alt_: Alt1<URI>['alt'] = (fa, that) => (isNone(fa) ? that() : fa)
@@ -561,23 +558,19 @@ export const extend: <A, B>(f: (wa: Option<A>) => B) => (wa: Option<A>) => Optio
  * @category Foldable
  * @since 2.0.0
  */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => (fa: Option<A>) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
+export const reduce: Foldable1<URI>['reduce'] = (b, f) => (fa) => (isNone(fa) ? b : f(b, fa.value))
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: Option<A>) => B = (b, f) => (fa) => reduce_(fa, b, f)
+export const foldMap: Foldable1<URI>['foldMap'] = (M) => (f) => (fa) => (isNone(fa) ? M.empty : f(fa.value))
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: Option<A>) => B = (b, f) => (fa) =>
-  reduceRight_(fa, b, f)
+export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => (fa) => (isNone(fa) ? b : f(fa.value, b))
 
 /**
  * @category Compactable
@@ -924,9 +917,9 @@ export const Monad: Monad1<URI> = {
  */
 export const Foldable: Foldable1<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -994,9 +987,9 @@ export const Filterable: Filterable1<URI> = {
 export const Traversable: Traversable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -1008,9 +1001,9 @@ export const Traversable: Traversable1<URI> = {
 export const Witherable: Witherable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   compact,
@@ -1052,9 +1045,9 @@ export const option: Monad1<URI> &
   of,
   ap,
   chain: chain_,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   zero,

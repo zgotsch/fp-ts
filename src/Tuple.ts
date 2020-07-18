@@ -103,9 +103,6 @@ const compose_: Semigroupoid2<URI>['compose'] = (ba, ae) => [fst(ba), snd(ae)]
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => [g(fst(fea)), f(snd(fea))]
 const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => [fst(fea), f(snd(fea))]
 const extend_: Extend2<URI>['extend'] = (ae, f) => [f(ae), snd(ae)]
-const reduce_: Foldable2<URI>['reduce'] = (ae, b, f) => f(b, fst(ae))
-const foldMap_: Foldable2<URI>['foldMap'] = (_) => (ae, f) => f(fst(ae))
-const reduceRight_: Foldable2<URI>['reduceRight'] = (ae, b, f) => f(fst(ae), b)
 const traverse_ = <F>(F: Applicative<F>) => <A, S, B>(
   as: readonly [A, S],
   f: (a: A) => HKT<F, B>
@@ -168,15 +165,6 @@ export const extend: <E, A, B>(f: (fa: readonly [A, E]) => B) => (wa: readonly [
 export const extract: <E, A>(wa: readonly [A, E]) => A = fst
 
 /**
- * @category Foldable
- * @since 2.5.0
- */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => <E>(fa: readonly [A, E]) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
-
-/**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
  * use the type constructor `F` to represent some computational context.
  *
@@ -189,15 +177,19 @@ export const map: Functor2<URI>['map'] = (f) => (fa) => [f(fst(fa)), snd(fa)]
  * @category Foldable
  * @since 2.5.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => <E>(fa: readonly [A, E]) => B = (b, f) => (fa) =>
-  reduce_(fa, b, f)
+export const reduce: Foldable2<URI>['reduce'] = (b, f) => (fa) => f(b, fst(fa))
 
 /**
  * @category Foldable
  * @since 2.5.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => <E>(fa: readonly [A, E]) => B = (b, f) => (fa) =>
-  reduceRight_(fa, b, f)
+export const foldMap: Foldable2<URI>['foldMap'] = () => (f) => (fa) => f(fst(fa))
+
+/**
+ * @category Foldable
+ * @since 2.5.0
+ */
+export const reduceRight: Foldable2<URI>['reduceRight'] = (b, f) => (fa) => f(fst(fa), b)
 
 /**
  * @since 2.6.3
@@ -287,9 +279,9 @@ export const Comonad: Comonad2<URI> = {
  */
 export const Foldable: Foldable2<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -299,9 +291,9 @@ export const Foldable: Foldable2<URI> = {
 export const Traversable: Traversable2<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -323,9 +315,9 @@ export const readonlyTuple: Semigroupoid2<URI> &
   mapLeft: mapLeft_,
   extract,
   extend: extend_,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }

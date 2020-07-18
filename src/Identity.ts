@@ -7,11 +7,10 @@ import { Comonad1 } from './Comonad'
 import { Eq } from './Eq'
 import { Extend1 } from './Extend'
 import { Foldable1 } from './Foldable'
-import { identity as id, pipe, flow } from './function'
+import { flow, identity as id, pipe } from './function'
 import { Functor1 } from './Functor'
 import { HKT } from './HKT'
 import { Monad1 } from './Monad'
-import { Monoid } from './Monoid'
 import { Show } from './Show'
 import { PipeableTraverse1, Traversable1 } from './Traversable'
 
@@ -30,9 +29,6 @@ export type Identity<A> = A
 // -------------------------------------------------------------------------------------
 
 const chain_: Monad1<URI>['chain'] = (ma, f) => f(ma)
-const reduce_: Foldable1<URI>['reduce'] = (fa, b, f) => f(b, fa)
-const foldMap_: Foldable1<URI>['foldMap'] = (_) => (fa, f) => f(fa)
-const reduceRight_: Foldable1<URI>['reduceRight'] = (fa, b, f) => f(fa, b)
 const alt_: Alt1<URI>['alt'] = id
 const extend_: Extend1<URI>['extend'] = (wa, f) => f(wa)
 const traverse_ = <F>(F: ApplicativeHKT<F>) => <A, B>(ta: Identity<A>, f: (a: A) => HKT<F, B>): HKT<F, Identity<B>> =>
@@ -158,23 +154,19 @@ export const flatten: <A>(mma: Identity<Identity<A>>) => Identity<A> = (mma) => 
  * @category Foldable
  * @since 2.0.0
  */
-export const foldMap: <M>(M: Monoid<M>) => <A>(f: (a: A) => M) => (fa: Identity<A>) => M = (M) => {
-  const foldMapM = foldMap_(M)
-  return (f) => (fa) => foldMapM(fa, f)
-}
+export const reduce: Foldable1<URI>['reduce'] = (b, f) => (fa) => f(b, fa)
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduce: <A, B>(b: B, f: (b: B, a: A) => B) => (fa: Identity<A>) => B = (b, f) => (fa) => reduce_(fa, b, f)
+export const foldMap: Foldable1<URI>['foldMap'] = () => (f) => (fa) => f(fa)
 
 /**
  * @category Foldable
  * @since 2.0.0
  */
-export const reduceRight: <A, B>(b: B, f: (a: A, b: B) => B) => (fa: Identity<A>) => B = (b, f) => (fa) =>
-  reduceRight_(fa, b, f)
+export const reduceRight: Foldable1<URI>['reduceRight'] = (b, f) => (fa) => f(fa, b)
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -257,9 +249,9 @@ export const Monad: Monad1<URI> = {
  */
 export const Foldable: Foldable1<URI> = {
   URI,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_
+  reduce,
+  foldMap,
+  reduceRight
 }
 
 /**
@@ -269,9 +261,9 @@ export const Foldable: Foldable1<URI> = {
 export const Traversable: Traversable1<URI> = {
   URI,
   map,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence
 }
@@ -308,9 +300,9 @@ export const identity: Monad1<URI> & Foldable1<URI> & Traversable1<URI> & Alt1<U
   ap,
   of,
   chain: chain_,
-  reduce: reduce_,
-  foldMap: foldMap_,
-  reduceRight: reduceRight_,
+  reduce,
+  foldMap,
+  reduceRight,
   traverse: traverse_,
   sequence,
   alt: alt_,

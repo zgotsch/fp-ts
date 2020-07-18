@@ -436,15 +436,18 @@ export function fromFoldable<F, K, A>(
 ): (fka: HKT<F, readonly [K, A]>) => ReadonlyMap<K, A> {
   return (fka: HKT<F, readonly [K, A]>) => {
     const lookupWithKeyE = lookupWithKey(E)
-    return F.reduce<readonly [K, A], Map<K, A>>(fka, new Map<K, A>(), (b, [k, a]) => {
-      const bOpt = lookupWithKeyE(k)(b)
-      if (O.isSome(bOpt)) {
-        b.set(bOpt.value[0], M.concat(bOpt.value[1], a))
-      } else {
-        b.set(k, a)
-      }
-      return b
-    })
+    return pipe(
+      fka,
+      F.reduce(new Map<K, A>(), (b, [k, a]) => {
+        const oka = lookupWithKeyE(k)(b)
+        if (O.isSome(oka)) {
+          b.set(oka.value[0], M.concat(oka.value[1], a))
+        } else {
+          b.set(k, a)
+        }
+        return b
+      })
+    )
   }
 }
 
@@ -773,12 +776,12 @@ export function getWitherable<K>(O: Ord<K>): Witherable2C<URI, K> & TraversableW
     filterMap: filterMap_,
     partition: partition_,
     partitionMap: partitionMap_,
-    reduce: (fa, b, f) => reduceWithIndex(fa, b, (_, b, a) => f(b, a)),
+    reduce: (b, f) => (fa) => reduceWithIndex(fa, b, (_, b, a) => f(b, a)),
     foldMap: (M) => {
       const foldMapWithIndexM = foldMapWithIndex(M)
-      return (fa, f) => foldMapWithIndexM(fa, (_, a) => f(a))
+      return (f) => (fa) => foldMapWithIndexM(fa, (_, a) => f(a))
     },
-    reduceRight: (fa, b, f) => reduceRightWithIndex(fa, b, (_, a, b) => f(a, b)),
+    reduceRight: (b, f) => (fa) => reduceRightWithIndex(fa, b, (_, a, b) => f(a, b)),
     traverse,
     sequence,
     mapWithIndex,
