@@ -40,7 +40,7 @@ use the type constructor `F` to represent some computational context.
 **Signature**
 
 ```ts
-export declare const map: <A, B>(f: (a: A) => B) => <P>(fa: Traced<P, A>) => Traced<P, B>
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: Traced<E, A>) => Traced<E, B>
 ```
 
 Added in v2.0.0

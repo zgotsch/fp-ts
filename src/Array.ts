@@ -957,7 +957,7 @@ export function lefts<E, A>(as: ReadonlyArray<Either<E, A>>): ReadonlyArray<E> {
  * @category combinators
  * @since 2.5.0
  */
-export function sort<A>(O: Ord<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
+export function sort<B>(O: Ord<B>): <A extends B>(as: ReadonlyArray<A>) => ReadonlyArray<A> {
   return (as) => (isEmpty(as) ? as : as.slice().sort(O.compare))
 }
 
@@ -1134,8 +1134,8 @@ export function uniq<A>(E: Eq<A>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
  * @category combinators
  * @since 2.5.0
  */
-export function sortBy<A>(ords: ReadonlyArray<Ord<A>>): (as: ReadonlyArray<A>) => ReadonlyArray<A> {
-  const M = getOrdMonoid<A>()
+export function sortBy<B>(ords: ReadonlyArray<Ord<B>>): <A extends B>(as: ReadonlyArray<A>) => ReadonlyArray<A> {
+  const M = getOrdMonoid<B>()
   return sort(ords.reduce(M.concat, M.empty))
 }
 

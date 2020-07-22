@@ -80,7 +80,6 @@ Added in v2.0.0
   - [getFilterable](#getfilterable)
   - [getSemigroup](#getsemigroup)
   - [taskEither](#taskeither)
-  - [taskEitherSeq](#taskeitherseq)
 - [model](#model)
   - [TaskEither (interface)](#taskeither-interface)
 - [utils](#utils)
@@ -776,22 +775,6 @@ Added in v2.0.0
 
 ```ts
 export declare const taskEither: Monad2<'TaskEither'> &
-  Bifunctor2<'TaskEither'> &
-  Alt2<'TaskEither'> &
-  MonadTask2<'TaskEither'> &
-  MonadThrow2<'TaskEither'>
-```
-
-Added in v2.0.0
-
-## taskEitherSeq
-
-Like `TaskEither` but `ap` is sequential
-
-**Signature**
-
-```ts
-export declare const taskEitherSeq: Monad2<'TaskEither'> &
   Bifunctor2<'TaskEither'> &
   Alt2<'TaskEither'> &
   MonadTask2<'TaskEither'> &

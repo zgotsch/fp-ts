@@ -590,7 +590,7 @@ export const map: Functor2<URI>['map'] = (f) => mapWithIndex((_, a) => f(a))
 
 /**
  * @category FunctorWithIndex
- * @since 3.0.0
+ * @since 2.7.1
  */
 export const mapWithIndex = <K, A, B>(f: (k: K, a: A) => B) => (fa: ReadonlyMap<K, A>): ReadonlyMap<K, B> => {
   const m = new Map<K, B>()

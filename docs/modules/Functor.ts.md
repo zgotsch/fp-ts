@@ -13,8 +13,8 @@ constructor `f` to represent some computational context.
 
 Instances must satisfy the following laws:
 
-1. Identity: `F.map(fa, a => a) <-> fa`
-2. Composition: `F.map(fa, a => bc(ab(a))) <-> F.map(F.map(fa, ab), bc)`
+1. Identity: `F.map(a => a)(fa) <-> fa`
+2. Composition: `F.map(flow(ab, bc)) <-> flow(F.map(ab), F.map(bc))`
 
 Added in v2.0.0
 
@@ -42,11 +42,11 @@ Added in v2.0.0
 ```ts
 export interface Functor<F> {
   readonly URI: F
-  readonly map: <A, B>(fa: HKT<F, A>, f: (a: A) => B) => HKT<F, B>
+  readonly map: <A, B>(f: (a: A) => B) => (fa: HKT<F, A>) => HKT<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Functor1 (interface)
 
@@ -55,11 +55,11 @@ Added in v2.0.0
 ```ts
 export interface Functor1<F extends URIS> {
   readonly URI: F
-  readonly map: <A, B>(fa: Kind<F, A>, f: (a: A) => B) => Kind<F, B>
+  readonly map: <A, B>(f: (a: A) => B) => (fa: Kind<F, A>) => Kind<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Functor2 (interface)
 
@@ -68,11 +68,11 @@ Added in v2.0.0
 ```ts
 export interface Functor2<F extends URIS2> {
   readonly URI: F
-  readonly map: <E, A, B>(fa: Kind2<F, E, A>, f: (a: A) => B) => Kind2<F, E, B>
+  readonly map: <A, B>(f: (a: A) => B) => <E>(fa: Kind2<F, E, A>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Functor2C (interface)
 
@@ -82,11 +82,11 @@ Added in v2.0.0
 export interface Functor2C<F extends URIS2, E> {
   readonly URI: F
   readonly _E: E
-  readonly map: <A, B>(fa: Kind2<F, E, A>, f: (a: A) => B) => Kind2<F, E, B>
+  readonly map: <A, B>(f: (a: A) => B) => (fa: Kind2<F, E, A>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Functor3 (interface)
 
@@ -95,11 +95,11 @@ Added in v2.0.0
 ```ts
 export interface Functor3<F extends URIS3> {
   readonly URI: F
-  readonly map: <R, E, A, B>(fa: Kind3<F, R, E, A>, f: (a: A) => B) => Kind3<F, R, E, B>
+  readonly map: <A, B>(f: (a: A) => B) => <R, E>(fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Functor3C (interface)
 
@@ -109,11 +109,11 @@ Added in v2.0.0
 export interface Functor3C<F extends URIS3, E> {
   readonly URI: F
   readonly _E: E
-  readonly map: <R, A, B>(fa: Kind3<F, R, E, A>, f: (a: A) => B) => Kind3<F, R, E, B>
+  readonly map: <A, B>(f: (a: A) => B) => <R>(fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
 }
 ```
 
-Added in v2.2.0
+Added in v3.0.0
 
 ## Functor4 (interface)
 
@@ -122,8 +122,8 @@ Added in v2.2.0
 ```ts
 export interface Functor4<F extends URIS4> {
   readonly URI: F
-  readonly map: <S, R, E, A, B>(fa: Kind4<F, S, R, E, A>, f: (a: A) => B) => Kind4<F, S, R, E, B>
+  readonly map: <A, B>(f: (a: A) => B) => <S, R, E>(fa: Kind4<F, S, R, E, A>) => Kind4<F, S, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0

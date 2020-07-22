@@ -13,8 +13,8 @@ constructor `f` to represent some computational context.
 
 Instances must satisfy the following laws:
 
-1. Identity: `F.mapWithIndex(fa, (_i, a) => a) <-> fa`
-2. Composition: `F.mapWithIndex(fa, (_i, a) => bc(ab(a))) <-> F.mapWithIndex(F.mapWithIndex(fa, ab), bc)`
+1. Identity: `F.mapWithIndex((_, a) => a)(fa) <-> fa`
+2. Composition: `F.mapWithIndex((_, a) => flow(ab, bc)(a)) <-> flow(F.mapWithIndex((_, a) => ab(a)), F.mapWithIndex((_, b) => bc(b)))`
 
 Added in v2.0.0
 
@@ -41,11 +41,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex<F, I> extends Functor<F> {
-  readonly mapWithIndex: <A, B>(fa: HKT<F, A>, f: (i: I, a: A) => B) => HKT<F, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => (fa: HKT<F, A>) => HKT<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## FunctorWithIndex1 (interface)
 
@@ -53,11 +53,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex1<F extends URIS, I> extends Functor1<F> {
-  readonly mapWithIndex: <A, B>(fa: Kind<F, A>, f: (i: I, a: A) => B) => Kind<F, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => (fa: Kind<F, A>) => Kind<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## FunctorWithIndex2 (interface)
 
@@ -65,11 +65,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex2<F extends URIS2, I> extends Functor2<F> {
-  readonly mapWithIndex: <E, A, B>(fa: Kind2<F, E, A>, f: (i: I, a: A) => B) => Kind2<F, E, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => <E>(fa: Kind2<F, E, A>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## FunctorWithIndex2C (interface)
 
@@ -77,11 +77,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex2C<F extends URIS2, I, E> extends Functor2C<F, E> {
-  readonly mapWithIndex: <A, B>(fa: Kind2<F, E, A>, f: (i: I, a: A) => B) => Kind2<F, E, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => (fa: Kind2<F, E, A>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## FunctorWithIndex3 (interface)
 
@@ -89,11 +89,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex3<F extends URIS3, I> extends Functor3<F> {
-  readonly mapWithIndex: <R, E, A, B>(fa: Kind3<F, R, E, A>, f: (i: I, a: A) => B) => Kind3<F, R, E, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => <R, E>(fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## FunctorWithIndex3C (interface)
 
@@ -101,11 +101,11 @@ Added in v2.0.0
 
 ```ts
 export interface FunctorWithIndex3C<F extends URIS3, I, E> extends Functor3C<F, E> {
-  readonly mapWithIndex: <R, A, B>(fa: Kind3<F, R, E, A>, f: (i: I, a: A) => B) => Kind3<F, R, E, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => <R>(fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
 }
 ```
 
-Added in v2.2.0
+Added in v3.0.0
 
 ## FunctorWithIndex4 (interface)
 
@@ -113,8 +113,8 @@ Added in v2.2.0
 
 ```ts
 export interface FunctorWithIndex4<F extends URIS4, I> extends Functor4<F> {
-  readonly mapWithIndex: <S, R, E, A, B>(fa: Kind4<F, S, R, E, A>, f: (i: I, a: A) => B) => Kind4<F, S, R, E, B>
+  readonly mapWithIndex: <A, B>(f: (i: I, a: A) => B) => <S, R, E>(fa: Kind4<F, S, R, E, A>) => Kind4<F, S, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0

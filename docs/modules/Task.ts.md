@@ -51,7 +51,6 @@ Added in v2.0.0
   - [getRaceMonoid](#getracemonoid)
   - [getSemigroup](#getsemigroup)
   - [task](#task)
-  - [taskSeq](#taskseq)
 - [model](#model)
   - [Task (interface)](#task-interface)
 - [utils](#utils)
@@ -369,18 +368,6 @@ Added in v2.0.0
 
 ```ts
 export declare const task: Monad1<'Task'> & MonadTask1<'Task'>
-```
-
-Added in v2.0.0
-
-## taskSeq
-
-Like `task` but `ap` is sequential
-
-**Signature**
-
-```ts
-export declare const taskSeq: Monad1<'Task'> & MonadTask1<'Task'>
 ```
 
 Added in v2.0.0

@@ -45,7 +45,6 @@ Added in v2.3.0
   - [getMonoid](#getmonoid)
   - [getSemigroup](#getsemigroup)
   - [readerTask](#readertask)
-  - [readerTaskSeq](#readertaskseq)
 - [model](#model)
   - [ReaderTask (interface)](#readertask-interface)
 
@@ -72,7 +71,7 @@ Apply a function to an argument under a type constructor.
 **Signature**
 
 ```ts
-export declare const ap: <R, A>(fa: ReaderTask<R, A>) => <B>(fab: ReaderTask<R, (a: A) => B>) => ReaderTask<R, B>
+export declare const ap: <E, A>(fa: ReaderTask<E, A>) => <B>(fab: ReaderTask<E, (a: A) => B>) => ReaderTask<E, B>
 ```
 
 Added in v2.3.0
@@ -108,7 +107,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const map: <A, B>(f: (a: A) => B) => <R>(fa: ReaderTask<R, A>) => ReaderTask<R, B>
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderTask<E, A>) => ReaderTask<E, B>
 ```
 
 Added in v2.3.0
@@ -340,18 +339,6 @@ Added in v2.3.0
 
 ```ts
 export declare const readerTask: MonadTask2<'ReaderTask'>
-```
-
-Added in v2.3.0
-
-## readerTaskSeq
-
-Like `readerTask` but `ap` is sequential
-
-**Signature**
-
-```ts
-export declare const readerTaskSeq: MonadTask2<'ReaderTask'>
 ```
 
 Added in v2.3.0

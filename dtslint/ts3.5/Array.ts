@@ -1,6 +1,7 @@
 import * as _ from '../../src/Array'
 import { pipe } from '../../src/function'
 import { eqNumber } from '../../src/Eq'
+import { Ord } from '../../src/Ord'
 
 declare const rus: ReadonlyArray<unknown>
 declare const rns: ReadonlyArray<number>
@@ -121,3 +122,31 @@ _.zip(['a', 'b']) // $ExpectType <A>(as: readonly A[]) => readonly (readonly [A,
 //
 
 _.cons(0) // $ExpectType (tail: readonly number[]) => NonEmptyArray<number>
+
+//
+// sort
+//
+
+declare const ord1: Ord<{ readonly a: string }>
+interface X1 {
+  readonly a: string
+  readonly b: number
+}
+declare const x1s: ReadonlyArray<X1>
+
+_.sort(ord1)(x1s) // $ExpectType ReadonlyArray<X1>
+
+//
+// sortBy
+//
+
+declare const ord2: Ord<X1>
+declare const ord3: Ord<X1>
+interface X2 {
+  readonly a: string
+  readonly b: number
+  readonly c: boolean
+}
+declare const x2s: ReadonlyArray<X2>
+
+_.sortBy([ord2, ord3])(x2s) // $ExpectType ReadonlyArray<X2>

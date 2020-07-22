@@ -86,7 +86,6 @@ Added in v2.0.0
   - [getApplySemigroup](#getapplysemigroup)
   - [getSemigroup](#getsemigroup)
   - [readerTaskEither](#readertaskeither)
-  - [readerTaskEitherSeq](#readertaskeitherseq)
 - [model](#model)
   - [ReaderTaskEither (interface)](#readertaskeither-interface)
 - [utils](#utils)
@@ -819,22 +818,6 @@ Added in v2.0.0
 
 ```ts
 export declare const readerTaskEither: Monad3<'ReaderTaskEither'> &
-  Bifunctor3<'ReaderTaskEither'> &
-  Alt3<'ReaderTaskEither'> &
-  MonadTask3<'ReaderTaskEither'> &
-  MonadThrow3<'ReaderTaskEither'>
-```
-
-Added in v2.0.0
-
-## readerTaskEitherSeq
-
-Like `readerTaskEither` but `ap` is sequential
-
-**Signature**
-
-```ts
-export declare const readerTaskEitherSeq: Monad3<'ReaderTaskEither'> &
   Bifunctor3<'ReaderTaskEither'> &
   Alt3<'ReaderTaskEither'> &
   MonadTask3<'ReaderTaskEither'> &

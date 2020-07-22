@@ -13,7 +13,7 @@ The `Apply` class provides the `ap` which is used to apply a function to an argu
 
 Instances must satisfy the following law in addition to the `Functor` laws:
 
-1. Associative composition: `F.ap(F.ap(F.map(fbc, bc => ab => a => bc(ab(a))), fab), fa) <-> F.ap(fbc, F.ap(fab, fa))`
+1. Associative composition: `pipe(fbc, F.map((bc) => (ab) => flow(ab, bc)), F.ap(fab), F.ap(fa)) <-> pipe(fbc, F.ap(pipe(fab, F.ap(fa))))`
 
 Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 
@@ -71,11 +71,11 @@ Added in v2.0.0
 
 ```ts
 export interface Apply<F> extends Functor<F> {
-  readonly ap: <A, B>(fab: HKT<F, (a: A) => B>, fa: HKT<F, A>) => HKT<F, B>
+  readonly ap: <A>(fa: HKT<F, A>) => <B>(fab: HKT<F, (a: A) => B>) => HKT<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Apply1 (interface)
 
@@ -83,11 +83,11 @@ Added in v2.0.0
 
 ```ts
 export interface Apply1<F extends URIS> extends Functor1<F> {
-  readonly ap: <A, B>(fab: Kind<F, (a: A) => B>, fa: Kind<F, A>) => Kind<F, B>
+  readonly ap: <A>(fa: Kind<F, A>) => <B>(fab: Kind<F, (a: A) => B>) => Kind<F, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Apply2 (interface)
 
@@ -95,11 +95,11 @@ Added in v2.0.0
 
 ```ts
 export interface Apply2<F extends URIS2> extends Functor2<F> {
-  readonly ap: <E, A, B>(fab: Kind2<F, E, (a: A) => B>, fa: Kind2<F, E, A>) => Kind2<F, E, B>
+  readonly ap: <E, A>(fa: Kind2<F, E, A>) => <B>(fab: Kind2<F, E, (a: A) => B>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Apply2C (interface)
 
@@ -107,11 +107,11 @@ Added in v2.0.0
 
 ```ts
 export interface Apply2C<F extends URIS2, E> extends Functor2C<F, E> {
-  readonly ap: <A, B>(fab: Kind2<F, E, (a: A) => B>, fa: Kind2<F, E, A>) => Kind2<F, E, B>
+  readonly ap: <A>(fa: Kind2<F, E, A>) => <B>(fab: Kind2<F, E, (a: A) => B>) => Kind2<F, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Apply3 (interface)
 
@@ -119,11 +119,11 @@ Added in v2.0.0
 
 ```ts
 export interface Apply3<F extends URIS3> extends Functor3<F> {
-  readonly ap: <R, E, A, B>(fab: Kind3<F, R, E, (a: A) => B>, fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
+  readonly ap: <R, E, A>(fa: Kind3<F, R, E, A>) => <B>(fab: Kind3<F, R, E, (a: A) => B>) => Kind3<F, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 ## Apply3C (interface)
 
@@ -131,7 +131,7 @@ Added in v2.0.0
 
 ```ts
 export interface Apply3C<F extends URIS3, E> extends Functor3C<F, E> {
-  readonly ap: <R, A, B>(fab: Kind3<F, R, E, (a: A) => B>, fa: Kind3<F, R, E, A>) => Kind3<F, R, E, B>
+  readonly ap: <R, A>(fa: Kind3<F, R, E, A>) => <B>(fab: Kind3<F, R, E, (a: A) => B>) => Kind3<F, R, E, B>
 }
 ```
 
@@ -143,11 +143,13 @@ Added in v2.2.0
 
 ```ts
 export interface Apply4<F extends URIS4> extends Functor4<F> {
-  readonly ap: <S, R, E, A, B>(fab: Kind4<F, S, R, E, (a: A) => B>, fa: Kind4<F, S, R, E, A>) => Kind4<F, S, R, E, B>
+  readonly ap: <S, R, E, A>(
+    fa: Kind4<F, S, R, E, A>
+  ) => <B>(fab: Kind4<F, S, R, E, (a: A) => B>) => Kind4<F, S, R, E, B>
 }
 ```
 
-Added in v2.0.0
+Added in v3.0.0
 
 # utils
 
