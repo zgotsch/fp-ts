@@ -531,7 +531,7 @@ export function sequence<F>(
 }
 
 /**
- * @category Whitherable
+ * @category Witherable
  * @since 2.6.5
  */
 export const wither: PipeableWither1<URI> = <F>(
@@ -542,7 +542,7 @@ export const wither: PipeableWither1<URI> = <F>(
 }
 
 /**
- * @category Whitherable
+ * @category Witherable
  * @since 2.6.5
  */
 export const wilt: PipeableWilt1<URI> = <F>(
