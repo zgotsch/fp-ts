@@ -588,7 +588,25 @@ describe('Array', () => {
   })
 
   it('sort', () => {
-    assert.deepStrictEqual(_.sort(Ord.ordNumber)([3, 2, 1]), [1, 2, 3])
+    const O = pipe(
+      Ord.ordNumber,
+      Ord.contramap((x: { readonly a: number }) => x.a)
+    )
+    assert.deepStrictEqual(
+      pipe(
+        [
+          { a: 3, b: 'b1' },
+          { a: 2, b: 'b2' },
+          { a: 1, b: 'b3' }
+        ],
+        _.sort(O)
+      ),
+      [
+        { a: 1, b: 'b3' },
+        { a: 2, b: 'b2' },
+        { a: 3, b: 'b1' }
+      ]
+    )
     assert.strictEqual(_.sort(Ord.ordNumber)(_.empty), _.empty)
   })
 
@@ -722,40 +740,41 @@ describe('Array', () => {
   })
 
   it('sortBy', () => {
-    interface Person {
-      readonly name: string
-      readonly age: number
+    interface X {
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
     }
     const byName = pipe(
       Ord.ordString,
-      Ord.contramap((p: Person) => p.name)
+      Ord.contramap((p: { readonly a: string; readonly b: number }) => p.a)
     )
     const byAge = pipe(
       Ord.ordNumber,
-      Ord.contramap((p: Person) => p.age)
+      Ord.contramap((p: { readonly a: string; readonly b: number }) => p.b)
     )
-    const sortByNameByAge = _.sortBy([byName, byAge])
-    const persons: ReadonlyArray<Person> = [
-      { name: 'a', age: 1 },
-      { name: 'b', age: 3 },
-      { name: 'c', age: 2 },
-      { name: 'b', age: 2 }
+    const f = _.sortBy([byName, byAge])
+    const xs: ReadonlyArray<X> = [
+      { a: 'a', b: 1, c: true },
+      { a: 'b', b: 3, c: true },
+      { a: 'c', b: 2, c: true },
+      { a: 'b', b: 2, c: true }
     ]
-    assert.deepStrictEqual(sortByNameByAge(persons), [
-      { name: 'a', age: 1 },
-      { name: 'b', age: 2 },
-      { name: 'b', age: 3 },
-      { name: 'c', age: 2 }
+    assert.deepStrictEqual(f(xs), [
+      { a: 'a', b: 1, c: true },
+      { a: 'b', b: 2, c: true },
+      { a: 'b', b: 3, c: true },
+      { a: 'c', b: 2, c: true }
     ])
     const sortByAgeByName = _.sortBy([byAge, byName])
-    assert.deepStrictEqual(sortByAgeByName(persons), [
-      { name: 'a', age: 1 },
-      { name: 'b', age: 2 },
-      { name: 'c', age: 2 },
-      { name: 'b', age: 3 }
+    assert.deepStrictEqual(sortByAgeByName(xs), [
+      { a: 'a', b: 1, c: true },
+      { a: 'b', b: 2, c: true },
+      { a: 'c', b: 2, c: true },
+      { a: 'b', b: 3, c: true }
     ])
 
-    assert.deepStrictEqual(_.sortBy([])(persons), persons)
+    assert.deepStrictEqual(_.sortBy([])(xs), xs)
   })
 
   it('chop', () => {
