@@ -27,9 +27,9 @@ import {
   FoldableComposition22C,
   Foldable4,
   Foldable3C
-} from './Foldable'
-import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3, URIS4, Kind4 } from './HKT'
-import { Monoid } from './Monoid'
+} from './Foldable.ts'
+import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3, URIS4, Kind4 } from './HKT.ts'
+import { Monoid } from './Monoid.ts'
 
 /* tslint:disable:readonly-array */
 

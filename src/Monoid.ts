@@ -1,9 +1,9 @@
 /**
  * @since 2.0.0
  */
-import { Bounded } from './Bounded'
-import { Endomorphism, identity } from './function'
-import { ReadonlyRecord } from './ReadonlyRecord'
+import { Bounded } from './Bounded.ts'
+import { Endomorphism, identity } from './function.ts'
+import { ReadonlyRecord } from './ReadonlyRecord.ts'
 import {
   fold as foldSemigroup,
   getDualSemigroup,
@@ -19,7 +19,7 @@ import {
   semigroupString,
   semigroupSum,
   semigroupVoid
-} from './Semigroup'
+} from './Semigroup.ts'
 
 /**
  * @category type classes

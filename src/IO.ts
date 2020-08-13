@@ -11,14 +11,14 @@
  *
  * @since 2.0.0
  */
-import { Applicative1 } from './Applicative'
-import { ChainRec1 } from './ChainRec'
-import { identity, pipe, bind_, bindTo_, flow } from './function'
-import { Functor1 } from './Functor'
-import { Monad1 } from './Monad'
-import { MonadIO1 } from './MonadIO'
-import { Monoid } from './Monoid'
-import { Semigroup } from './Semigroup'
+import { Applicative1 } from './Applicative.ts'
+import { ChainRec1 } from './ChainRec.ts'
+import { identity, pipe, bind_, bindTo_, flow } from './function.ts'
+import { Functor1 } from './Functor.ts'
+import { Monad1 } from './Monad.ts'
+import { MonadIO1 } from './MonadIO.ts'
+import { Monoid } from './Monoid.ts'
+import { Semigroup } from './Semigroup.ts'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -149,7 +149,7 @@ export const URI = 'IO'
  */
 export type URI = typeof URI
 
-declare module './HKT' {
+declare module './HKT.ts' {
   interface URItoKind<A> {
     readonly [URI]: IO<A>
   }

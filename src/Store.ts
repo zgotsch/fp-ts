@@ -1,11 +1,11 @@
 /**
  * @since 2.0.0
  */
-import { Comonad2 } from './Comonad'
-import { Endomorphism, identity, pipe } from './function'
-import { Functor as FunctorHKT, Functor1, Functor2, Functor2C, Functor3, Functor3C } from './Functor'
-import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT'
-import { Extend2 } from './Extend'
+import { Comonad2 } from './Comonad.ts'
+import { Endomorphism, identity, pipe } from './function.ts'
+import { Functor as FunctorHKT, Functor1, Functor2, Functor2C, Functor3, Functor3C } from './Functor.ts'
+import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from './HKT.ts'
+import { Extend2 } from './Extend.ts'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -136,7 +136,7 @@ export const URI = 'Store'
  */
 export type URI = typeof URI
 
-declare module './HKT' {
+declare module './HKT.ts' {
   interface URItoKind2<E, A> {
     readonly [URI]: Store<E, A>
   }

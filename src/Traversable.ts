@@ -34,7 +34,7 @@ import {
   Applicative3,
   Applicative3C,
   Applicative4
-} from './Applicative'
+} from './Applicative.ts'
 import {
   Foldable,
   Foldable1,
@@ -44,7 +44,7 @@ import {
   FoldableComposition,
   FoldableComposition11,
   getFoldableComposition
-} from './Foldable'
+} from './Foldable.ts'
 import {
   Functor,
   Functor1,
@@ -54,8 +54,8 @@ import {
   FunctorComposition,
   FunctorComposition11,
   getFunctorComposition
-} from './Functor'
-import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
+} from './Functor.ts'
+import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT.ts'
 
 /**
  * @category type classes

@@ -17,7 +17,7 @@
  *
  * @since 2.0.0
  */
-import { Apply, Apply1, Apply2, Apply2C, Apply3, Apply4, Apply3C } from './Apply'
+import { Apply, Apply1, Apply2, Apply2C, Apply3, Apply4, Apply3C } from './Apply.ts'
 import {
   FunctorComposition,
   FunctorCompositionHKT1,
@@ -31,8 +31,8 @@ import {
   FunctorComposition2C1,
   getFunctorComposition,
   FunctorCompositionHKT2C
-} from './Functor'
-import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT'
+} from './Functor.ts'
+import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from './HKT.ts'
 
 /**
  * @category type classes
